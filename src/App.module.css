@@ -1,0 +1,9 @@
+.app {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 100px auto 360px;
+  grid-template-rows: var(--headerHeight) auto;
+  grid-template-areas:
+    'sidebar header userMenu'
+    'sidebar mainContent userMenu';
+}
