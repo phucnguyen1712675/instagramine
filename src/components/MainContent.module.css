@@ -1,5 +1,0 @@
-.mainContent {
-  grid-area: mainContent;
-  background-color: green;
-  min-height: calc(100vh - var(--headerHeight));
-}

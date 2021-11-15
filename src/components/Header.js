@@ -1,8 +1,18 @@
-import React from 'react';
-import styles from './Header.module.css';
+import {StyledHeader, AppLogo} from './styled/Header.styled';
+import SearchForm from './SearchForm';
+import LogoIcon from './icons/LogoIcon';
+import LogoTextIcon from './icons/LogoTextIcon';
 
 const Header = () => {
-  return <div className={styles.header}></div>;
+  return (
+    <StyledHeader>
+      <AppLogo href="#">
+        <LogoIcon style={{fontSize: '2.8rem'}} />
+        <LogoTextIcon />
+      </AppLogo>
+      <SearchForm />
+    </StyledHeader>
+  );
 };
 
 export default Header;

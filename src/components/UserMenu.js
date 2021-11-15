@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './UserMenu.module.css';
+import {StyledUserMenu} from './styled/UserMenu.styled';
 
 const UserMenu = () => {
-  return <div className={styles.userMenu}></div>;
+  return <StyledUserMenu></StyledUserMenu>;
 };
 
 export default UserMenu;
