@@ -6,7 +6,7 @@ export const StyledSidebar = styled.aside`
   ${flexCenter({direction: 'column'})};
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   position: relative;
-  border: 1px solid ${({theme}) => theme.colors.borderSidebar};
+  border: 1px solid ${({theme}) => theme.colors.primaryBorderDark};
 `;
 
 export const Nav = styled.nav`

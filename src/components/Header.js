@@ -7,7 +7,7 @@ const Header = () => {
   return (
     <StyledHeader>
       <AppLogo href="#">
-        <LogoIcon style={{fontSize: '2.8rem'}} />
+        <LogoIcon />
         <LogoTextIcon />
       </AppLogo>
       <SearchForm />

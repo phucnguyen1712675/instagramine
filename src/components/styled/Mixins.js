@@ -2,11 +2,11 @@ import {css} from 'styled-components';
 
 export const textStyle = ({
   color = '#afc1d9',
-  fontSize = 1.4,
+  fontSize = '1.4rem',
   fontWeight = 400,
 }) => css`
   color: ${color};
-  font-size: ${fontSize}rem;
+  font-size: ${fontSize};
   font-weight: ${fontWeight};
 `;
 

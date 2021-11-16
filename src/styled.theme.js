@@ -2,8 +2,8 @@ const theme = {
   colors: {
     bgApp: '#fbfcfd',
     bgComponentLightTheme: '#fff',
-    borderSidebar: '#EBF1FB',
-    borderHeader: '#F0F6FD',
+    primaryBorder: '#F0F6FD',
+    primaryBorderDark: '#EBF1FB',
     borderSeenStory: '#D7E0EB',
     blueAlphaAction: '#afc1d9',
     link: '#338DF6',

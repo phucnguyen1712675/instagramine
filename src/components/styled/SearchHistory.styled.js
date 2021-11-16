@@ -48,7 +48,7 @@ export const SearchHistoryHeader = styled.header`
     ${({theme}) =>
     textStyle({
       color: theme.colors.primary,
-      fontSize: 1.6,
+      fontSize: '1.6rem',
       fontWeight: 600,
     })};
   }

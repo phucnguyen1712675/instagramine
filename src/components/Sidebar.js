@@ -1,6 +1,6 @@
 import React from 'react';
 import MainNavigation from './MainNavigation';
-import {Button} from './styled/Lib';
+import {HoverScaleButton} from './styled/Lib';
 import {
   StyledSidebar,
   Nav,
@@ -14,9 +14,9 @@ const Sidebar = () => {
       <Nav>
         <MainNavigation />
         <SettingButtonWrapper>
-          <Button fontSize={2.4}>
+          <HoverScaleButton>
             <SettingIcon />
-          </Button>
+          </HoverScaleButton>
         </SettingButtonWrapper>
       </Nav>
     </StyledSidebar>

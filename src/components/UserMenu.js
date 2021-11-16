@@ -1,8 +1,15 @@
 import React from 'react';
-import {StyledUserMenu} from './styled/UserMenu.styled';
+import {StyledUserMenu, NotificationButton} from './styled/UserMenu.styled';
+import BellIcon from './icons/BellIcon';
 
 const UserMenu = () => {
-  return <StyledUserMenu></StyledUserMenu>;
+  return (
+    <StyledUserMenu>
+      <NotificationButton>
+        <BellIcon />
+      </NotificationButton>
+    </StyledUserMenu>
+  );
 };
 
 export default UserMenu;

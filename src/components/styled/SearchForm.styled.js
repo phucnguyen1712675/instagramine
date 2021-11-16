@@ -40,7 +40,7 @@ export const StyledSearchForm = styled.form`
 
 export const SearchInput = styled.input.attrs(() => ({
   type: 'text',
-  fontSize: 1.8,
+  fontSize: '1.8rem',
 }))`
   position: absolute;
   width: 100%;

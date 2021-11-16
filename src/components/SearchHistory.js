@@ -14,7 +14,7 @@ const SearchHistory = ({hasSearchHistoryOpened, setHasSearchHistoryOpened}) => {
   const [isLoading, setIsLoading] = useState(!hasSearchHistoryOpened);
 
   useEffect(() => {
-    // Fake loading
+    // If first time opened
     if (!hasSearchHistoryOpened) {
       setTimeout(() => {
         setIsLoading(false);

@@ -14,7 +14,6 @@ const MainNavigation = () => {
       {navIcons.map((btn, idx) => (
         <NavigationButton
           key={btn.id}
-          fontSize={3}
           onClick={() => navigateHandler(idx)}
           isActive={btn.id === currentIndex}
         >
