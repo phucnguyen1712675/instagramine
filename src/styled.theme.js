@@ -1,14 +1,14 @@
 const theme = {
   colors: {
-    backgroundApp: '#fbfcfd',
+    bgApp: '#fbfcfd',
     bgComponentLightTheme: '#fff',
     borderSidebar: '#EBF1FB',
     borderHeader: '#F0F6FD',
+    borderSeenStory: '#D7E0EB',
     blueAlphaAction: '#afc1d9',
     link: '#338DF6',
-    primaryText: '#1B1D28',
-    secondaryText: '#76777E',
-    greyAction: '#D7E0EB',
+    primary: '#1B1D28',
+    secondary: '#76777E',
   },
 };
 

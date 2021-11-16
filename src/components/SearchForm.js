@@ -9,6 +9,8 @@ import {SearchHistoryResultsContextProvider} from '../store/search-history-resul
 const SearchForm = () => {
   const [isFocused, setIsFocused] = useState(false);
 
+  const [hasSearchHistoryOpened, setHasSearchHistoryOpened] = useState(false);
+
   const onFocus = () => setIsFocused(true);
 
   const onBlur = () => setIsFocused(false);
@@ -30,10 +32,12 @@ const SearchForm = () => {
           <CloseIcon />
         </Button>
       )}
-      $
       {isFocused && (
         <SearchHistoryResultsContextProvider>
-          <SearchHistory />
+          <SearchHistory
+            hasSearchHistoryOpened={hasSearchHistoryOpened}
+            setHasSearchHistoryOpened={setHasSearchHistoryOpened}
+          />
         </SearchHistoryResultsContextProvider>
       )}
     </StyledSearchForm>

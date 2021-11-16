@@ -21,7 +21,7 @@ const SearchHistoryItem = ({user}) => {
 
   return (
     <StyledSearchHistoryItem>
-      <a href={user.profile}>
+      <a href={user.profile} onMouseDown={(e) => e.preventDefault()}>
         <Avatar
           size={52}
           url={user.avatar}
@@ -42,7 +42,7 @@ const SearchHistoryItem = ({user}) => {
             </div>
           </SearchHistoryContent>
         </SearchHistoryContentWrapper>
-        <Button onClick={removeHistoryItemHandler}>
+        <Button onMouseDown={removeHistoryItemHandler}>
           <MultiplyIcon />
         </Button>
       </a>

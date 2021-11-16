@@ -5,7 +5,7 @@ const HasStoryBackground = css`
 `;
 
 const hasStoryBeenSeenBackground = css`
-  background: ${({theme}) => theme.colors.greyAction};
+  background: ${({theme}) => theme.colors.borderSeenStory};
 `;
 
 export const StyledAvatar = styled.div.attrs((props) => ({

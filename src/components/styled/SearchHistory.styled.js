@@ -19,7 +19,7 @@ export const StyledSearchHistory = styled.div`
     text-align: center;
     ${({theme}) =>
     textStyle({
-      color: theme.colors.secondaryText
+      color: theme.colors.secondary,
     })};
   }
 
@@ -47,7 +47,7 @@ export const SearchHistoryHeader = styled.header`
     display: inline-block;
     ${({theme}) =>
     textStyle({
-      color: theme.colors.primaryText,
+      color: theme.colors.primary,
       fontSize: 1.6,
       fontWeight: 600,
     })};

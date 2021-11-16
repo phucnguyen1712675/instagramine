@@ -16,7 +16,7 @@ const GlobalStyles = createGlobalStyle`
 	body {
 	  margin: 0;
 	  padding: 0;
-		background-color: ${({theme}) => theme.colors.backgroundApp};
+		background-color: ${({theme}) => theme.colors.bgApp};
 	}
 
 	:where(ul, ol) {
