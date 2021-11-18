@@ -16,9 +16,13 @@ const Avatar = ({url, size, hasStory, hasStoryBeenSeen}) => {
 
 Avatar.propTypes = {
   url: PropTypes.string.isRequired,
-  size: PropTypes.number,
-  hasStory: PropTypes.bool,
+  size: PropTypes.string,
+  hasStory: PropTypes.bool.isRequired,
   hasStoryBeenSeen: PropTypes.bool,
+};
+
+Avatar.defaultProps = {
+  size: '40px',
 };
 
 export default Avatar;

@@ -14,13 +14,22 @@ const SearchHistory = ({hasSearchHistoryOpened, setHasSearchHistoryOpened}) => {
   const [isLoading, setIsLoading] = useState(!hasSearchHistoryOpened);
 
   useEffect(() => {
+    let isMounted = true; // note mutable flag
+
     // If first time opened
     if (!hasSearchHistoryOpened) {
-      setTimeout(() => {
-        setIsLoading(false);
-        setHasSearchHistoryOpened(true);
-      }, 1000);
+      if (isMounted) {
+        // add conditional check
+        setTimeout(() => {
+          setIsLoading(false);
+          setHasSearchHistoryOpened(true);
+        }, 1000);
+      }
     }
+
+    return () => {
+      isMounted = false; // cleanup toggles value, if unmounted
+    };
   }, []);
 
   const {users, removeAllUsers} = useContext(SearchHistoryResultsContext);

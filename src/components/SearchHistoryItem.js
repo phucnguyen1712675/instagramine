@@ -1,12 +1,11 @@
 import {useContext} from 'react';
 import PropTypes from 'prop-types';
 import Avatar from './Avatar';
-import {Button} from './styled/Lib';
+import {Button, Dot} from './styled/Lib';
 import {
   StyledSearchHistoryItem,
   SearchHistoryContentWrapper,
   SearchHistoryContent,
-  Dot,
 } from './styled/SearchHistoryItem.styled';
 import MultiplyIcon from './icons/MultiplyIcon';
 import SearchHistoryResultsContext from '../store/search-history-results-context';
@@ -23,7 +22,7 @@ const SearchHistoryItem = ({user}) => {
     <StyledSearchHistoryItem>
       <a href={user.profile} onMouseDown={(e) => e.preventDefault()}>
         <Avatar
-          size={52}
+          size="52px"
           url={user.avatar}
           hasStory={user.hasStory}
           hasStoryBeenSeen={user.hasStoryBeenSeen}

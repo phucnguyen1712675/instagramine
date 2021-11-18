@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {flexCenter} from './Mixins';
+import {flexCenter, sizeCircle} from './Mixins';
 
 export const Button = styled.button.attrs((props) => ({
   fontSize: props.fontSize ?? '2.4rem',
@@ -27,5 +27,25 @@ export const HoverScaleButton = styled(Button).attrs(() => ({
 
   &:hover {
     transform: scale(${({scaleNum}) => scaleNum});
+  }
+`;
+
+export const Dot = styled.span.attrs((props) => ({
+  size: props.size ?? '4px',
+  bgColor: props.bgColor ?? props.theme.colors.secondary,
+}))`
+  ${({size}) => sizeCircle({size: size})};
+  background-color: ${({bgColor}) => bgColor};
+`;
+
+export const CircleImg = styled.div.attrs((props) => ({
+  bgColor: props.theme.colors.bgComponentLightTheme,
+}))`
+  ${({size}) => sizeCircle({size})}
+
+  img {
+    ${sizeCircle({size: '100%'})}
+    object-fit: cover;
+    background-color: ${({bgColor}) => bgColor};
   }
 `;

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import {textStyle, flexCenter, flexColumn} from './Mixins';
-import {Button} from './Lib';
+import {Button, Dot} from './Lib';
 import {StyledAvatar} from './Avatar.styled';
 
 export const StyledSearchHistoryItem = styled.li`
@@ -22,7 +22,7 @@ export const StyledSearchHistoryItem = styled.li`
   ${Button} {
     align-self: center;
     font-size: 1.6rem;
-    padding: 8px;
+    padding: 0.5em;
 
     svg {
       color: ${({theme}) => theme.colors.secondary};
@@ -46,15 +46,10 @@ export const SearchHistoryContent = styled.div`
 
   div {
     ${flexCenter({horizontally: false})};
-    ${({theme}) => textStyle({color: theme.colors.secondary})};
+    ${({theme}) => textStyle({color: theme.colors.secondary, fontWeight: 400})};
   }
-`;
 
-export const Dot = styled.span`
-  --size-dot: 4px;
-  width: var(--size-dot);
-  height: var(--size-dot);
-  border-radius: 100rem;
-  background-color: ${({theme}) => theme.colors.secondary};
-  margin: 0 5px;
+  ${Dot} {
+    margin: 0 5px;
+  }
 `;

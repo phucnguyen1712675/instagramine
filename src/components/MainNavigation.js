@@ -9,19 +9,17 @@ const MainNavigation = () => {
     setCurrentIndex(idx);
   };
 
-  return (
-    <>
-      {navIcons.map((btn, idx) => (
-        <NavigationButton
-          key={btn.id}
-          onClick={() => navigateHandler(idx)}
-          isActive={btn.id === currentIndex}
-        >
-          {btn.icon}
-        </NavigationButton>
-      ))}
-    </>
-  );
+  const content = navIcons.map((btn, idx) => (
+    <NavigationButton
+      key={btn.id}
+      onClick={() => navigateHandler(idx)}
+      isActive={btn.id === currentIndex}
+    >
+      {btn.icon}
+    </NavigationButton>
+  ));
+
+  return content;
 };
 
 export default MainNavigation;

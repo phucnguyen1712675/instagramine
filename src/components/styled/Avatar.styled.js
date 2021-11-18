@@ -1,30 +1,22 @@
 import styled, {css} from 'styled-components';
+import {CircleImg} from './Lib';
 
 const HasStoryBackground = css`
   background: linear-gradient(45deg, gold, fuchsia);
 `;
 
-const hasStoryBeenSeenBackground = css`
+const HasStoryBeenSeenBackground = css`
   background: ${({theme}) => theme.colors.borderSeenStory};
 `;
 
-export const StyledAvatar = styled.div.attrs((props) => ({
-  size: `${props.size ?? '40'}px`,
-}))`
-  border-radius: 100%;
-  padding: 2px;
-  width: ${({size}) => size};
-  height: ${({size}) => size};
+export const StyledAvatar = styled(CircleImg)`
+  --padding-space: 3px;
+  padding: calc(var(--padding-space) / 2);
   ${({hasStory, hasStoryBeenSeen}) =>
     hasStory &&
-    (hasStoryBeenSeen ? HasStoryBackground : hasStoryBeenSeenBackground)};
+    (hasStoryBeenSeen ? HasStoryBeenSeenBackground : HasStoryBackground)};
 
   img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 100%;
-    padding: 2px;
-    background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
+    padding: var(--padding-space);
   }
 `;

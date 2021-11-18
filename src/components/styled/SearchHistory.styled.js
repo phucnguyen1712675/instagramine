@@ -20,6 +20,7 @@ export const StyledSearchHistory = styled.div`
     ${({theme}) =>
     textStyle({
       color: theme.colors.secondary,
+      fontWeight: 400,
     })};
   }
 

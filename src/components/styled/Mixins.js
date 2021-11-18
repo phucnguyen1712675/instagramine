@@ -3,7 +3,7 @@ import {css} from 'styled-components';
 export const textStyle = ({
   color = '#afc1d9',
   fontSize = '1.4rem',
-  fontWeight = 400,
+  fontWeight = 500,
 }) => css`
   color: ${color};
   font-size: ${fontSize};
@@ -34,4 +34,14 @@ export const flexCenter = ({
 export const flexColumn = css`
   display: flex;
   flex-direction: column;
+`;
+
+export const sizeSame = ({size}) => css`
+  width: ${size};
+  height: ${size};
+`;
+
+export const sizeCircle = ({size}) => css`
+  ${sizeSame({size})}
+  border-radius: 100%;
 `;

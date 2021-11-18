@@ -28,6 +28,7 @@ const GlobalStyles = createGlobalStyle`
 	a {
 	  display: inline-block;
 	  text-decoration: none;
+		cursor: pointer;
 	}
 
 	img {
@@ -42,6 +43,10 @@ const GlobalStyles = createGlobalStyle`
 	button {
 		padding: 0;
 		font-family: inherit;
+	}
+
+	p {
+		margin: 0;
 	}
 `;
 

@@ -1,4 +1,5 @@
 import styled, {keyframes} from 'styled-components';
+import {sizeSame} from './Mixins';
 
 const rotate = keyframes`
  from {
@@ -11,8 +12,7 @@ const rotate = keyframes`
 
 export const StyledSpinner = styled.div`
   position: relative;
-  width: 54px;
-  height: 54px;
+  ${sizeSame({size: '54px'})}
   display: inline-block;
   background: transparent;
   padding: 10px;

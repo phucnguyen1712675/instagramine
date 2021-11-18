@@ -1,14 +1,16 @@
 import {useState, createContext} from 'react';
 import PropTypes from 'prop-types';
 
-const SearchHistoryResultsContext = createContext({
+const initialState = {
   users: [],
   // eslint-disable-next-line no-unused-vars
   addUser: (user) => {},
   // eslint-disable-next-line no-unused-vars
   removeUser: (userId) => {},
   removeAllUsers: () => {},
-});
+};
+
+const SearchHistoryResultsContext = createContext(initialState);
 
 export const SearchHistoryResultsContextProvider = ({children}) => {
   const [users, setUsers] = useState([
