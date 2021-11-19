@@ -10,8 +10,8 @@ const HasStoryBeenSeenBackground = css`
 `;
 
 export const StyledAvatar = styled(CircleImg)`
-  --padding-space: 3px;
-  padding: calc(var(--padding-space) / 2);
+  --padding-space: 2px;
+  padding: var(--padding-space);
   ${({hasStory, hasStoryBeenSeen}) =>
     hasStory &&
     (hasStoryBeenSeen ? HasStoryBeenSeenBackground : HasStoryBackground)};

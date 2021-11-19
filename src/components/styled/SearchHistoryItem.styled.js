@@ -1,26 +1,31 @@
 import styled from 'styled-components';
-import {textStyle, flexCenter, flexColumn} from './Mixins';
+// import {textStyle, flexCenter, flexColumn} from './Mixins';
 import {Button, Dot} from './Lib';
 import {StyledAvatar} from './Avatar.styled';
+import {StyledUserCard} from './UserCard.styled';
 
 export const StyledSearchHistoryItem = styled.li`
-  padding: 8px 16px;
-  cursor: pointer;
-
   &:hover {
     background-color: rgba(250, 250, 250, 1);
   }
 
   a {
-    display: flex;
+    display: block;
+
+    ${StyledUserCard} {
+      padding: 8px 16px;
+    }
   }
 
   ${StyledAvatar} {
     margin-right: 12px;
   }
 
+  ${Dot} {
+    margin: 0 5px;
+  }
+
   ${Button} {
-    align-self: center;
     font-size: 1.6rem;
     padding: 0.5em;
 
@@ -30,26 +35,22 @@ export const StyledSearchHistoryItem = styled.li`
   }
 `;
 
-export const SearchHistoryContentWrapper = styled.div`
-  ${flexCenter({horizontally: false})};
-  flex-grow: 1;
-`;
+// export const SearchHistoryContentWrapper = styled.div`
+//   ${flexCenter({horizontally: false})};
+//   flex-grow: 1;
+// `;
 
-export const SearchHistoryContent = styled.div`
-  ${flexColumn}
-  font-size: 1.4rem;
-  line-height: 1.4;
+// export const SearchHistoryContent = styled.div`
+//   ${flexColumn}
+//   font-size: 1.4rem;
+//   line-height: 1.4;
 
-  h4 {
-    ${({theme}) => textStyle({color: theme.colors.primary, fontWeight: 600})};
-  }
+//   h4 {
+//     ${({theme}) => textStyle({color: theme.colors.primary, fontWeight: 600})};
+//   }
 
-  div {
-    ${flexCenter({horizontally: false})};
-    ${({theme}) => textStyle({color: theme.colors.secondary, fontWeight: 400})};
-  }
-
-  ${Dot} {
-    margin: 0 5px;
-  }
-`;
+//   div {
+//     ${flexCenter({horizontally: false})};
+//     ${({theme}) => textStyle({color: theme.colors.secondary, fontWeight: 400})};
+//   }
+// `;

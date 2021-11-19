@@ -210,36 +210,41 @@ export const StoriesContentStoryList = styled.ul`
 	margin-top: 2.4rem;
 `;
 
-export const rotate360Deg = css`
-	transition: transform .5s ease-in-out;
-
-	&:hover {
-		transform: rotate(360deg);
-	}
-`;
-
 export const StoriesContentStoryItem = styled.li`
 	cursor: pointer;
 	text-align: center;
 
 	div {
 		${flexColumn}
-
-		${CircleImg} {
-			${rotate360Deg}
-		}
-
 	}
+
 	p {
 		${({theme}) =>textStyle({
     fontSize: '1.2rem',
     color: theme.colors.primary,
   })}
 		margin-top: 8px;
+		max-width: ${({theme}) => theme.storyThumbnailSize};
+		white-space: nowrap;
+  	overflow: hidden;
+  	text-overflow: ellipsis;
 	}
 
 	&:last-child {
 		align-self: flex-start;
+	}
+`;
+
+export const StoriesContentCircleImg = styled(CircleImg)`
+	overflow: hidden;
+	
+	img {
+		${({size}) => sizeCircle({size})}
+		transition: transform 0.2s ease-out;
+	}
+
+	&:hover img {
+		transform: scale(1.2);
 	}
 `;
 

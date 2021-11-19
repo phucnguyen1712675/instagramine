@@ -1,6 +1,7 @@
 import {useContext} from 'react';
+import {ThemeContext} from 'styled-components';
 import Avatar from './Avatar';
-import {Button, Dot, CircleImg} from './styled/Lib';
+import {Button, Dot} from './styled/Lib';
 import {
   StyledUserMenu,
   UserMenuInner,
@@ -20,6 +21,7 @@ import {
   StoriesContentTitle,
   StoriesContentStoryList,
   StoriesContentStoryItem,
+  StoriesContentCircleImg,
   PlayButton,
   CreatePostButton,
 } from './styled/UserMenu.styled';
@@ -33,6 +35,7 @@ const MAX_STORIES_NUMBER = 3;
 
 const UserMenu = () => {
   const {currentUser} = useContext(GlobalContext);
+  const {storyThumbnailSize} = useContext(ThemeContext);
 
   const socialLinksContent = currentUser.socialLinks
     .slice(0, MAX_SOCIAL_LINK_NUMBER)
@@ -56,9 +59,9 @@ const UserMenu = () => {
     .map((story, index) => (
       <StoriesContentStoryItem key={index}>
         <div>
-          <CircleImg size="6rem">
+          <StoriesContentCircleImg size={storyThumbnailSize}>
             <img src={story.thumbnail} />
-          </CircleImg>
+          </StoriesContentCircleImg>
           <p>{story.name}</p>
         </div>
       </StoriesContentStoryItem>

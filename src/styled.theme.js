@@ -11,6 +11,7 @@ const theme = {
     secondary: '#76777E',
   },
   userMenuWidth: '360px',
+  storyThumbnailSize: '6rem',
 };
 
 export default theme;
