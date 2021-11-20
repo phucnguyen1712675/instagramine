@@ -5,52 +5,81 @@ import {
   StyledUserCard,
   InfoWrapper,
   InfoContent,
+  InfoContentUsername,
   AdditionalInfoContent,
   OptionWrapper,
 } from './styled/UserCard.styled';
 
 const UserCard = ({
+  className,
   avatar,
   avatarSize,
   hasStory,
   hasStoryBeenSeen,
   username,
+  profile,
   additionalInfoComponent,
   optionComponent,
+  usernameAsHeading,
+  asHeader,
 }) => {
-  return (
-    <StyledUserCard>
+  const usernameHeading = usernameAsHeading ? (
+    <InfoContentUsername as="h4">{username}</InfoContentUsername>
+  ) : (
+    <InfoContentUsername href={profile}>{username}</InfoContentUsername>
+  );
+
+  const content = (
+    <>
       <Avatar
         size={avatarSize}
         url={avatar}
         hasStory={hasStory}
         hasStoryBeenSeen={hasStoryBeenSeen}
+        asLink={!hasStory}
+        profile={profile}
       />
       <InfoWrapper>
         <InfoContent>
-          <h4>{username}</h4>
+          {usernameHeading}
           <AdditionalInfoContent>
             {additionalInfoComponent}
           </AdditionalInfoContent>
         </InfoContent>
       </InfoWrapper>
       <OptionWrapper>{optionComponent}</OptionWrapper>
-    </StyledUserCard>
+    </>
   );
+
+  if (asHeader) {
+    return (
+      <StyledUserCard className={className} as="header">
+        {content}
+      </StyledUserCard>
+    );
+  }
+
+  return <StyledUserCard className={className}>{content}</StyledUserCard>;
 };
 
 UserCard.propTypes = {
+  className: PropTypes.string,
   avatar: PropTypes.string.isRequired,
   avatarSize: PropTypes.string,
   hasStory: PropTypes.bool.isRequired,
   hasStoryBeenSeen: PropTypes.bool,
   username: PropTypes.string.isRequired,
+  profile: PropTypes.string,
   additionalInfoComponent: PropTypes.element.isRequired,
   optionComponent: PropTypes.element.isRequired,
+  usernameAsHeading: PropTypes.bool,
+  asHeader: PropTypes.bool,
 };
 
 UserCard.defaultProps = {
   avatarSize: '4rem',
+  usernameAsHeading: false,
+  asHeader: false,
 };
 
 export default UserCard;

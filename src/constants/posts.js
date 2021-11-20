@@ -3,11 +3,14 @@ const posts = [
     id: 0,
     avatar:
       'https://images.unsplash.com/photo-1527980965255-d3b416303d12?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
+    profile: 'https://instagram.com/rivi.19.xx/',
     hasStory: true,
     hasStoryBeenSeen: false,
     username: 'mcdonald',
-    city: 'Munbai',
+    city: 'New Delhi',
     country: 'India',
+    location:
+      'https://www.instagram.com/explore/locations/215141266/delhi-india/',
     img: 'https://images.unsplash.com/photo-1456926631375-92c8ce872def?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     isLiked: false,
     isSaved: false,
@@ -25,11 +28,13 @@ const posts = [
     id: 1,
     avatar:
       'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1167&q=80',
-    hasStory: true,
-    hasStoryBeenSeen: false,
+    profile: 'https://instagram.com/victorialoi/',
+    hasStory: false,
     username: 'cameron_will',
     city: 'New Delhi',
     country: 'India',
+    location:
+      'https://www.instagram.com/explore/locations/215141266/delhi-india/',
     img: 'https://images.unsplash.com/photo-1484406566174-9da000fda645?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=389&q=80',
     isLiked: true,
     isSaved: true,
@@ -47,11 +52,14 @@ const posts = [
     id: 2,
     avatar:
       'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=580&q=80',
+    profile: 'https://instagram.com/tomuyn.tomie/',
     hasStory: true,
     hasStoryBeenSeen: false,
     username: 'codyfisher',
     city: 'New Delhi',
     country: 'India',
+    location:
+      'https://www.instagram.com/explore/locations/215141266/delhi-india/',
     img: 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80',
     isLiked: false,
     isSaved: false,
@@ -69,11 +77,13 @@ const posts = [
     id: 3,
     avatar:
       'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
-    hasStory: true,
-    hasStoryBeenSeen: false,
+    profile: 'https://instagram.com/yubinyummi/',
+    hasStory: false,
     username: 'pat.rick96',
     city: 'New Delhi',
     country: 'India',
+    location:
+      'https://www.instagram.com/explore/locations/215141266/delhi-india/',
     img: 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1159&q=80',
     isLiked: false,
     isSaved: false,
@@ -113,11 +123,14 @@ const posts = [
     id: 5,
     avatar:
       'https://images.unsplash.com/photo-1624561172888-ac93c696e10c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=389&q=80',
+    profile: 'https://instagram.com/dancerbaodi1503/',
     hasStory: true,
     hasStoryBeenSeen: false,
     username: 'hawkins360',
     city: 'New Delhi',
     country: 'India',
+    location:
+      'https://www.instagram.com/explore/locations/215141266/delhi-india/',
     img: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80',
     isLiked: false,
     isSaved: false,

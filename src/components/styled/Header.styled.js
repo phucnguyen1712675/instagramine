@@ -15,6 +15,7 @@ export const AppLogo = styled.a`
   ${flexCenter({horizontally: false})}
   column-gap: 8px;
   cursor: pointer;
+	outline: none;
 
   svg:first-child {
     font-size: 2.8rem;

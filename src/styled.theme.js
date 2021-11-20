@@ -9,6 +9,7 @@ const theme = {
     link: '#338DF6',
     primary: '#1B1D28',
     secondary: '#76777E',
+    postAction: '#D7E0EB',
   },
   userMenuWidth: '360px',
   storyThumbnailSize: '6rem',

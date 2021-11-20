@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import {flexCenter, sizeCircle} from './Mixins';
 
 export const Button = styled.button.attrs((props) => ({
-  fontSize: props.fontSize ?? '2.4rem',
+  fontSize: props.fontSize ?? '1.4rem',
 }))`
   ${flexCenter}
   font-size: ${({fontSize}) => fontSize};
@@ -34,6 +34,7 @@ export const Dot = styled.span.attrs((props) => ({
   size: props.size ?? '4px',
   bgColor: props.bgColor ?? props.theme.colors.secondary,
 }))`
+  display: inline-block;
   ${({size}) => sizeCircle({size: size})};
   background-color: ${({bgColor}) => bgColor};
 `;

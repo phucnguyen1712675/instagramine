@@ -45,3 +45,16 @@ export const sizeCircle = ({size}) => css`
   ${sizeSame({size})}
   border-radius: 100%;
 `;
+
+export const hideScrollBarScrolling = css`
+  overflow-y: auto;
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;

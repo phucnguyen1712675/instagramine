@@ -15,6 +15,7 @@ export const StyledAvatar = styled(CircleImg)`
   ${({hasStory, hasStoryBeenSeen}) =>
     hasStory &&
     (hasStoryBeenSeen ? HasStoryBeenSeenBackground : HasStoryBackground)};
+	cursor: pointer;
 
   img {
     padding: var(--padding-space);

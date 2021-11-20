@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {NavigationButton} from './styled/MainNavigation.styled';
-import navIcons from '../constants/navIcons';
+import navIcons from '../constants/nav-icons';
 
 const MainNavigation = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

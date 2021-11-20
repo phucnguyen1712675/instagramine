@@ -1,5 +1,10 @@
 import styled from 'styled-components';
-import {textStyle, flexCenter, flexColumn} from './Mixins';
+import {
+  textStyle,
+  flexCenter,
+  flexColumn,
+  hideScrollBarScrolling,
+} from './Mixins';
 
 export const StyledSearchHistory = styled.div`
   --height-arrow-up: 14px;
@@ -13,7 +18,7 @@ export const StyledSearchHistory = styled.div`
   z-index: 1;
   border-radius: 6px;
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
-  overflow-y: auto;
+  ${hideScrollBarScrolling}
 
   & > p {
     text-align: center;

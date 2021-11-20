@@ -4,7 +4,7 @@ import ExploreIcon from '../components/icons/ExploreIcon';
 import ActivityIcon from '../components/icons/ActivityIcon';
 import ReelIcon from '../components/icons/ReelIcon';
 import StreamIcon from '../components/icons/StreamIcon';
-import SavedIcon from '../components/icons/SavedIcon';
+import SavedListIcon from '../components/icons/SavedListIcon';
 
 const navIcons = [
   {
@@ -33,7 +33,7 @@ const navIcons = [
   },
   {
     id: 6,
-    icon: <SavedIcon />,
+    icon: <SavedListIcon />,
   },
 ];
 

@@ -1,8 +1,11 @@
 import {useContext} from 'react';
 import PropTypes from 'prop-types';
-import UserCard from './UserCard';
 import {Button, Dot} from './styled/Lib';
-import {StyledSearchHistoryItem} from './styled/SearchHistoryItem.styled';
+import {
+  StyledSearchHistoryItem,
+  SearchHistoryItemContent,
+  SearchHistoryUserAdditionalInfo,
+} from './styled/SearchHistoryItem.styled';
 import MultiplyIcon from './icons/MultiplyIcon';
 import SearchHistoryResultsContext from '../store/search-history-results-context';
 
@@ -15,10 +18,15 @@ const SearchHistoryItem = ({user}) => {
   };
 
   const additionalInfoComponent = (
-    <>
-      <Dot />
-      <span>Following</span>
-    </>
+    <SearchHistoryUserAdditionalInfo>
+      <span>{user.name}</span>
+      {user.isFollowed && (
+        <>
+          <Dot />
+          <span>Following</span>
+        </>
+      )}
+    </SearchHistoryUserAdditionalInfo>
   );
 
   const optionComponent = (
@@ -30,19 +38,15 @@ const SearchHistoryItem = ({user}) => {
   return (
     <StyledSearchHistoryItem>
       <a href={user.profile} onMouseDown={(e) => e.preventDefault()}>
-        <UserCard
+        <SearchHistoryItemContent
           avatar={user.avatar}
           avatarSize="5.2rem"
           hasStory={user.hasStory}
           hasStoryBeenSeen={user.hasStoryBeenSeen}
           username={user.username}
-          additionalInfoComponent={
-            <>
-              <span>{user.name}</span>
-              {user.isFollowed ?? additionalInfoComponent}
-            </>
-          }
+          additionalInfoComponent={additionalInfoComponent}
           optionComponent={optionComponent}
+          usernameAsHeading
         />
       </a>
     </StyledSearchHistoryItem>

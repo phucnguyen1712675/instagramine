@@ -19,7 +19,6 @@ export const CreatePostButton = styled(Button)`
 	padding: 15px 0;
 	border-radius: 5px;
 	${textStyle({
-    fontSize: '1.4rem',
     color: '#fff',
     fontWeight: 800,
   })}
@@ -101,7 +100,6 @@ export const ThumbnailContent = styled.div`
 		margin-top: 12px;
 		background-color: ${({theme}) => theme.colors.primary};
 		color: #fff;
-		font-size: 1.4rem;
 		padding: 0.7rem 2.7rem;
 		border-radius: 5px;
 		${hoverBrightness}
