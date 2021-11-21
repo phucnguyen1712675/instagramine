@@ -1,10 +1,10 @@
 import React from 'react';
 import MainNavigation from './MainNavigation';
-import {HoverScaleButton} from './styled/Lib';
 import {
   StyledSidebar,
   Nav,
   SettingButtonWrapper,
+  SettingButton,
 } from './styled/Sidebar.styled';
 import SettingIcon from './icons/SettingIcon';
 
@@ -14,9 +14,9 @@ const Sidebar = () => {
       <Nav>
         <MainNavigation />
         <SettingButtonWrapper>
-          <HoverScaleButton>
+          <SettingButton>
             <SettingIcon />
-          </HoverScaleButton>
+          </SettingButton>
         </SettingButtonWrapper>
       </Nav>
     </StyledSidebar>

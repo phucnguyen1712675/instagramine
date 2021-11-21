@@ -1,34 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import PostHeader from './PostHeader';
-import VideoPostBody from './VideoPostBody';
+import PostActions from './PostActions';
+import Avatar from './Avatar';
 import {
   StyledPost,
   PostBody,
   PostImageWrapper,
   PostImage,
-  PostActions,
-  PostActionButton,
+  PostLikedUsersInfo,
+  PostLikedUsersStatement,
+  PostLikedUsersHighlight,
+  PostLikedUsersAvatars,
+  PostLikedUsersAvatar,
+  PostCaptionSection,
+  PostCaptionWrapper,
+  PostCaption,
+  PostDate,
   PostFooter,
 } from './styled/Post.styled';
-import postActionButtons from '../constants/post-action-buttons';
+import QuotationMarkIcon from './icons/QuotationMarkIcon';
 
 const Post = ({post}) => {
-  const postBodyContent = post.img ? (
-    <>
-      <PostImageWrapper>
-        <PostImage src={post.img} />
-      </PostImageWrapper>
-      <PostActions>
-        {postActionButtons.map((btn) => (
-          <PostActionButton key={btn.id}>{btn.icon}</PostActionButton>
-        ))}
-      </PostActions>
-    </>
-  ) : (
-    <VideoPostBody />
-  );
-
   return (
     <StyledPost>
       <PostHeader
@@ -41,7 +34,42 @@ const Post = ({post}) => {
         country={post.country}
         location={post.location}
       />
-      <PostBody>{postBodyContent}</PostBody>
+      <PostBody>
+        <PostImageWrapper>
+          <PostImage src={post.img} />
+        </PostImageWrapper>
+        <PostActions isLiked={post.isLiked} isSaved={post.isSaved} />
+        <PostLikedUsersInfo>
+          <PostLikedUsersStatement>
+            <span>{post.img ? 'Liked' : 'Viewed'} by </span>
+            <PostLikedUsersHighlight href={post.likedUsersLink}>
+              {post.likedUser}
+            </PostLikedUsersHighlight>
+            <span> and </span>
+            <PostLikedUsersHighlight href={post.likedUsersLink}>
+              {post.otherLikedUserAmount} others
+            </PostLikedUsersHighlight>
+          </PostLikedUsersStatement>
+          <PostLikedUsersAvatars href={post.likedUsersLink}>
+            {post.likedOtherUser.map((url, index) => (
+              <PostLikedUsersAvatar
+                as={Avatar}
+                key={index}
+                url={url}
+                size="1.5rem"
+                hasStory={false}
+              />
+            ))}
+          </PostLikedUsersAvatars>
+        </PostLikedUsersInfo>
+        <PostCaptionSection>
+          <PostCaptionWrapper>
+            <QuotationMarkIcon />
+            <PostCaption>{post.caption}</PostCaption>
+          </PostCaptionWrapper>
+          <PostDate>{post.date}</PostDate>
+        </PostCaptionSection>
+      </PostBody>
       <PostFooter></PostFooter>
     </StyledPost>
   );

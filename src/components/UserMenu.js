@@ -1,12 +1,13 @@
 import {useContext} from 'react';
 import {ThemeContext} from 'styled-components';
 import Avatar from './Avatar';
-import {Button, Dot} from './styled/Lib';
+import {Dot} from './styled/Lib';
 import {
   StyledUserMenu,
   UserMenuInner,
   NotificationButton,
   ThumbnailContent,
+  EditButton,
   StatisticalContent,
   StatisticalContentInner,
   StatisticItem,
@@ -83,7 +84,7 @@ const UserMenu = () => {
           />
           <h2>{currentUser.username}</h2>
           <h5>{currentUser.job}</h5>
-          <Button>Edit</Button>
+          <EditButton>Edit</EditButton>
         </ThumbnailContent>
         <StatisticalContent>
           <StatisticalContentInner>

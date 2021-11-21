@@ -11,12 +11,13 @@ const searchFormIcon = css`
   color: ${({theme}) => theme.colors.blueAlphaAction};
 `;
 
-export const StyledSearchForm = styled.form`
-  --width-form: 300px;
-  --width-search-history-diff: 75px;
-  --distance-action: 15px;
+export const StyledSearchForm = styled.form.attrs(() => ({
+  widthForm: '300px',
+  widthSearchHistoryDiff: '75px',
+  distanceAction: '15px',
+}))`
   position: relative;
-  width: var(--width-form);
+  width: ${({widthForm}) => widthForm};
   height: 48px;
 
   & > svg,
@@ -25,16 +26,21 @@ export const StyledSearchForm = styled.form`
   }
 
   & > svg {
-    left: var(--distance-action);
+    left: ${({distanceAction}) => distanceAction};
   }
 
   & > button {
-    right: var(--distance-action);
+    right: ${({distanceAction}) => distanceAction};
   }
 
   ${StyledSearchHistory} {
-    width: calc(var(--width-form) + var(--width-search-history-diff));
-    left: calc(-1 * var(--width-search-history-diff) / 2);
+    width: calc(
+      ${({widthForm}) => widthForm} +
+        ${({widthSearchHistoryDiff}) => widthSearchHistoryDiff}
+    );
+    left: calc(
+      -1 * ${({widthSearchHistoryDiff}) => widthSearchHistoryDiff} / 2
+    );
   }
 `;
 

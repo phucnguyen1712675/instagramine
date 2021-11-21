@@ -20,13 +20,19 @@ export const Button = styled.button.attrs((props) => ({
   -moz-osx-font-smoothing: grayscale;
 `;
 
-export const HoverScaleButton = styled(Button).attrs(() => ({
-  scaleNum: 1.2,
-}))`
+export const HoverScaleButton = styled(Button)`
   transition: transform 0.2s ease-out;
 
   &:hover {
-    transform: scale(${({scaleNum}) => scaleNum});
+    transform: scale(1.2);
+  }
+`;
+
+export const HoverBrighterButton = styled(Button).attrs(() => ({
+  amount: 1.2,
+}))`
+  &:hover {
+    filter: brightness(${({amount}) => amount});
   }
 `;
 

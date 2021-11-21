@@ -22,6 +22,7 @@ const UserCard = ({
   optionComponent,
   usernameAsHeading,
   asHeader,
+  avatarAsLink,
 }) => {
   const usernameHeading = usernameAsHeading ? (
     <InfoContentUsername as="h4">{username}</InfoContentUsername>
@@ -36,7 +37,7 @@ const UserCard = ({
         url={avatar}
         hasStory={hasStory}
         hasStoryBeenSeen={hasStoryBeenSeen}
-        asLink={!hasStory}
+        asLink={avatarAsLink && !hasStory}
         profile={profile}
       />
       <InfoWrapper>
@@ -74,12 +75,14 @@ UserCard.propTypes = {
   optionComponent: PropTypes.element.isRequired,
   usernameAsHeading: PropTypes.bool,
   asHeader: PropTypes.bool,
+  avatarAsLink: PropTypes.bool,
 };
 
 UserCard.defaultProps = {
   avatarSize: '4rem',
   usernameAsHeading: false,
   asHeader: false,
+  avatarAsLink: false,
 };
 
 export default UserCard;

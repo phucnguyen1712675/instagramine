@@ -1,10 +1,8 @@
 import styled from 'styled-components';
-import {Button} from './Lib';
-import {flexCenter, flexColumn} from './Mixins';
+import {flexColumn, flexCenter, hoverUnderline, textStyle} from './Mixins';
 
 export const StyledPost = styled.div`
   ${flexColumn};
-  height: 480px;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   outline: 1px solid ${({theme}) => theme.colors.primaryBorder};
   border-radius: 30px;
@@ -17,7 +15,7 @@ export const PostBody = styled.div`
 `;
 
 export const PostImageWrapper = styled.div`
-  padding: 15px 5px 7px;
+  padding: 15px 5px 0;
 `;
 
 export const PostImage = styled.div`
@@ -31,24 +29,82 @@ export const PostImage = styled.div`
   padding-top: 100%;
 `;
 
-export const PostActionButton = styled(Button)`
-  font-size: 1.6rem;
-  color: ${({theme}) => theme.colors.postAction};
+export const PostLikedUsersInfo = styled.div`
+  ${flexCenter({horizontally: false})};
+  justify-content: space-between;
+  padding: 7px 15px;
+`;
 
-  &:last-child {
-    margin-left: auto;
+export const PostLikedUsersStatement = styled.p`
+  color: ${({theme}) => theme.colors.primary};
+  font-size: 1.2rem;
+`;
+
+export const PostLikedUsersHighlight = styled.a`
+  font-weight: 800;
+  color: inherit;
+  ${hoverUnderline}
+`;
+
+export const PostLikedUsersAvatars = styled.a`
+  display: inline-flex;
+  flex-direction: row-reverse;
+`;
+
+export const PostLikedUsersAvatar = styled.div.attrs(() => ({
+  shadowSpread: '2px',
+}))`
+  padding: 0;
+
+  &:not(:first-child) {
+    margin-right: calc(-1 * ${({shadowSpread}) => shadowSpread});
+  }
+
+  img {
+    padding: 0;
+    box-shadow: 0 0 0 ${({shadowSpread}) => shadowSpread} #fff;
   }
 `;
 
-export const PostActions = styled.div.attrs(() => ({
-  btnPadding: '0.8rem',
-}))`
-  ${flexCenter({horizontally: false})};
-  padding: 0 calc(15px - ${({btnPadding}) => btnPadding});
+export const PostDate = styled.p`
+  ${({theme}) =>
+    textStyle({
+      color: theme.colors.secondary,
+      fontSize: '1rem',
+    })};
+	margin-top: 2px;
+`;
 
-  ${PostActionButton} {
-    padding: ${({btnPadding}) => btnPadding};
+export const PostCaptionSection = styled.div.attrs(() => ({
+  paddingRight: '28px',
+  paddingLeft: '15px',
+}))`
+  padding: 5px 28px 5px 15px;
+
+	${PostDate} {
+		padding-left: calc(${({paddingRight}) => paddingRight} - ${({paddingLeft}) =>
+  paddingLeft});
+	}
+`;
+
+export const PostCaptionWrapper = styled.div`
+  ${flexCenter({horizontally: false})};
+  column-gap: 6px;
+
+  svg {
+    font-size: 0.7rem;
   }
+`;
+
+export const PostCaption = styled.p`
+  ${({theme}) =>
+    textStyle({
+      color: theme.colors.primary,
+      fontSize: '1.2rem',
+    })};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const PostFooter = styled.footer``;

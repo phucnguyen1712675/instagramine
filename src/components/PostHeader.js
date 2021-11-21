@@ -39,6 +39,7 @@ const PostHeader = ({
       profile={profile}
       additionalInfoComponent={additionalInfoComponent}
       optionComponent={optionComponent}
+      avatarAsLink
     />
   );
 };
@@ -55,4 +56,3 @@ PostHeader.propTypes = {
 };
 
 export default PostHeader;
-	

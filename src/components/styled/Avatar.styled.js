@@ -9,15 +9,16 @@ const HasStoryBeenSeenBackground = css`
   background: ${({theme}) => theme.colors.borderSeenStory};
 `;
 
-export const StyledAvatar = styled(CircleImg)`
-  --padding-space: 2px;
-  padding: var(--padding-space);
+export const StyledAvatar = styled(CircleImg).attrs(() => ({
+  paddingSpace: '2px',
+}))`
+  padding: ${({paddingSpace}) => paddingSpace};
   ${({hasStory, hasStoryBeenSeen}) =>
     hasStory &&
     (hasStoryBeenSeen ? HasStoryBeenSeenBackground : HasStoryBackground)};
-	cursor: pointer;
+  cursor: pointer;
 
   img {
-    padding: var(--padding-space);
+    padding: ${({paddingSpace}) => paddingSpace};
   }
 `;

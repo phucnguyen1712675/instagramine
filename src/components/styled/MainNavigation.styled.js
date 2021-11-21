@@ -4,6 +4,7 @@ import {sizeCircle} from './Mixins';
 
 export const NavigationButton = styled(HoverScaleButton).attrs(() => ({
   fontSize: '3rem',
+  sizeDot: '5px',
 }))`
   ${({isActive}) =>
     isActive &&
@@ -11,9 +12,8 @@ export const NavigationButton = styled(HoverScaleButton).attrs(() => ({
       position: relative;
 
       &:after {
-        --size-dot: 5px;
         content: '';
-        ${sizeCircle({size: 'var(--size-dot)'})}
+        ${({sizeDot}) => sizeCircle({size: sizeDot})};
         background-color: #f31c3f;
         position: absolute;
         top: calc(100% + 5px);

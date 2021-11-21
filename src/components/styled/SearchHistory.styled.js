@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {
   textStyle,
   flexCenter,
@@ -6,13 +6,18 @@ import {
   hideScrollBarScrolling,
 } from './Mixins';
 
-export const StyledSearchHistory = styled.div`
-  --height-arrow-up: 14px;
+export const StyledSearchHistory = styled.div.attrs(() => ({
+  heightArrowUp: '14px',
+}))`
   ${flexColumn}
   ${({isLoading}) =>
-    isLoading && 'justify-content: center;	align-items: center;	'}
+    isLoading &&
+    css`
+      justify-content: center;
+      align-items: center;
+    `}
   position: absolute;
-  top: calc(100% + var(--height-arrow-up));
+  top: calc(100% + ${({heightArrowUp}) => heightArrowUp});
   height: 362px;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   z-index: 1;
@@ -32,14 +37,14 @@ export const StyledSearchHistory = styled.div`
   /* &:before {
     content: '';
     position: absolute;
-    top: calc(-1 * var(--height-arrow-up));
+    top: calc(-1 *${({heightArrowUp}) => heightArrowUp});
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: var(--height-arrow-up) solid transparent;
-    border-right: var(--height-arrow-up) solid transparent;
-    border-bottom: var(--height-arrow-up) solid
+    border-left:${({heightArrowUp}) => heightArrowUp} solid transparent;
+    border-right:${({heightArrowUp}) => heightArrowUp} solid transparent;
+    border-bottom:${({heightArrowUp}) => heightArrowUp} solid
       ${({theme}) => theme.colors.bgComponentLightTheme};
   } */
 `;

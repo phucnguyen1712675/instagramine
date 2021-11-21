@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import {flexCenter} from './Mixins';
+import {HoverScaleButton} from './Lib';
 
 export const StyledSidebar = styled.aside`
   grid-area: sidebar;
@@ -18,6 +19,10 @@ export const Nav = styled.nav`
 export const SettingButtonWrapper = styled.div`
   position: absolute;
   bottom: 34px;
+`;
+
+export const SettingButton = styled(HoverScaleButton)`
+  font-size: 2.4rem;
 `;
 
 // !Note: Maybe do later

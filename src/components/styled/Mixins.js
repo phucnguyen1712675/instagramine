@@ -58,3 +58,10 @@ export const hideScrollBarScrolling = css`
     display: none;
   }
 `;
+
+export const hoverUnderline = css`
+  &:hover {
+    text-decoration: underline;
+    text-decoration-color: ${({theme}) => theme.colors.primary};
+  }
+`;
