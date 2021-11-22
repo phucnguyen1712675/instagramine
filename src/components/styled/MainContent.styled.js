@@ -4,6 +4,7 @@ import {hideScrollBarScrolling} from './Mixins';
 export const StyledMainContent = styled.main`
   grid-area: mainContent;
   padding: 25px 20px;
+  overflow-y: auto;
   ${hideScrollBarScrolling}
 `;
 

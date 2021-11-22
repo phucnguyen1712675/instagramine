@@ -1,27 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import dateFormat from 'dateformat';
 import PostHeader from './PostHeader';
 import PostActions from './PostActions';
 import Avatar from './Avatar';
+import Carousel from './Carousel';
+import QuotationMarkIcon from './icons/QuotationMarkIcon';
 import {
   StyledPost,
   PostBody,
-  PostImageWrapper,
+  PostMedia,
   PostImage,
   PostLikedUsersInfo,
   PostLikedUsersStatement,
   PostLikedUsersHighlight,
   PostLikedUsersAvatars,
   PostLikedUsersAvatar,
-  PostCaptionSection,
   PostCaptionWrapper,
   PostCaption,
   PostDate,
   PostFooter,
 } from './styled/Post.styled';
-import QuotationMarkIcon from './icons/QuotationMarkIcon';
 
 const Post = ({post}) => {
+  const convertedPostDate = new Date(post.date * 1000);
+  const formattedPostDate = dateFormat(convertedPostDate, 'ddd, dd mmmm yyyy');
+
   return (
     <StyledPost>
       <PostHeader
@@ -35,9 +39,13 @@ const Post = ({post}) => {
         location={post.location}
       />
       <PostBody>
-        <PostImageWrapper>
-          <PostImage src={post.img} />
-        </PostImageWrapper>
+        <PostMedia>
+          {post.media.length === 1 ? (
+            <PostImage src={post.media[0]} />
+          ) : (
+            <Carousel media={post.media} />
+          )}
+        </PostMedia>
         <PostActions isLiked={post.isLiked} isSaved={post.isSaved} />
         <PostLikedUsersInfo>
           <PostLikedUsersStatement>
@@ -62,15 +70,14 @@ const Post = ({post}) => {
             ))}
           </PostLikedUsersAvatars>
         </PostLikedUsersInfo>
-        <PostCaptionSection>
-          <PostCaptionWrapper>
-            <QuotationMarkIcon />
-            <PostCaption>{post.caption}</PostCaption>
-          </PostCaptionWrapper>
-          <PostDate>{post.date}</PostDate>
-        </PostCaptionSection>
       </PostBody>
-      <PostFooter></PostFooter>
+      <PostFooter>
+        <PostCaptionWrapper>
+          <QuotationMarkIcon />
+          <PostCaption>{post.caption}</PostCaption>
+        </PostCaptionWrapper>
+        <PostDate>{formattedPostDate}</PostDate>
+      </PostFooter>
     </StyledPost>
   );
 };

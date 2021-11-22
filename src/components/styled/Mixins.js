@@ -47,8 +47,6 @@ export const sizeCircle = ({size}) => css`
 `;
 
 export const hideScrollBarScrolling = css`
-  overflow-y: auto;
-
   /* Hide scrollbar for IE, Edge and Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */

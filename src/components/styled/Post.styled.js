@@ -1,5 +1,11 @@
 import styled from 'styled-components';
-import {flexColumn, flexCenter, hoverUnderline, textStyle} from './Mixins';
+import {
+  flexColumn,
+  flexCenter,
+  hoverUnderline,
+  textStyle,
+  // hideScrollBarScrolling,
+} from './Mixins';
 
 export const StyledPost = styled.div`
   ${flexColumn};
@@ -14,7 +20,7 @@ export const PostBody = styled.div`
   ${flexColumn};
 `;
 
-export const PostImageWrapper = styled.div`
+export const PostMedia = styled.div`
   padding: 15px 5px 0;
 `;
 
@@ -29,6 +35,13 @@ export const PostImage = styled.div`
   padding-top: 100%;
 `;
 
+export const PostCarousel = styled.div`
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+`;
+
 export const PostLikedUsersInfo = styled.div`
   ${flexCenter({horizontally: false})};
   justify-content: space-between;
@@ -36,8 +49,12 @@ export const PostLikedUsersInfo = styled.div`
 `;
 
 export const PostLikedUsersStatement = styled.p`
-  color: ${({theme}) => theme.colors.primary};
-  font-size: 1.2rem;
+  ${({theme}) =>
+    textStyle({
+      color: theme.colors.primary,
+      fontSize: '1.2rem',
+      fontWeight: 400,
+    })};
 `;
 
 export const PostLikedUsersHighlight = styled.a`
@@ -66,26 +83,27 @@ export const PostLikedUsersAvatar = styled.div.attrs(() => ({
   }
 `;
 
-export const PostDate = styled.p`
+export const PostDate = styled.time`
   ${({theme}) =>
     textStyle({
       color: theme.colors.secondary,
       fontSize: '1rem',
     })};
-	margin-top: 2px;
+  margin-top: 2px;
 `;
 
-export const PostCaptionSection = styled.div.attrs(() => ({
-  paddingRight: '28px',
-  paddingLeft: '15px',
-}))`
-  padding: 5px 28px 5px 15px;
+// export const PostCaptionSection = styled.div.attrs(() => ({
+//   paddingRight: '28px',
+//   paddingLeft: '15px',
+// }))`
+//   padding: 5px 28px 15px 15px;
 
-	${PostDate} {
-		padding-left: calc(${({paddingRight}) => paddingRight} - ${({paddingLeft}) =>
-  paddingLeft});
-	}
-`;
+//   ${PostDate} {
+//     padding-left: calc(
+//       ${({paddingRight}) => paddingRight} - ${({paddingLeft}) => paddingLeft}
+//     );
+//   }
+// `;
 
 export const PostCaptionWrapper = styled.div`
   ${flexCenter({horizontally: false})};
@@ -107,4 +125,15 @@ export const PostCaption = styled.p`
   text-overflow: ellipsis;
 `;
 
-export const PostFooter = styled.footer``;
+export const PostFooter = styled.footer.attrs(() => ({
+  paddingRight: '28px',
+  paddingLeft: '15px',
+}))`
+  padding: 5px 28px 15px 15px;
+
+  ${PostDate} {
+    padding-left: calc(
+      ${({paddingRight}) => paddingRight} - ${({paddingLeft}) => paddingLeft}
+    );
+  }
+`;

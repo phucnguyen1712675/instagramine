@@ -23,6 +23,7 @@ export const StyledSearchHistory = styled.div.attrs(() => ({
   z-index: 1;
   border-radius: 6px;
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
+  overflow-y: auto;
   ${hideScrollBarScrolling}
 
   & > p {
