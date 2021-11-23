@@ -5,8 +5,6 @@ import {InfoContentUsername} from './UserCard.styled';
 import UserCard from '../UserCard';
 
 export const StyledPostHeader = styled(UserCard)`
-  padding-bottom: 0;
-
   ${InfoContentUsername} {
     ${hoverUnderline}
   }

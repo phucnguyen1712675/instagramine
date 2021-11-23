@@ -1,5 +1,5 @@
 export function validateImageUrl(url) {
-  return /^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(url);
+  return url.match(/^https?:\/\/.+\/.+$/);
 }
 
 export function doesImageExist(url) {

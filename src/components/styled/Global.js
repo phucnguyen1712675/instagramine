@@ -31,8 +31,8 @@ const GlobalStyles = createGlobalStyle`
 		cursor: pointer;
 	}
 
-	img {
-	  width: 100%;
+	img, video {
+	  max-width: 100%;
 	  height: auto;
 	}
 

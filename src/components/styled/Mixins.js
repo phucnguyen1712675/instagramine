@@ -26,9 +26,18 @@ export const flexCenter = ({
   direction = 'row',
 }) => css`
   display: flex;
-  ${direction !== 'row' && 'flex-direction: column'};
-  ${vertically && 'align-items: center;'}
-  ${horizontally && 'justify-content: center;'}
+  ${direction !== 'row' &&
+  css`
+    flex-direction: column;
+  `};
+  ${vertically &&
+  css`
+    align-items: center;
+  `}
+  ${horizontally &&
+  css`
+    justify-content: center;
+  `}
 `;
 
 export const flexColumn = css`

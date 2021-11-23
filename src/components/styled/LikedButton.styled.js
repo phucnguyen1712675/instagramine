@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {PostActionButton} from './PostActions.styled';
+import {PostActionButton} from './Post.styled';
 
 const likedColor = css`
   color: #f0304e;

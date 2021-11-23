@@ -2,10 +2,11 @@ import styled from 'styled-components';
 import {
   flexColumn,
   flexCenter,
-  hoverUnderline,
+  // hoverUnderline,
   textStyle,
   // hideScrollBarScrolling,
 } from './Mixins';
+import {HoverBrighterButton} from './Lib';
 
 export const StyledPost = styled.div`
   ${flexColumn};
@@ -18,49 +19,36 @@ export const StyledPost = styled.div`
 
 export const PostBody = styled.div`
   ${flexColumn};
+  flex: 1;
 `;
 
-export const PostMedia = styled.div`
-  padding: 15px 5px 0;
+export const PostActionButton = styled(HoverBrighterButton).attrs(() => ({
+  amount: 0.8,
+}))`
+  font-size: 1.6rem;
+  color: ${({theme}) => theme.colors.postAction};
+
+  &:last-child {
+    margin-left: auto;
+  }
 `;
 
-export const PostImage = styled.div`
-  background-image: url(${({src}) => src});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 15px;
-  overflow: hidden;
-  width: 100%;
-  padding-top: 100%;
-`;
+export const PostActions = styled.div.attrs(() => ({
+  btnPadding: '0.8rem',
+}))`
+  ${flexCenter({horizontally: false})};
+  padding-left: calc(15px - ${({btnPadding}) => btnPadding});
+  padding-right: calc(15px - ${({btnPadding}) => btnPadding});
 
-export const PostCarousel = styled.div`
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 100%;
-  overflow-x: auto;
+  ${PostActionButton} {
+    padding: ${({btnPadding}) => btnPadding};
+  }
 `;
 
 export const PostLikedUsersInfo = styled.div`
   ${flexCenter({horizontally: false})};
   justify-content: space-between;
   padding: 7px 15px;
-`;
-
-export const PostLikedUsersStatement = styled.p`
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.primary,
-      fontSize: '1.2rem',
-      fontWeight: 400,
-    })};
-`;
-
-export const PostLikedUsersHighlight = styled.a`
-  font-weight: 800;
-  color: inherit;
-  ${hoverUnderline}
 `;
 
 export const PostLikedUsersAvatars = styled.a`
@@ -83,7 +71,12 @@ export const PostLikedUsersAvatar = styled.div.attrs(() => ({
   }
 `;
 
+export const PostFooter = styled.footer`
+  padding-bottom: 15px;
+`;
+
 export const PostDate = styled.time`
+  display: inline-block;
   ${({theme}) =>
     textStyle({
       color: theme.colors.secondary,
@@ -92,18 +85,20 @@ export const PostDate = styled.time`
   margin-top: 2px;
 `;
 
-// export const PostCaptionSection = styled.div.attrs(() => ({
-//   paddingRight: '28px',
-//   paddingLeft: '15px',
-// }))`
-//   padding: 5px 28px 15px 15px;
+export const PostCaptionContainer = styled.div.attrs(() => ({
+  paddingRight: '28px',
+  paddingLeft: '15px',
+}))`
+  padding-top: 5px;
+  padding-left: ${({paddingLeft}) => paddingLeft};
+  padding-right: ${({paddingRight}) => paddingRight};
 
-//   ${PostDate} {
-//     padding-left: calc(
-//       ${({paddingRight}) => paddingRight} - ${({paddingLeft}) => paddingLeft}
-//     );
-//   }
-// `;
+  ${PostDate} {
+    padding-left: calc(
+      ${({paddingRight}) => paddingRight} - ${({paddingLeft}) => paddingLeft}
+    );
+  }
+`;
 
 export const PostCaptionWrapper = styled.div`
   ${flexCenter({horizontally: false})};
@@ -123,17 +118,4 @@ export const PostCaption = styled.p`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`;
-
-export const PostFooter = styled.footer.attrs(() => ({
-  paddingRight: '28px',
-  paddingLeft: '15px',
-}))`
-  padding: 5px 28px 15px 15px;
-
-  ${PostDate} {
-    padding-left: calc(
-      ${({paddingRight}) => paddingRight} - ${({paddingLeft}) => paddingLeft}
-    );
-  }
 `;

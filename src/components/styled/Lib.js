@@ -56,3 +56,17 @@ export const CircleImg = styled.div.attrs((props) => ({
     background-color: ${({bgColor}) => bgColor};
   }
 `;
+
+export const PostImageWrapper = styled.div.attrs(() => ({
+  paddingHorizontal: '5px',
+}))`
+  padding-left: ${({paddingHorizontal}) => paddingHorizontal};
+  padding-right: ${({paddingHorizontal}) => paddingHorizontal};
+`;
+
+export const PostImage = styled.img`
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 15px;
+  overflow: hidden;
+`;
