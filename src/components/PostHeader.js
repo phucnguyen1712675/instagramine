@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import Avatar from './Avatar';
 import ThreeDotsIcon from './icons/ThreeDotsIcon';
 import {
   StyledPostHeader,
@@ -17,6 +17,18 @@ const PostHeader = ({
   country,
   location,
 }) => {
+  
+  const avatarComponent = (
+    <Avatar
+      size="4rem"
+      url={avatar}
+      hasStory={hasStory}
+      hasStoryBeenSeen={hasStoryBeenSeen}
+      asLink={!hasStory}
+      profile={profile}
+    />
+  );
+
   const additionalInfoComponent = (
     <PostHeaderLocation href={location}>
       {city}, {country}
@@ -32,14 +44,11 @@ const PostHeader = ({
   return (
     <StyledPostHeader
       asHeader
-      avatar={avatar}
-      hasStory={hasStory}
-      hasStoryBeenSeen={hasStoryBeenSeen}
+      avatarComponent={avatarComponent}
       username={username}
       profile={profile}
       additionalInfoComponent={additionalInfoComponent}
       optionComponent={optionComponent}
-      avatarAsLink
     />
   );
 };

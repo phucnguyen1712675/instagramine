@@ -1,5 +1,6 @@
 import {useContext} from 'react';
 import PropTypes from 'prop-types';
+import Avatar from './Avatar';
 import {Button, Dot} from './styled/Lib';
 import {
   StyledSearchHistoryItem,
@@ -16,6 +17,16 @@ const SearchHistoryItem = ({user}) => {
     e.preventDefault();
     removeUser(user.id);
   };
+
+  const avatarComponent = (
+    <Avatar
+      size="5.2rem"
+      url={user.avatar}
+      hasStory={user.hasStory}
+      hasStoryBeenSeen={user.hasStoryBeenSeen}
+      disableOnClickHandler
+    />
+  );
 
   const additionalInfoComponent = (
     <SearchHistoryUserAdditionalInfo>
@@ -39,10 +50,7 @@ const SearchHistoryItem = ({user}) => {
     <StyledSearchHistoryItem>
       <a href={user.profile} onMouseDown={(e) => e.preventDefault()}>
         <SearchHistoryItemContent
-          avatar={user.avatar}
-          avatarSize="5.2rem"
-          hasStory={user.hasStory}
-          hasStoryBeenSeen={user.hasStoryBeenSeen}
+          avatarComponent={avatarComponent}
           username={user.username}
           additionalInfoComponent={additionalInfoComponent}
           optionComponent={optionComponent}

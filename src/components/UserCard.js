@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Avatar from './Avatar';
 import {
   StyledUserCard,
   InfoWrapper,
@@ -12,17 +11,13 @@ import {
 
 const UserCard = ({
   className,
-  avatar,
-  avatarSize,
-  hasStory,
-  hasStoryBeenSeen,
   username,
   profile,
   additionalInfoComponent,
   optionComponent,
   usernameAsHeading,
   asHeader,
-  avatarAsLink,
+  avatarComponent,
 }) => {
   const usernameHeading = usernameAsHeading ? (
     <InfoContentUsername as="h4">{username}</InfoContentUsername>
@@ -32,14 +27,7 @@ const UserCard = ({
 
   const content = (
     <>
-      <Avatar
-        size={avatarSize}
-        url={avatar}
-        hasStory={hasStory}
-        hasStoryBeenSeen={hasStoryBeenSeen}
-        asLink={avatarAsLink && !hasStory}
-        profile={profile}
-      />
+      {avatarComponent}
       <InfoWrapper>
         <InfoContent>
           {usernameHeading}
@@ -65,24 +53,18 @@ const UserCard = ({
 
 UserCard.propTypes = {
   className: PropTypes.string,
-  avatar: PropTypes.string.isRequired,
-  avatarSize: PropTypes.string,
-  hasStory: PropTypes.bool.isRequired,
-  hasStoryBeenSeen: PropTypes.bool,
   username: PropTypes.string.isRequired,
   profile: PropTypes.string,
   additionalInfoComponent: PropTypes.element.isRequired,
   optionComponent: PropTypes.element.isRequired,
   usernameAsHeading: PropTypes.bool,
   asHeader: PropTypes.bool,
-  avatarAsLink: PropTypes.bool,
+  avatarComponent: PropTypes.element.isRequired,
 };
 
 UserCard.defaultProps = {
-  avatarSize: '4rem',
   usernameAsHeading: false,
   asHeader: false,
-  avatarAsLink: false,
 };
 
 export default UserCard;

@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState} from 'react';
 import PropTypes from 'prop-types';
 import {StyledAvatar} from './styled/Avatar.styled';
 import {onErrorImage} from '../utils/media';
@@ -11,16 +11,25 @@ const Avatar = ({
   hasStoryBeenSeen,
   asLink,
   profile,
+  disableOnClickHandler,
 }) => {
+  const [hasStoryBeenSeenState, setHasStoryBeenSeenState] = useState(
+    hasStory && hasStoryBeenSeen
+  );
+
+  const onClickStoryHandler = () => {
+    !hasStoryBeenSeenState && setHasStoryBeenSeenState(true);
+  };
+
   if (asLink) {
     return (
       <StyledAvatar
         as="a"
-        className={className}
         href={profile}
+        className={className}
         size={size}
         hasStory={hasStory}
-        hasStoryBeenSeen={hasStoryBeenSeen}
+        hasStoryBeenSeen={hasStoryBeenSeenState}
       >
         <img src={url} alt="" onError={onErrorImage} />
       </StyledAvatar>
@@ -32,7 +41,12 @@ const Avatar = ({
       className={className}
       size={size}
       hasStory={hasStory}
-      hasStoryBeenSeen={hasStoryBeenSeen}
+      hasStoryBeenSeen={hasStoryBeenSeenState}
+      onClick={
+        !disableOnClickHandler && !hasStoryBeenSeenState
+          ? onClickStoryHandler
+          : null
+      }
     >
       <img src={url} alt="" onError={onErrorImage} />
     </StyledAvatar>
@@ -63,11 +77,13 @@ Avatar.propTypes = {
       return new Error(`Please provide a profile for ${componentName}!`);
     }
   },
+  disableOnClickHandler: PropTypes.bool,
 };
 
 Avatar.defaultProps = {
   size: '40px',
   asLink: false,
+  disableOnClickHandler: false,
 };
 
 export default Avatar;
