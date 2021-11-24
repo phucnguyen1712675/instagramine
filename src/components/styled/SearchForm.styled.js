@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {textStyle, sizeSame} from './Mixins';
+import {textStyle, wh} from './Mixins';
 import {StyledSearchHistory} from './SearchHistory.styled';
 
 const searchFormIcon = css`
@@ -46,21 +46,24 @@ export const StyledSearchForm = styled.form.attrs(() => ({
 
 export const SearchInput = styled.input.attrs(() => ({
   type: 'text',
+  color: '#afc1d9',
   fontSize: '1.8rem',
+  fontWeight: 400,
 }))`
   position: absolute;
-  ${sizeSame({size: '100%'})}
+  ${wh}
   left: 0;
   padding: 0px 50px;
   background: #f8fbff;
   box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
   border-radius: 8px;
   border: none;
-  ${textStyle({fontWeight: 400})}
+  ${({color, fontWeight}) => textStyle({color, fontWeight})}
 
   &::placeholder {
-    ${({fontSize}) => textStyle({fontSize: fontSize, fontWeight: 400})}
+    ${({color, fontSize, fontWeight}) => textStyle({color, fontSize, fontWeight})}
     user-select: none;
+    transform: translateY(2px);
   }
 
   &:focus {

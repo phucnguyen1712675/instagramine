@@ -1,17 +1,21 @@
 import styled from 'styled-components';
-import {flexCenter} from './Mixins';
 import {HoverScaleButton} from './Lib';
 
 export const StyledSidebar = styled.aside`
   grid-area: sidebar;
-  ${flexCenter({direction: 'column'})};
+  display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-direction:column;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   position: relative;
   border: 1px solid ${({theme}) => theme.colors.primaryBorderDark};
 `;
 
 export const Nav = styled.nav`
-  ${flexCenter({horizontally: false, direction: 'column'})};
+  display:flex;
+	align-items:center;
+	flex-direction:column;
   justify-content: stretch;
   row-gap: 4rem;
 `;

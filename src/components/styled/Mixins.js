@@ -1,11 +1,11 @@
 import {css} from 'styled-components';
 
 export const textStyle = ({
-  color = '#afc1d9',
+  color,
   fontSize = '1.4rem',
   fontWeight = 500,
 }) => css`
-  color: ${color};
+  color: ${({theme}) => color ?? theme.colors.primary};
   font-size: ${fontSize};
   font-weight: ${fontWeight};
 `;
@@ -20,42 +20,18 @@ export const responsive = {
   },
 };
 
-export const flexCenter = ({
-  vertically = true,
-  horizontally = true,
-  direction = 'row',
-}) => css`
-  display: flex;
-  ${direction !== 'row' &&
-  css`
-    flex-direction: column;
-  `};
-  ${vertically &&
-  css`
-    align-items: center;
-  `}
-  ${horizontally &&
-  css`
-    justify-content: center;
-  `}
+export const wh = ({w = '100%', h = w}) => `
+  width: ${w};
+  height: ${h};
 `;
 
-export const flexColumn = css`
-  display: flex;
-  flex-direction: column;
-`;
-
-export const sizeSame = ({size}) => css`
-  width: ${size};
-  height: ${size};
-`;
-
-export const sizeCircle = ({size}) => css`
-  ${sizeSame({size})}
+export const circle = ({w = '100%', h = w}) => `
+  ${wh({w, h})};
   border-radius: 100%;
+	overflow: hidden;
 `;
 
-export const hideScrollBarScrolling = css`
+export const hideScrollBarScrolling = `
   /* Hide scrollbar for IE, Edge and Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */

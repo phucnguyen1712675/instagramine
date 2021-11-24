@@ -1,6 +1,6 @@
-import styled, {css} from 'styled-components';
-import {Button, PostImageWrapper, PostImage} from './Lib';
-import {sizeCircle, flexCenter} from './Mixins';
+import styled from 'styled-components';
+import {Button, PostMediaWrapper, PostImage} from './Lib';
+import {circle} from './Mixins';
 
 const CarouselButtonWrapper = styled.div`
   position: absolute;
@@ -11,7 +11,7 @@ const CarouselButtonWrapper = styled.div`
 `;
 
 export const CarouselButton = styled(Button)`
-  ${sizeCircle({size: '2.4rem'})}
+  ${circle({w: '2.4rem'})}
   color: rgba(0, 0, 0, 0.5);
   font-size: 1rem;
   background-color: rgba(255, 255, 255, 0.8);
@@ -25,8 +25,11 @@ export const CarouselLeftButtonWrapper = styled(CarouselButtonWrapper)``;
 
 export const CarouselRightButtonWrapper = styled(CarouselButtonWrapper)``;
 
-export const StyledCarousel = styled(PostImageWrapper)`
-  ${flexCenter({direction: 'column'})};
+export const StyledCarousel = styled(PostMediaWrapper)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   position: relative;
 
   ${CarouselLeftButtonWrapper} {
@@ -38,11 +41,12 @@ export const StyledCarousel = styled(PostImageWrapper)`
   }
 `;
 
-const hideComponent = css`
+const hideComponent = `
   display: none;
 `;
 
 export const CarouselSlide = styled.div`
+  width: 100%;
   ${({isActive}) => !isActive && hideComponent};
 `;
 
@@ -58,7 +62,7 @@ export const CarouselNav = styled.div`
 
 export const CarouselIndicator = styled.span`
   display: inline-block;
-  ${sizeCircle({size: '0.6rem'})}
+  ${circle({w: '0.6rem'})}
   background-color: ${({isActive, theme}) =>
     isActive ? theme.colors.link : theme.colors.secondary};
 `;

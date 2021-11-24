@@ -1,6 +1,5 @@
 import {useRef} from 'react';
 import PropTypes from 'prop-types';
-import dateFormat from 'dateformat';
 import PostHeader from './PostHeader';
 import Avatar from './Avatar';
 import Carousel from './Carousel';
@@ -10,7 +9,7 @@ import PostLikedUsersStatement from './PostLikedUsersStatement';
 import CommentIcon from './icons/CommentIcon';
 import ShareIcon from './icons/ShareIcon';
 import QuotationMarkIcon from './icons/QuotationMarkIcon';
-import {PostImageWrapper, PostImage} from './styled/Lib';
+import {PostMediaWrapper, PostImage} from './styled/Lib';
 import {
   StyledPost,
   PostBody,
@@ -25,26 +24,27 @@ import {
   PostDate,
   PostFooter,
 } from './styled/Post.styled';
+import {onErrorImage} from '../utils/media';
+import {formatPostDate} from '../utils/formatter';
 
 const Post = ({post}) => {
   const postLikedUsersStatementRef = useRef(null);
 
   const mediaContent =
     post.media.length === 1 ? (
-      <PostImageWrapper>
-        <PostImage src={post.media[0]} />
-      </PostImageWrapper>
+      <PostMediaWrapper>
+        <PostImage src={post.media[0]} onError={onErrorImage} />
+      </PostMediaWrapper>
     ) : (
       <Carousel media={post.media} />
     );
-  const convertedPostDate = new Date(post.date * 1000);
-  const formattedPostDate = dateFormat(convertedPostDate, 'ddd, dd mmmm yyyy');
+  const formattedPostDate = formatPostDate(post.date);
 
-  const increaseLikeAmount = () =>
-    postLikedUsersStatementRef.current.increaseLikeAmount();
-
-  const decreaseLikeAmount = () =>
-    postLikedUsersStatementRef.current.decreaseLikeAmount();
+  const changePostLikeAmountHandler = (isLiked) => {
+    isLiked
+      ? postLikedUsersStatementRef.current.decreaseLikeAmount()
+      : postLikedUsersStatementRef.current.increaseLikeAmount();
+  };
 
   return (
     <StyledPost>
@@ -63,8 +63,7 @@ const Post = ({post}) => {
         <PostActions mediaLength={post.media.length}>
           <LikedButton
             isLiked={post.isLiked}
-            increaseLikeAmount={increaseLikeAmount}
-            decreaseLikeAmount={decreaseLikeAmount}
+            changePostLikeAmountHandler={changePostLikeAmountHandler}
           />
           <PostActionButton>
             <CommentIcon />

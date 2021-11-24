@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {StyledAvatar} from './styled/Avatar.styled';
+import {onErrorImage} from '../utils/media';
 
 const Avatar = ({
   className,
@@ -21,7 +22,7 @@ const Avatar = ({
         hasStory={hasStory}
         hasStoryBeenSeen={hasStoryBeenSeen}
       >
-        <img src={url} alt="" />
+        <img src={url} alt="" onError={onErrorImage} />
       </StyledAvatar>
     );
   }
@@ -33,7 +34,7 @@ const Avatar = ({
       hasStory={hasStory}
       hasStoryBeenSeen={hasStoryBeenSeen}
     >
-      <img src={url} alt="" />
+      <img src={url} alt="" onError={onErrorImage} />
     </StyledAvatar>
   );
 };

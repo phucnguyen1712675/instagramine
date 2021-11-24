@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import {StyledAvatar} from './Avatar.styled';
 import {Button} from './Lib';
-import {textStyle, flexCenter, flexColumn} from './Mixins';
+import {textStyle} from './Mixins';
 
 export const StyledUserCard = styled.div`
   display: flex;
@@ -13,22 +13,25 @@ export const StyledUserCard = styled.div`
 `;
 
 export const InfoWrapper = styled.div`
-  ${flexCenter({horizontally: false})};
+  display: flex;
+  align-items: center;
   flex-grow: 1;
 `;
 
 export const InfoContent = styled.div`
-  ${flexColumn}
+  display: flex;
+  flex-direction: column;
   font-size: 1.4rem;
   line-height: 1.4;
 `;
 
 export const InfoContentUsername = styled.a`
-  ${({theme}) => textStyle({color: theme.colors.primary, fontWeight: 600})};
+  ${textStyle({fontWeight: 600})};
 `;
 
 export const AdditionalInfoContent = styled.div`
-  ${flexCenter({horizontally: false})};
+  display: flex;
+  align-items: center;
   ${({theme}) =>
     textStyle({
       color: theme.colors.secondary,

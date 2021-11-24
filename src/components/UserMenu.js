@@ -29,13 +29,16 @@ import {
 import BellIcon from './icons/BellIcon';
 import PlayIcon from './icons/PlayIcon';
 import GlobalContext from '../store/global-context';
+import {
+  MAX_SOCIAL_LINK_NUMBER,
+  MAX_STORIES_NUMBER,
+} from '../constants/user-menu';
 import {kFormatter, socialLinkFormatter} from '../utils/formatter';
-
-const MAX_SOCIAL_LINK_NUMBER = 3;
-const MAX_STORIES_NUMBER = 3;
+import {onErrorImage} from '../utils/media';
 
 const UserMenu = () => {
   const {currentUser} = useContext(GlobalContext);
+
   const {storyThumbnailSize} = useContext(ThemeContext);
 
   const socialLinksContent = currentUser.socialLinks
@@ -61,7 +64,7 @@ const UserMenu = () => {
       <StoriesContentStoryItem key={index}>
         <div>
           <StoriesContentCircleImg size={storyThumbnailSize}>
-            <img src={story.thumbnail} />
+            <img src={story.thumbnail} alt="" onError={onErrorImage} />
           </StoriesContentCircleImg>
           <p>{story.name}</p>
         </div>

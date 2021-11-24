@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import {StyledLikedButton} from './styled/LikedButton.styled';
 import HeaderICon from './icons/HeartIcon';
 
-const LikedButton = ({isLiked, increaseLikeAmount, decreaseLikeAmount}) => {
+const LikedButton = ({isLiked, changePostLikeAmountHandler}) => {
   const [isLikedState, setIsLikedState] = useState(isLiked);
 
   const likePostHandler = () => {
-    isLikedState ? decreaseLikeAmount() : increaseLikeAmount();
+    changePostLikeAmountHandler(isLikedState);
     setIsLikedState((prevState) => !prevState);
   };
 
@@ -20,8 +20,7 @@ const LikedButton = ({isLiked, increaseLikeAmount, decreaseLikeAmount}) => {
 
 LikedButton.propTypes = {
   isLiked: PropTypes.bool.isRequired,
-  increaseLikeAmount: PropTypes.func.isRequired,
-  decreaseLikeAmount: PropTypes.func.isRequired,
+  changePostLikeAmountHandler: PropTypes.func.isRequired,
 };
 
 export default LikedButton;

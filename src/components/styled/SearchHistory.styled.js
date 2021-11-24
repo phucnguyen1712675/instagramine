@@ -1,20 +1,15 @@
-import styled, {css} from 'styled-components';
-import {
-  textStyle,
-  flexCenter,
-  flexColumn,
-  hideScrollBarScrolling,
-} from './Mixins';
+import styled from 'styled-components';
+import {textStyle, hideScrollBarScrolling} from './Mixins';
 
 export const StyledSearchHistory = styled.div.attrs(() => ({
   heightArrowUp: '14px',
 }))`
-  ${flexColumn}
+  display: flex;
+  flex-direction: column;
   ${({isLoading}) =>
     isLoading &&
-    css`
-      justify-content: center;
-      align-items: center;
+    ` justify-content: center;
+    	align-items: center;
     `}
   position: absolute;
   top: calc(100% + ${({heightArrowUp}) => heightArrowUp});
@@ -51,18 +46,17 @@ export const StyledSearchHistory = styled.div.attrs(() => ({
 `;
 
 export const SearchHistoryHeader = styled.header`
-  ${flexCenter({horizontally: false})};
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 16px 16px 8px;
 
   h3 {
     display: inline-block;
-    ${({theme}) =>
-    textStyle({
-      color: theme.colors.primary,
-      fontSize: '1.6rem',
-      fontWeight: 600,
-    })};
+    ${textStyle({
+    fontSize: '1.6rem',
+    fontWeight: 600,
+  })};
   }
 
   & > button {
@@ -76,5 +70,6 @@ export const SearchHistoryHeader = styled.header`
 `;
 
 export const SearchHistoryList = styled.ul`
-  ${flexColumn}
+  display: flex;
+  flex-direction: column;
 `;

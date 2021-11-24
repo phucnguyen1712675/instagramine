@@ -1,10 +1,12 @@
 import styled from 'styled-components';
-import {flexCenter, sizeCircle} from './Mixins';
+import {circle} from './Mixins';
 
 export const Button = styled.button.attrs((props) => ({
   fontSize: props.fontSize ?? '1.4rem',
 }))`
-  ${flexCenter}
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: ${({fontSize}) => fontSize};
   background: transparent;
   cursor: pointer;
@@ -41,23 +43,23 @@ export const Dot = styled.span.attrs((props) => ({
   bgColor: props.bgColor ?? props.theme.colors.secondary,
 }))`
   display: inline-block;
-  ${({size}) => sizeCircle({size: size})};
+  ${({size}) => circle({w: size})};
   background-color: ${({bgColor}) => bgColor};
 `;
 
-export const CircleImg = styled.div.attrs((props) => ({
-  bgColor: props.theme.colors.bgComponentLightTheme,
+export const CircleImg = styled.div.attrs(({theme}) => ({
+  bgColor: theme.colors.bgComponentLightTheme,
 }))`
-  ${({size}) => sizeCircle({size})}
+  ${({size}) => size && circle({w: size})}
 
   img {
-    ${sizeCircle({size: '100%'})}
+    ${circle}
     object-fit: cover;
     background-color: ${({bgColor}) => bgColor};
   }
 `;
 
-export const PostImageWrapper = styled.div.attrs(() => ({
+export const PostMediaWrapper = styled.div.attrs(() => ({
   paddingHorizontal: '5px',
 }))`
   padding-left: ${({paddingHorizontal}) => paddingHorizontal};
@@ -65,6 +67,7 @@ export const PostImageWrapper = styled.div.attrs(() => ({
 `;
 
 export const PostImage = styled.img`
+  width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 15px;

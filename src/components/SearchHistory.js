@@ -13,6 +13,8 @@ import SearchHistoryResultsContext from '../store/search-history-results-context
 const SearchHistory = ({hasSearchHistoryOpened, setHasSearchHistoryOpened}) => {
   const [isLoading, setIsLoading] = useState(!hasSearchHistoryOpened);
 
+  const {users, removeAllUsers} = useContext(SearchHistoryResultsContext);
+
   useEffect(() => {
     let isMounted = true; // note mutable flag
 
@@ -31,8 +33,6 @@ const SearchHistory = ({hasSearchHistoryOpened, setHasSearchHistoryOpened}) => {
       isMounted = false; // cleanup toggles value, if unmounted
     };
   }, []);
-
-  const {users, removeAllUsers} = useContext(SearchHistoryResultsContext);
 
   const clearAllHandler = (e) => {
     e.preventDefault();

@@ -1,3 +1,5 @@
+import {ONERROR_IMAGE_PLACEHOLDER} from '../constants/media';
+
 export function validateImageUrl(url) {
   return url.match(/^https?:\/\/.+\/.+$/);
 }
@@ -10,4 +12,9 @@ export function doesImageExist(url) {
     img.onload = () => resolve(true);
     img.onerror = () => resolve(false);
   });
+}
+
+export function onErrorImage(e) {
+  e.target.onerror = null;
+  e.target.src = ONERROR_IMAGE_PLACEHOLDER;
 }

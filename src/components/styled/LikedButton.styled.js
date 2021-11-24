@@ -1,7 +1,7 @@
-import styled, {css} from 'styled-components';
+import styled from 'styled-components';
 import {PostActionButton} from './Post.styled';
 
-const likedColor = css`
+const likedColor = `
   color: #f0304e;
 `;
 

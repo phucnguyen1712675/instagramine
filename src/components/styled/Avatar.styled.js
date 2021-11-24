@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components';
 import {CircleImg} from './Lib';
 
-const HasStoryBackground = css`
+const HasStoryBackground = `
   background: linear-gradient(45deg, gold, fuchsia);
 `;
 

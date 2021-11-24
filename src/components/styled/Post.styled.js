@@ -1,15 +1,10 @@
 import styled from 'styled-components';
-import {
-  flexColumn,
-  flexCenter,
-  // hoverUnderline,
-  textStyle,
-  // hideScrollBarScrolling,
-} from './Mixins';
+import {textStyle} from './Mixins';
 import {HoverBrighterButton} from './Lib';
 
 export const StyledPost = styled.div`
-  ${flexColumn};
+  display: flex;
+  flex-direction: column;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   outline: 1px solid ${({theme}) => theme.colors.primaryBorder};
   border-radius: 30px;
@@ -18,7 +13,8 @@ export const StyledPost = styled.div`
 `;
 
 export const PostBody = styled.div`
-  ${flexColumn};
+  display: flex;
+  flex-direction: column;
   flex: 1;
 `;
 
@@ -36,7 +32,8 @@ export const PostActionButton = styled(HoverBrighterButton).attrs(() => ({
 export const PostActions = styled.div.attrs(() => ({
   btnPadding: '0.8rem',
 }))`
-  ${flexCenter({horizontally: false})};
+  display: flex;
+  align-items: center;
   padding-left: calc(15px - ${({btnPadding}) => btnPadding});
   padding-right: calc(15px - ${({btnPadding}) => btnPadding});
 
@@ -46,7 +43,8 @@ export const PostActions = styled.div.attrs(() => ({
 `;
 
 export const PostLikedUsersInfo = styled.div`
-  ${flexCenter({horizontally: false})};
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 7px 15px;
 `;
@@ -101,7 +99,8 @@ export const PostCaptionContainer = styled.div.attrs(() => ({
 `;
 
 export const PostCaptionWrapper = styled.div`
-  ${flexCenter({horizontally: false})};
+  display: flex;
+  align-items: center;
   column-gap: 6px;
 
   svg {
@@ -110,11 +109,7 @@ export const PostCaptionWrapper = styled.div`
 `;
 
 export const PostCaption = styled.p`
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.primary,
-      fontSize: '1.2rem',
-    })};
+  ${textStyle({fontSize: '1.2rem'})};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,4 +1,4 @@
-import styled, {css} from 'styled-components';
+import styled from 'styled-components';
 import {
   HoverScaleButton,
   Button,
@@ -6,16 +6,15 @@ import {
   Dot,
   CircleImg,
 } from './Lib';
-import {flexColumn, flexCenter, textStyle, sizeCircle} from './Mixins';
+import {textStyle, circle} from './Mixins';
 import {StyledAvatar} from './Avatar.styled';
 
-const gradientBackground = css`
-  background: linear-gradient(
-    99.27deg,
-    #ff1cf6 -35.3%,
-    rgba(253, 96, 28, 0.74) 66.33%,
-    #de2442 138.45%
-  );
+const gradientBackground = () => `
+	background: linear-gradient(
+	99.27deg,
+	#ff1cf6 -35.3%,
+	rgba(253, 96, 28, 0.74) 66.33%,
+	#de2442 138.45%);
 `;
 
 export const CreatePostButton = styled(HoverBrighterButton).attrs(() => ({
@@ -51,7 +50,6 @@ export const StyledUserMenu = styled.div.attrs(() => ({
 }))`
   grid-area: userMenu;
   display: flex;
-
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   border-left: ${({widthBorder}) => widthBorder} solid
     ${({theme}) => theme.colors.primaryBorderDark};
@@ -69,7 +67,8 @@ export const StyledUserMenu = styled.div.attrs(() => ({
 `;
 
 export const UserMenuInner = styled.div`
-  ${flexColumn}
+  display: flex;
+  flex-direction: column;
   justify-content: flex-end;
 `;
 
@@ -79,12 +78,15 @@ export const NotificationButton = styled(HoverScaleButton).attrs(() => ({
   position: absolute;
   top: ${({distance}) => distance};
   right: ${({distance}) => distance};
-	font-size: 2.4rem;
+  font-size: 2.4rem;
   padding: 8px;
 `;
 
 export const ThumbnailContent = styled.div`
-  ${flexCenter({direction: 'column'})}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   line-height: 1.4;
 
   ${StyledAvatar} {
@@ -93,24 +95,19 @@ export const ThumbnailContent = styled.div`
 
   h2 {
     margin-top: 16px;
-    ${({theme}) =>
-    textStyle({
-      fontSize: '2rem',
-      color: theme.colors.primary,
-      fontWeight: 600,
-    })}
+    ${textStyle({
+    fontSize: '2rem',
+    fontWeight: 600,
+  })}
   }
 
   h5 {
-    ${({theme}) =>
-    textStyle({
-      color: theme.colors.secondary,
-    })}
+    ${({theme}) => textStyle({color: theme.colors.secondary})}
   }
 `;
 
 export const EditButton = styled(HoverBrighterButton)`
- 	margin-top: 12px;
+  margin-top: 12px;
   background-color: ${({theme}) => theme.colors.primary};
   color: #fff;
   padding: 0.7rem 2.7rem;
@@ -118,7 +115,9 @@ export const EditButton = styled(HoverBrighterButton)`
 `;
 
 export const StatisticalContent = styled.div`
-  ${flexCenter}
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-top: 32px;
 `;
 
@@ -134,19 +133,20 @@ export const StatisticalContentInner = styled.div`
 `;
 
 export const StatisticItem = styled.div`
-  ${flexCenter({direction: 'column'})}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   row-gap: 2px;
   line-height: 1.4;
   width: 60px;
 `;
 
 export const StatisticNumber = styled.div`
-  ${({theme}) =>
-    textStyle({
-      fontSize: '1.6rem',
-      color: theme.colors.primary,
-      fontWeight: 600,
-    })}
+  ${textStyle({
+    fontSize: '1.6rem',
+    fontWeight: 600,
+  })}
 `;
 
 export const StatisticName = styled.div`
@@ -158,26 +158,22 @@ export const StatisticName = styled.div`
 `;
 
 export const BioContent = styled.div`
-  /* margin-top: 50px; */
-  ${flexCenter({vertically: false, direction: 'column'})}
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
   height: 25vh;
 `;
 
 export const BioContentUsername = styled.div`
-  ${({theme}) =>
-    textStyle({
-      fontSize: '1.6rem',
-      color: theme.colors.primary,
-      fontWeight: 600,
-    })}
+  ${textStyle({
+    fontSize: '1.6rem',
+    fontWeight: 600,
+  })}
   line-height: 2.2rem;
 `;
 
 export const BioContentBio = styled.div`
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.secondary,
-    })}
+  ${({theme}) => textStyle({color: theme.colors.secondary})}
   margin-top: 12px;
   line-height: 1.9rem;
   display: -webkit-box;
@@ -197,17 +193,13 @@ export const BioContentSocialLink = styled.a`
     })}
 `;
 
-export const StoriesContent = styled.div`
-  /* margin-top: 48px; */
-`;
+export const StoriesContent = styled.div``;
 
 export const StoriesContentTitle = styled.h3`
-  ${({theme}) =>
-    textStyle({
-      fontSize: '1.6rem',
-      color: theme.colors.primary,
-      fontWeight: 600,
-    })}
+  ${textStyle({
+    fontSize: '1.6rem',
+    fontWeight: 600,
+  })}
 `;
 
 export const StoriesContentStoryList = styled.ul`
@@ -224,15 +216,12 @@ export const StoriesContentStoryItem = styled.li`
   text-align: center;
 
   div {
-    ${flexColumn}
+    display: flex;
+    flex-direction: column;
   }
 
   p {
-    ${({theme}) =>
-    textStyle({
-      fontSize: '1.2rem',
-      color: theme.colors.primary,
-    })}
+    ${textStyle({fontSize: '1.2rem'})}
     margin-top: 8px;
     max-width: ${({theme}) => theme.storyThumbnailSize};
     white-space: nowrap;
@@ -249,7 +238,7 @@ export const StoriesContentCircleImg = styled(CircleImg)`
   overflow: hidden;
 
   img {
-    ${({size}) => sizeCircle({size})}
+    ${({size}) => circle({w: size})}
     transition: transform 0.2s ease-out;
   }
 
@@ -259,8 +248,7 @@ export const StoriesContentCircleImg = styled(CircleImg)`
 `;
 
 export const PlayButton = styled(Button)`
-  ${sizeCircle({size: '6rem'})}
+  ${circle({w: '6rem'})}
   border: 2px solid ${({theme}) => theme.colors.primary};
   font-size: 2.4rem;
-  ${flexCenter}
 `;
