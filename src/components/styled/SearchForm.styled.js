@@ -3,12 +3,12 @@ import {textStyle, wh} from './Mixins';
 import {StyledSearchHistory} from './SearchHistory.styled';
 
 const searchFormIcon = css`
-  font-size: 2.5rem;
-  z-index: 1;
   position: absolute;
   top: 0;
   height: 100%;
+  z-index: 1;
   color: ${({theme}) => theme.colors.blueAlphaAction};
+  font-size: 2.5rem;
 `;
 
 export const StyledSearchForm = styled.form.attrs(() => ({
@@ -17,8 +17,7 @@ export const StyledSearchForm = styled.form.attrs(() => ({
   distanceAction: '15px',
 }))`
   position: relative;
-  width: ${({widthForm}) => widthForm};
-  height: 48px;
+	${({widthForm}) => wh({w: widthForm, h: '48px'})};
 
   & > svg,
   & > button {
@@ -44,25 +43,22 @@ export const StyledSearchForm = styled.form.attrs(() => ({
   }
 `;
 
-export const SearchInput = styled.input.attrs(() => ({
+export const SearchInput = styled.input.attrs((props) => ({
   type: 'text',
-  color: '#afc1d9',
+  color: props.theme.colors.blueAlphaAction,
   fontSize: '1.8rem',
   fontWeight: 400,
 }))`
-  position: absolute;
   ${wh}
+  position: absolute;
   left: 0;
   padding: 0px 50px;
   background: #f8fbff;
   box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
   border-radius: 8px;
-  border: none;
-  ${({color, fontWeight}) => textStyle({color, fontWeight})}
+  ${({color, fontSize, fontWeight}) => textStyle({color, fontSize, fontWeight})}
 
   &::placeholder {
-    ${({color, fontSize, fontWeight}) => textStyle({color, fontSize, fontWeight})}
-    user-select: none;
     transform: translateY(2px);
   }
 

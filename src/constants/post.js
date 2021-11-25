@@ -1,0 +1,1 @@
+export const POST_CAPTION_SHOW_CHAR = 36;

@@ -115,7 +115,14 @@ const UserMenu = () => {
         </StatisticalContent>
         <BioContent>
           <BioContentUsername>{currentUser.name}</BioContentUsername>
-          <BioContentBio>{currentUser.bio}</BioContentBio>
+          <BioContentBio
+            showChar={80}
+            readMoreText="Read More"
+            showLessText="Show Less"
+            readMoreLink={currentUser.socialLinks[0]}
+          >
+            {currentUser.bio}
+          </BioContentBio>
           <BioContentSocialLinks>{socialLinksContent}</BioContentSocialLinks>
         </BioContent>
         <StoriesContent>

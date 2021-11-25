@@ -8,6 +8,7 @@ import {
 } from './Lib';
 import {textStyle, circle} from './Mixins';
 import {StyledAvatar} from './Avatar.styled';
+import ReadMore from '../ReadMore';
 
 const gradientBackground = () => `
 	background: linear-gradient(
@@ -172,14 +173,10 @@ export const BioContentUsername = styled.div`
   line-height: 2.2rem;
 `;
 
-export const BioContentBio = styled.div`
+export const BioContentBio = styled(ReadMore)`
   ${({theme}) => textStyle({color: theme.colors.secondary})}
   margin-top: 12px;
   line-height: 1.9rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 `;
 
 export const BioContentSocialLinks = styled.div`
@@ -224,9 +221,12 @@ export const StoriesContentStoryItem = styled.li`
     ${textStyle({fontSize: '1.2rem'})}
     margin-top: 8px;
     max-width: ${({theme}) => theme.storyThumbnailSize};
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: break-word;
   }
 
   &:last-child {

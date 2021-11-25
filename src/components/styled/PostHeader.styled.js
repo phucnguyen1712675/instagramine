@@ -8,6 +8,7 @@ export const StyledPostHeader = styled(UserCard)`
   ${InfoContentUsername} {
     ${hoverUnderline}
   }
+	flex-shrink: 0;
 `;
 
 export const PostHeaderLocation = styled.a`

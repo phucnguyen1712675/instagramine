@@ -48,6 +48,26 @@ const GlobalStyles = createGlobalStyle`
 	p {
 		margin: 0;
 	}
+
+	input {
+		border: none;
+
+		&::placeholder {
+			color: inherit;
+			font-size: inherit;
+			font-weight: inherit;
+			line-height: inherit;
+			user-select: none;
+		}
+	}
+
+	textarea {
+		border: none;
+
+		&::placeholder {
+
+		}
+	}
 `;
 
 export default GlobalStyles;

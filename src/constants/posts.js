@@ -25,7 +25,7 @@ const posts = [
     otherLikedUserAmount: 254,
     likedUsersLink: 'https://www.instagram.com/p/CWiifozP2TD/liked_by/',
     caption: 'Fox can be smarter than a wolf wolf wolf',
-    date: 1637194026,
+    date: 1637851802,
   },
   {
     id: 1,
@@ -54,7 +54,7 @@ const posts = [
     otherLikedUserAmount: 903,
     likedUsersLink: 'https://www.instagram.com/p/CWiifozP2TD/liked_by/',
     caption: 'Million Parrots in india Like a Family Family Family',
-    date: 1637194026,
+    date: 1637851802,
   },
   {
     id: 2,
@@ -82,7 +82,7 @@ const posts = [
     otherLikedUserAmount: 127,
     likedUsersLink: 'https://www.instagram.com/p/CWiifozP2TD/liked_by/',
     caption: 'Lazy Weekend',
-    date: 1637194026,
+    date: 1637851802,
   },
   {
     id: 3,
@@ -109,7 +109,7 @@ const posts = [
     otherLikedUserAmount: 103,
     likedUsersLink: 'https://www.instagram.com/p/CWiifozP2TD/liked_by/',
     caption: 'Underwater heaven Underwater heaven Underwater heaven',
-    date: 1637194026,
+    date: 1637851802,
   },
   // {
   //   id: 4,
@@ -131,7 +131,7 @@ const posts = [
   //   ],
   //   otherLikedUserAmount: 387,
   //   caption: 'Into the woods Into the woods Into the woods',
-  //   date: 1637194026,
+  //   date: 1637851802,
   // },
   {
     id: 5,
@@ -159,7 +159,7 @@ const posts = [
     otherLikedUserAmount: 387,
     likedUsersLink: 'https://www.instagram.com/p/CWiifozP2TD/liked_by/',
     caption: 'Hi Everyone are you enjoying enjoying',
-    date: 1637194026,
+    date: 1637851802,
   },
 ];
 

@@ -6,8 +6,10 @@ import {StyledSavedButton} from './styled/SavedButton.styled';
 const SavedButton = ({isSaved}) => {
   const [isSavedState, setIsSavedState] = useState(isSaved);
 
+  const toggleIsSaved = () => setIsSavedState((prevState) => !prevState);
+
   const savePostHandler = () => {
-    setIsSavedState((prevState) => !prevState);
+    toggleIsSaved();
   };
 
   return (

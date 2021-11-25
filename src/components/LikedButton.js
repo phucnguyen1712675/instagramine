@@ -6,13 +6,18 @@ import HeaderICon from './icons/HeartIcon';
 const LikedButton = ({isLiked, changePostLikeAmountHandler}) => {
   const [isLikedState, setIsLikedState] = useState(isLiked);
 
-  const likePostHandler = () => {
+  const toggleIsLiked = () => setIsLikedState((prevState) => !prevState);
+
+  const onClickLikeButtonHandler = () => {
     changePostLikeAmountHandler(isLikedState);
-    setIsLikedState((prevState) => !prevState);
+    toggleIsLiked();
   };
 
   return (
-    <StyledLikedButton isLiked={isLikedState} onClick={likePostHandler}>
+    <StyledLikedButton
+      isLiked={isLikedState}
+      onClick={onClickLikeButtonHandler}
+    >
       <HeaderICon />
     </StyledLikedButton>
   );

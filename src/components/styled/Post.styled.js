@@ -12,10 +12,19 @@ export const StyledPost = styled.div`
   overflow: hidden;
 `;
 
-export const PostBody = styled.div`
+export const PostContent = styled.div`
   display: flex;
   flex-direction: column;
+  padding-bottom: 15px;
   flex: 1;
+`;
+
+export const PostTopContent = styled.div`
+  /* flex: 1; */
+`;
+
+export const PostBottomContent = styled.div`
+  margin-top: auto;
 `;
 
 export const PostActionButton = styled(HoverBrighterButton).attrs(() => ({
@@ -54,23 +63,17 @@ export const PostLikedUsersAvatars = styled.a`
   flex-direction: row-reverse;
 `;
 
-export const PostLikedUsersAvatar = styled.div.attrs(() => ({
-  shadowSpread: '2px',
-}))`
+export const PostLikedUsersAvatar = styled.div`
   padding: 0;
 
   &:not(:first-child) {
-    margin-right: calc(-1 * ${({shadowSpread}) => shadowSpread});
+    margin-right: -4.5px;
   }
 
   img {
     padding: 0;
-    box-shadow: 0 0 0 ${({shadowSpread}) => shadowSpread} #fff;
+		border: 1.5px solid #fff;
   }
-`;
-
-export const PostFooter = styled.footer`
-  padding-bottom: 15px;
 `;
 
 export const PostDate = styled.time`
@@ -110,7 +113,5 @@ export const PostCaptionWrapper = styled.div`
 
 export const PostCaption = styled.p`
   ${textStyle({fontSize: '1.2rem'})};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
+

@@ -42,9 +42,9 @@ export const hideScrollBarScrolling = `
   }
 `;
 
-export const hoverUnderline = css`
+export const hoverUnderline = ({color}) => css`
   &:hover {
     text-decoration: underline;
-    text-decoration-color: ${({theme}) => theme.colors.primary};
+    text-decoration-color: ${({theme}) => color ?? theme.colors.primary};
   }
 `;
