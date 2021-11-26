@@ -1,5 +1,5 @@
 import {StyledHeader, AppLogo} from './styled/Header.styled';
-import SearchForm from './SearchForm';
+import SearchBar from './SearchBar';
 import LogoIcon from './icons/LogoIcon';
 import LogoTextIcon from './icons/LogoTextIcon';
 
@@ -10,7 +10,7 @@ const Header = () => {
         <LogoIcon />
         <LogoTextIcon />
       </AppLogo>
-      <SearchForm />
+      <SearchBar />
     </StyledHeader>
   );
 };

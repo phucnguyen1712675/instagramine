@@ -48,3 +48,7 @@ export const hoverUnderline = ({color}) => css`
     text-decoration-color: ${({theme}) => color ?? theme.colors.primary};
   }
 `;
+
+export const hideComponent = `
+	display: none;
+`;

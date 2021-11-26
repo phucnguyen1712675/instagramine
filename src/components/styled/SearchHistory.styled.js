@@ -4,7 +4,7 @@ import {textStyle, hideScrollBarScrolling} from './Mixins';
 export const StyledSearchHistory = styled.div.attrs(() => ({
   heightArrowUp: '14px',
 }))`
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   ${({isLoading}) =>
     isLoading &&
@@ -20,6 +20,7 @@ export const StyledSearchHistory = styled.div.attrs(() => ({
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
   overflow-y: auto;
   ${hideScrollBarScrolling}
+	display: none;
 
   & > p {
     text-align: center;

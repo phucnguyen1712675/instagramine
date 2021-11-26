@@ -1,6 +1,6 @@
 import {useState} from 'react';
 
-export const useForm = ({initialValues, onSubmit, validate}) => {
+const useForm = ({initialValues, onSubmit, validate}) => {
   const [values, setValues] = useState(initialValues || {});
   const [touchedValues, setTouchedValues] = useState({});
   const [errors, setErrors] = useState({});
@@ -39,6 +39,12 @@ export const useForm = ({initialValues, onSubmit, validate}) => {
     onSubmit({values, e});
   };
 
+  const reset = (values = initialValues) => {
+    setValues(values);
+    setTouchedValues({});
+    setErrors({});
+  };
+
   return {
     values,
     touchedValues,
@@ -46,8 +52,11 @@ export const useForm = ({initialValues, onSubmit, validate}) => {
     handleChange,
     handleSubmit,
     handleBlur,
+    reset,
   };
 };
+
+export default useForm;
 
 // function App() {
 //   const {

@@ -1,6 +1,6 @@
 import {useState, createContext} from 'react';
 import PropTypes from 'prop-types';
-import searchHistory from '../constants/search-history';
+import searchHistoryData from '../data/search-history.json';
 
 const initialState = {
   users: [],
@@ -14,7 +14,7 @@ const initialState = {
 const SearchHistoryResultsContext = createContext(initialState);
 
 export const SearchHistoryResultsContextProvider = ({children}) => {
-  const [users, setUsers] = useState(searchHistory);
+  const [users, setUsers] = useState(searchHistoryData);
 
   const addUser = (user) => setUsers((prevUsers) => [...prevUsers, user]);
 
