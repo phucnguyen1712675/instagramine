@@ -1,25 +1,24 @@
 import styled, {css} from 'styled-components';
 import {CircleImg} from './Lib';
 
-const HasStoryBackground = `
+const hasStoryBackground = `
   background: linear-gradient(45deg, gold, fuchsia);
 `;
 
-const HasStoryBeenSeenBackground = css`
+const hasStoryBeenSeenBackground = css`
   background: ${({theme}) => theme.colors.borderSeenStory};
 `;
 
-export const StyledAvatar = styled(CircleImg).attrs(() => ({
-  paddingSpace: '2px',
-}))`
-  padding: ${({paddingSpace}) => paddingSpace};
+export const StyledAvatar = styled(CircleImg)`
+  --padding-space: 2px;
+	padding: var(--padding-space);
+	cursor: pointer;
+	user-select: none;
   ${({hasStory, hasStoryBeenSeen}) =>
     hasStory &&
-    (hasStoryBeenSeen ? HasStoryBeenSeenBackground : HasStoryBackground)};
-  cursor: pointer;
-	user-select: none;
+    (hasStoryBeenSeen ? hasStoryBeenSeenBackground : hasStoryBackground)};
+`;
 
-  img {
-    padding: ${({paddingSpace}) => paddingSpace};
-  }
+export const AvatarImg = styled.img`
+  padding: var(--padding-space);
 `;

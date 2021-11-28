@@ -1,21 +1,23 @@
 import {useState, useContext, forwardRef, useImperativeHandle} from 'react';
-import PropTypes from 'prop-types';
 import SearchHistoryItem from './SearchHistoryItem';
 import Spinner from './icons/Spinner';
-import {Button} from './styled/Lib';
 import {
   StyledSearchHistory,
+  NoResultsText,
   SearchHistoryHeader,
+  SearchHistoryHeaderTitle,
+  ClearAllButton,
   SearchHistoryList,
 } from './styled/SearchHistory.styled';
 import SearchHistoryResultsContext from '../store/search-history-results-context';
 
 const SearchHistory = forwardRef((props, ref) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const {users, removeAllUsers} = useContext(SearchHistoryResultsContext);
 
   useImperativeHandle(ref, () => ({
+    getIsLoadingState: () => isLoading,
     setIsLoadingState: (isLoadingState) => setIsLoading(isLoadingState),
   }));
 
@@ -29,9 +31,11 @@ const SearchHistory = forwardRef((props, ref) => {
   ) : (
     <>
       <SearchHistoryHeader>
-        <h3>Recent</h3>
+        <SearchHistoryHeaderTitle>Recent</SearchHistoryHeaderTitle>
         {users.length > 0 && (
-          <Button onMouseDown={clearAllHandler}>Clear All</Button>
+          <ClearAllButton onMouseDown={clearAllHandler}>
+            Clear All
+          </ClearAllButton>
         )}
       </SearchHistoryHeader>
       {users.length > 0 ? (
@@ -41,7 +45,7 @@ const SearchHistory = forwardRef((props, ref) => {
           ))}
         </SearchHistoryList>
       ) : (
-        <p>No recent searches</p>
+        <NoResultsText>No result founds.</NoResultsText>
       )}
     </>
   );
@@ -54,10 +58,5 @@ const SearchHistory = forwardRef((props, ref) => {
 });
 
 SearchHistory.displayName = 'SearchHistory';
-
-SearchHistory.propTypes = {
-  hasSearchHistoryOpened: PropTypes.bool.isRequired,
-  setHasSearchHistoryOpened: PropTypes.func.isRequired,
-};
 
 export default SearchHistory;

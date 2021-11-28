@@ -1,56 +1,24 @@
 import styled from 'styled-components';
-import {textStyle, wh} from './Mixins';
-import {StyledSearchHistory} from './SearchHistory.styled';
+import {wh} from './Mixins';
+import {Input} from './Lib';
+import SearchIcon from '../icons/SearchIcon';
 
-export const StyledSearchBar = styled.form.attrs(() => ({
-  widthSearchBar: '300px',
-  widthSearchHistoryDiff: '75px',
-  distanceAction: '22.5px',
-}))`
+export const StyledSearchBar = styled.form`
+  --width-search-bar: 300px;
   position: relative;
-  ${({widthSearchBar}) => wh({w: widthSearchBar, h: '48px'})};
-
-  & > svg {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    z-index: 1;
-    color: ${({theme}) => theme.colors.blueAlphaAction};
-    font-size: 1.8rem;
-    left: 18px;
-  }
-
-  ${StyledSearchHistory} {
-    width: calc(
-      ${({widthSearchBar}) => widthSearchBar} +
-        ${({widthSearchHistoryDiff}) => widthSearchHistoryDiff}
-    );
-    left: calc(
-      -1 * ${({widthSearchHistoryDiff}) => widthSearchHistoryDiff} / 2
-    );
-  }
+  width: var(--width-search-bar);
+  height: 48px;
 `;
 
-export const SearchInput = styled.input.attrs((props) => ({
+export const SearchInput = styled(Input).attrs(() => ({
   type: 'search',
-  color: props.theme.colors.blueAlphaAction,
-  fontSize: '1.8rem',
-  fontWeight: 400,
-  paddingCancelButton: '25px',
 }))`
+  --padding-cancel-button: 25px;
   ${wh}
   position: absolute;
   left: 0;
-  padding: 0 calc(50px - ${({paddingCancelButton}) => paddingCancelButton}) 0
-    50px;
-  background: #f8fbff;
-  box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
-  border-radius: 8px;
-  ${({color, fontSize, fontWeight}) => textStyle({color, fontSize, fontWeight})}
-
-  /* &::placeholder {
-    transform: translateY(2px);
-  } */
+  padding: 0 calc(50px - var(--padding-cancel-button)) 0 50px;
+ 
 
   &::-webkit-search-cancel-button {
     position: relative;
@@ -58,16 +26,18 @@ export const SearchInput = styled.input.attrs((props) => ({
     cursor: pointer;
     padding: 0.2rem;
   }
+`;
 
-  &:focus {
-    outline: 1px solid ${({theme}) => theme.colors.blueAlphaAction};
-  }
+export const SearchInputSearchIcon = styled(SearchIcon)`
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+  color: ${({theme}) => theme.colors.blueAlphaAction};
+  font-size: 1.8rem;
+  left: 18px;
 
-  &:focus ~ svg {
+  ${SearchInput}:focus ~ & {
     display: none;
-  }
-
-  &:focus ~ ${StyledSearchHistory} {
-    display: flex;
   }
 `;

@@ -1,49 +1,42 @@
 import styled from 'styled-components';
+import {Button} from './Lib';
 import {textStyle, hideScrollBarScrolling} from './Mixins';
+import {SearchInput} from './SearchBar.styled';
 
-export const StyledSearchHistory = styled.div.attrs(() => ({
-  heightArrowUp: '14px',
-}))`
-  /* display: flex; */
+const centerFlex = `
+	justify-content: center;
+	align-items: center;
+`;
+
+export const StyledSearchHistory = styled.div`
+  --width-search-history-diff: 75px;
   flex-direction: column;
-  ${({isLoading}) =>
-    isLoading &&
-    ` justify-content: center;
-    	align-items: center;
-    `}
+  ${({isLoading}) => isLoading && centerFlex}
   position: absolute;
-  top: calc(100% + ${({heightArrowUp}) => heightArrowUp});
+  top: calc(100% + 14px);
+  width: calc(var(--width-search-bar) + var(--width-search-history-diff));
   height: 362px;
+  left: calc(-1 * var(--width-search-history-diff) / 2);
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   z-index: 1;
   border-radius: 6px;
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
   overflow-y: auto;
   ${hideScrollBarScrolling}
-	display: none;
+  display: none;
 
-  & > p {
-    text-align: center;
-    ${({theme}) =>
+  ${SearchInput}:focus ~ & {
+    display: flex;
+  }
+`;
+
+export const NoResultsText = styled.p`
+  text-align: center;
+  ${({theme}) =>
     textStyle({
       color: theme.colors.secondary,
       fontWeight: 400,
     })};
-  }
-
-  /* &:before {
-    content: '';
-    position: absolute;
-    top: calc(-1 *${({heightArrowUp}) => heightArrowUp});
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left:${({heightArrowUp}) => heightArrowUp} solid transparent;
-    border-right:${({heightArrowUp}) => heightArrowUp} solid transparent;
-    border-bottom:${({heightArrowUp}) => heightArrowUp} solid
-      ${({theme}) => theme.colors.bgComponentLightTheme};
-  } */
 `;
 
 export const SearchHistoryHeader = styled.header`
@@ -51,23 +44,23 @@ export const SearchHistoryHeader = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 16px 16px 8px;
+`;
 
-  h3 {
-    display: inline-block;
-    ${textStyle({
+export const SearchHistoryHeaderTitle = styled.h3`
+  display: inline-block;
+  ${textStyle({
     fontSize: '1.6rem',
     fontWeight: 600,
   })};
-  }
+`;
 
-  & > button {
-    display: inline-flex;
-    ${({theme}) =>
+export const ClearAllButton = styled(Button)`
+  display: inline-flex;
+  ${({theme}) =>
     textStyle({
       color: theme.colors.link,
       fontWeight: 600,
     })};
-  }
 `;
 
 export const SearchHistoryList = styled.ul`

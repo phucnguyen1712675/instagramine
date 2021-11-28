@@ -1,13 +1,11 @@
 import styled from 'styled-components';
 import {circle} from './Mixins';
 
-export const Button = styled.button.attrs((props) => ({
-  fontSize: props.fontSize ?? '1.4rem',
-}))`
+export const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: ${({fontSize}) => fontSize};
+  font-size: 1.4rem;
   background: transparent;
   cursor: pointer;
   border: none;
@@ -30,40 +28,35 @@ export const HoverScaleButton = styled(Button)`
   }
 `;
 
-export const HoverBrighterButton = styled(Button).attrs(() => ({
-  amount: 1.2,
-}))`
+export const HoverBrighterButton = styled(Button)`
+  --amount: 1.2;
   &:hover {
-    filter: brightness(${({amount}) => amount});
+    filter: brightness(var(--amount));
   }
 `;
 
-export const Dot = styled.span.attrs((props) => ({
-  size: props.size ?? '4px',
-  bgColor: props.bgColor ?? props.theme.colors.secondary,
-}))`
+export const Dot = styled.span`
+  --size: 4px;
   display: inline-block;
-  ${({size}) => circle({w: size})};
-  background-color: ${({bgColor}) => bgColor};
+  ${circle({w: 'var(--size)'})};
+  background-color: ${({theme}) => theme.colors.secondary};
 `;
 
-export const CircleImg = styled.div.attrs(({theme}) => ({
-  bgColor: theme.colors.bgComponentLightTheme,
-}))`
-  ${({size}) => size && circle({w: size})}
+export const CircleImg = styled.div`
+  --size: 4rem;
+  ${circle({w: 'var(--size)'})}
 
   img {
     ${circle}
     object-fit: cover;
-    background-color: ${({bgColor}) => bgColor};
+    background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   }
 `;
 
-export const PostMediaWrapper = styled.div.attrs(() => ({
-  paddingHorizontal: '5px',
-}))`
-  padding-left: ${({paddingHorizontal}) => paddingHorizontal};
-  padding-right: ${({paddingHorizontal}) => paddingHorizontal};
+export const PostMediaWrapper = styled.div`
+  --padding-horizontal: '5px';
+  padding-left: var(--padding-horizontal);
+  padding-right: var(--padding-horizontal);
 `;
 
 export const PostImage = styled.img`
@@ -72,4 +65,20 @@ export const PostImage = styled.img`
   object-fit: cover;
   border-radius: 15px;
   overflow: hidden;
+`;
+
+export const Input = styled.input.attrs(() => ({
+  type: 'text',
+}))`
+  padding: 0 50px;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: ${({theme}) => theme.colors.blueAlphaAction};
+  background: #f8fbff;
+  box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
+  border-radius: 8px;
+
+  &:focus {
+    outline: 1px solid ${({theme}) => theme.colors.blueAlphaAction};
+  }
 `;

@@ -1,15 +1,11 @@
 import styled from 'styled-components';
-import {StyledAvatar} from './Avatar.styled';
 import {Button} from './Lib';
 import {textStyle} from './Mixins';
 
 export const StyledUserCard = styled.div`
+	--margin-left-info-content: 10px;
   display: flex;
   padding: 15px;
-
-  ${StyledAvatar} {
-    margin-right: 10px;
-  }
 `;
 
 export const InfoWrapper = styled.div`
@@ -23,6 +19,7 @@ export const InfoContent = styled.div`
   flex-direction: column;
   font-size: 1.4rem;
   line-height: 1.4;
+	margin-left: var(--margin-left-info-content);
 `;
 
 export const InfoContentUsername = styled.a`

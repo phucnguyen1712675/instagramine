@@ -1,7 +1,6 @@
 import {useRef} from 'react';
 import PropTypes from 'prop-types';
 import PostHeader from './PostHeader';
-import Avatar from './Avatar';
 import Carousel from './Carousel';
 import LikedButton from './LikedButton';
 import SavedButton from './SavedButton';
@@ -9,7 +8,6 @@ import PostLikedUsersStatement from './PostLikedUsersStatement';
 import ReadMore from './ReadMore';
 import CommentIcon from './icons/CommentIcon';
 import ShareIcon from './icons/ShareIcon';
-import QuotationMarkIcon from './icons/QuotationMarkIcon';
 import {PostMediaWrapper, PostImage} from './styled/Lib';
 import {
   StyledPost,
@@ -23,6 +21,7 @@ import {
   PostLikedUsersAvatar,
   PostCaptionContainer,
   PostCaptionWrapper,
+  PostCaptionWrapperIcon,
   PostCaption,
   PostDate,
 } from './styled/Post.styled';
@@ -100,19 +99,13 @@ const Post = ({post}) => {
             />
             <PostLikedUsersAvatars href={post.likedUsersLink}>
               {post.likedOtherUser.map((url, index) => (
-                <PostLikedUsersAvatar
-                  as={Avatar}
-                  key={index}
-                  url={url}
-                  size="1.5rem"
-                  hasStory={false}
-                />
+                <PostLikedUsersAvatar key={index} url={url} hasStory={false} />
               ))}
             </PostLikedUsersAvatars>
           </PostLikedUsersInfo>
           <PostCaptionContainer>
             <PostCaptionWrapper>
-              <QuotationMarkIcon />
+              <PostCaptionWrapperIcon />
               {postCaptionContent}
             </PostCaptionWrapper>
             <PostDate>{formattedPostDate}</PostDate>

@@ -1,11 +1,16 @@
 import {useState, useEffect, useRef} from 'react';
 import SearchHistory from './SearchHistory';
-import SearchIcon from './icons/SearchIcon';
-import {StyledSearchBar, SearchInput} from './styled/SearchBar.styled';
+import {
+  StyledSearchBar,
+  SearchInput,
+  SearchInputSearchIcon,
+} from './styled/SearchBar.styled';
 import {SearchHistoryResultsContextProvider} from '../store/search-history-results-context';
+import useBlur from '../hooks/useBlur';
+import {LOADING_DELAY} from '../constants/search-form';
 
-const SearchForm = () => {
-  // const [isFocused, setIsFocused] = useState(false);
+const SearchBar = () => {
+  const [isFocused, setIsFocused] = useState(false);
 
   const [hasSearchHistoryOpened, setHasSearchHistoryOpened] = useState(false);
 
@@ -13,70 +18,78 @@ const SearchForm = () => {
 
   const searchHistoryRef = useRef(null);
 
+  const [inputRef, setInputBlur] = useBlur();
+
+  let timeoutId;
+
   useEffect(() => {
-    if (!hasSearchHistoryOpened) {
-      searchHistoryRef.current?.setIsLoadingState(true);
-
-      setTimeout(() => {
-        searchHistoryRef.current?.setIsLoadingState(false);
-      }, 1000);
-
-      setHasSearchHistoryOpened(true);
-    }
+    inputRef?.current?.addEventListener('search', onSearch);
   }, []);
 
-  // const onFocus = () => setIsFocused(true);
+  useEffect(() => {
+    if (isFocused && !hasSearchHistoryOpened) {
+      setHasSearchHistoryOpened(true);
 
-  // const onBlur = () => setIsFocused(false);
+      timeoutId = setTimeout(() => {
+        searchHistoryRef.current.setIsLoadingState(false);
+      }, LOADING_DELAY);
 
-  const onSearch = () => {
-    if (searchTerm === '') {
-      setSearchTerm('');
+      return () => {
+        const isLoading = searchHistoryRef.current.getIsLoadingState();
+        isLoading && searchHistoryRef.current.setIsLoadingState(false);
+
+        clearTimeout(timeoutId);
+      };
     }
-  };
+  }, [isFocused]);
 
-  const fetchDataFake = () => {
-    searchHistoryRef.current.setIsLoadingState(true);
+  useEffect(() => {
+    if (searchTerm !== '') {
+      searchHistoryRef.current.setIsLoadingState(true);
 
-    setTimeout(() => {
-      searchHistoryRef.current.setIsLoadingState(false);
-    }, 1000);
-  };
+      timeoutId = setTimeout(() => {
+        searchHistoryRef.current.setIsLoadingState(false);
+      }, LOADING_DELAY);
 
-  const handleChange = (e) => {
-    setSearchTerm(e.target.value);
+      return () => {
+        const isLoading = searchHistoryRef.current.getIsLoadingState();
+        isLoading && searchHistoryRef.current.setIsLoadingState(false);
 
-    // Fake loading
-    fetchDataFake();
-  };
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [searchTerm]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
+  const handleChange = (e) => setSearchTerm(e.target.value);
+
+  const handleSubmit = (e) => e.preventDefault();
+
+  const onFocus = () => setIsFocused(true);
+
+  const onBlur = () => setIsFocused(false);
+
+  // On close search bar
+  const onSearch = () => setInputBlur();
 
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
-      {/* {!isFocused && <SearchIcon />} */}
       <SearchInput
         name="searchTerm"
         placeholder="Search"
         autoComplete="off"
         value={searchTerm}
         onChange={handleChange}
-        // onFocus={onFocus}
-        // onBlur={onBlur}
-        ref={(element) => ((element || {}).onsearch = onSearch)}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        ref={inputRef}
+        // ref={(element) => ((element || {}).onsearch = onSearch)}
       />
-      <SearchIcon />
+      <SearchInputSearchIcon />
       <SearchHistoryResultsContextProvider>
-        <SearchHistory
-          ref={searchHistoryRef}
-          hasSearchHistoryOpened={hasSearchHistoryOpened}
-          setHasSearchHistoryOpened={setHasSearchHistoryOpened}
-        />
+        <SearchHistory ref={searchHistoryRef} />
       </SearchHistoryResultsContextProvider>
     </StyledSearchBar>
   );
 };
 
-export default SearchForm;
+export default SearchBar;

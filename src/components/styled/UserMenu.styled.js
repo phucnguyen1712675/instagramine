@@ -7,7 +7,7 @@ import {
   CircleImg,
 } from './Lib';
 import {textStyle, circle} from './Mixins';
-import {StyledAvatar} from './Avatar.styled';
+import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
 
 const gradientBackground = () => `
@@ -18,53 +18,22 @@ const gradientBackground = () => `
 	#de2442 138.45%);
 `;
 
-export const CreatePostButton = styled(HoverBrighterButton).attrs(() => ({
-  heightBlur: '40px',
-}))`
-  width: 100%;
-  margin-top: 45px;
-  padding: 15px 0;
-  border-radius: 5px;
-  ${textStyle({
-    color: '#fff',
-    fontWeight: 800,
-  })}
-  line-height: 1.3;
-  ${gradientBackground}
-  position: relative;
-  z-index: 1;
-
-  &:after {
-    content: '';
-    position: absolute;
-    top: 23px;
-    height: ${({heightBlur}) => heightBlur};
-    ${gradientBackground}
-    filter: blur(${({heightBlur}) => heightBlur});
-    z-index: -1;
-  }
-`;
-
 export const StyledUserMenu = styled.div.attrs(() => ({
   widthBorder: '1px',
   paddingVertical: '36px',
 }))`
+  --width-border: 1px;
+  --padding-horizontal: 30px;
+  --padding-vertical: 36px;
   grid-area: userMenu;
+  position: relative;
   display: flex;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
-  border-left: ${({widthBorder}) => widthBorder} solid
+  border-left: var(--width-border) solid
     ${({theme}) => theme.colors.primaryBorderDark};
-  position: relative;
-  padding: ${({paddingVertical}) => paddingVertical} 30px
-    ${({paddingVertical}) => paddingVertical}
-    calc(30px - ${({widthBorder}) => widthBorder});
-
-  ${CreatePostButton}:after {
-    width: calc(
-      ${({theme}) => theme.userMenuWidth} -
-        (${({paddingVertical}) => paddingVertical} + 28px) * 2
-    );
-  }
+  padding: var(--padding-vertical) var(--padding-horizontal)
+    var(--padding-vertical)
+    calc(var(--padding-horizontal) - var(--width-border));
 `;
 
 export const UserMenuInner = styled.div`
@@ -73,12 +42,11 @@ export const UserMenuInner = styled.div`
   justify-content: flex-end;
 `;
 
-export const NotificationButton = styled(HoverScaleButton).attrs(() => ({
-  distance: '24px',
-}))`
+export const NotificationButton = styled(HoverScaleButton)`
+  --distance: 24px;
   position: absolute;
-  top: ${({distance}) => distance};
-  right: ${({distance}) => distance};
+  top: var(--padding-vertical);
+  right: var(--padding-vertical);
   font-size: 2.4rem;
   padding: 8px;
 `;
@@ -89,22 +57,23 @@ export const ThumbnailContent = styled.div`
   justify-content: center;
   flex-direction: column;
   line-height: 1.4;
+`;
 
-  ${StyledAvatar} {
-    cursor: pointer;
-  }
+export const ThumbnailContentAvatar = styled(Avatar)`
+  --size: 8rem;
+  cursor: pointer;
+`;
 
-  h2 {
-    margin-top: 16px;
-    ${textStyle({
+export const ThumbnailContentUserName = styled.h2`
+  margin-top: 16px;
+  ${textStyle({
     fontSize: '2rem',
     fontWeight: 600,
   })}
-  }
+`;
 
-  h5 {
-    ${({theme}) => textStyle({color: theme.colors.secondary})}
-  }
+export const ThumbnailContentJobDescription = styled.h5`
+  ${({theme}) => textStyle({color: theme.colors.secondary})}
 `;
 
 export const EditButton = styled(HoverBrighterButton)`
@@ -127,10 +96,10 @@ export const StatisticalContentInner = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+`;
 
-  ${Dot} {
-    color: #6d6c76;
-  }
+export const StatisticalContentInnerDot = styled(Dot)`
+  color: #6d6c76;
 `;
 
 export const StatisticItem = styled.div`
@@ -212,37 +181,36 @@ export const StoriesContentStoryItem = styled.li`
   cursor: pointer;
   text-align: center;
 
-  div {
-    display: flex;
-    flex-direction: column;
-  }
-
-  p {
-    ${textStyle({fontSize: '1.2rem'})}
-    margin-top: 8px;
-    max-width: ${({theme}) => theme.storyThumbnailSize};
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: break-word;
-  }
-
   &:last-child {
     align-self: flex-start;
   }
 `;
 
-export const StoriesContentCircleImg = styled(CircleImg)`
+export const StoriesContentStoryItemInner = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const StoriesContentStoryItemCateName = styled.p`
+  ${textStyle({fontSize: '1.2rem'})}
+  margin-top: 8px;
+  max-width: ${({theme}) => theme.storyThumbnailSize};
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+`;
 
-  img {
-    ${({size}) => circle({w: size})}
-    transition: transform 0.2s ease-out;
-  }
+export const StoriesContentCircleImgWrapper = styled(CircleImg)`
+  overflow: hidden;
+`;
 
-  &:hover img {
+export const StoriesContentCircleImg = styled.img`
+  transition: transform 0.2s ease-out;
+
+  ${StoriesContentCircleImgWrapper}:hover & {
     transform: scale(1.2);
   }
 `;
@@ -251,4 +219,33 @@ export const PlayButton = styled(Button)`
   ${circle({w: '6rem'})}
   border: 2px solid ${({theme}) => theme.colors.primary};
   font-size: 2.4rem;
+`;
+
+export const CreatePostButton = styled(HoverBrighterButton)`
+  width: 100%;
+  margin-top: 45px;
+  padding: 15px 0;
+  border-radius: 5px;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+  ${textStyle({
+    color: '#fff',
+    fontWeight: 800,
+  })}
+  ${gradientBackground}
+
+  &:after {
+    --height-blur: 40px;
+    content: '';
+    position: absolute;
+    top: 23px;
+    width: calc(
+      ${({theme}) => theme.userMenuWidth} - (var(--padding-vertical) + 28px) * 2
+    );
+    height: var(--height-blur);
+    filter: blur(var(--height-blur));
+    ${gradientBackground}
+    z-index: -1;
+  }
 `;

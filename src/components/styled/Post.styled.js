@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import {textStyle} from './Mixins';
 import {HoverBrighterButton} from './Lib';
+import Avatar from '../Avatar';
+import QuotationMarkIcon from '../icons/QuotationMarkIcon';
 
 export const StyledPost = styled.div`
   display: flex;
@@ -27,27 +29,22 @@ export const PostBottomContent = styled.div`
   margin-top: auto;
 `;
 
-export const PostActionButton = styled(HoverBrighterButton).attrs(() => ({
-  amount: 0.8,
-}))`
+export const PostActions = styled.div`
+  --padding-btn: 0.8rem;
+  display: flex;
+  align-items: center;
+  padding-left: calc(15px - var(--padding-btn));
+  padding-right: calc(15px - var(--padding-btn));
+`;
+
+export const PostActionButton = styled(HoverBrighterButton)`
+  --amount: 0.8;
   font-size: 1.6rem;
+  padding: ${({btnPadding}) => btnPadding};
   color: ${({theme}) => theme.colors.postAction};
 
   &:last-child {
     margin-left: auto;
-  }
-`;
-
-export const PostActions = styled.div.attrs(() => ({
-  btnPadding: '0.8rem',
-}))`
-  display: flex;
-  align-items: center;
-  padding-left: calc(15px - ${({btnPadding}) => btnPadding});
-  padding-right: calc(15px - ${({btnPadding}) => btnPadding});
-
-  ${PostActionButton} {
-    padding: ${({btnPadding}) => btnPadding};
   }
 `;
 
@@ -63,7 +60,8 @@ export const PostLikedUsersAvatars = styled.a`
   flex-direction: row-reverse;
 `;
 
-export const PostLikedUsersAvatar = styled.div`
+export const PostLikedUsersAvatar = styled(Avatar)`
+  --size: 1.5rem;
   padding: 0;
 
   &:not(:first-child) {
@@ -72,46 +70,42 @@ export const PostLikedUsersAvatar = styled.div`
 
   img {
     padding: 0;
-		border: 1.5px solid #fff;
+    border: 1.5px solid #fff;
   }
-`;
-
-export const PostDate = styled.time`
-  display: inline-block;
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.secondary,
-      fontSize: '1rem',
-    })};
-  margin-top: 2px;
 `;
 
 export const PostCaptionContainer = styled.div.attrs(() => ({
   paddingRight: '28px',
   paddingLeft: '15px',
 }))`
+  --paddingRight: 28px;
+  --paddingLeft: 15px;
   padding-top: 5px;
-  padding-left: ${({paddingLeft}) => paddingLeft};
-  padding-right: ${({paddingRight}) => paddingRight};
+  padding-left: var(--paddingLeft);
+  padding-right: var(--paddingRight);
+`;
 
-  ${PostDate} {
-    padding-left: calc(
-      ${({paddingRight}) => paddingRight} - ${({paddingLeft}) => paddingLeft}
-    );
-  }
+export const PostDate = styled.time`
+  display: inline-block;
+  margin-top: 2px;
+  padding-left: calc(var(--paddingRight) - var(--paddingLeft));
+  ${({theme}) =>
+    textStyle({
+      color: theme.colors.secondary,
+      fontSize: '1rem',
+    })};
 `;
 
 export const PostCaptionWrapper = styled.div`
   display: flex;
   align-items: center;
   column-gap: 6px;
+`;
 
-  svg {
-    font-size: 0.7rem;
-  }
+export const PostCaptionWrapperIcon = styled(QuotationMarkIcon)`
+  font-size: 0.7rem;
 `;
 
 export const PostCaption = styled.p`
   ${textStyle({fontSize: '1.2rem'})};
 `;
-

@@ -1,13 +1,15 @@
 import {useContext} from 'react';
 import PropTypes from 'prop-types';
-import Avatar from './Avatar';
-import {Button, Dot} from './styled/Lib';
+import {Button} from './styled/Lib';
 import {
   StyledSearchHistoryItem,
+  SearchHistoryItemLink,
   SearchHistoryItemContent,
+  RemoveHistoryItemButtonIcon,
+  SearchHistoryItemAvatar,
   SearchHistoryUserAdditionalInfo,
+  SearchHistoryUserAdditionalInfoDot,
 } from './styled/SearchHistoryItem.styled';
-import MultiplyIcon from './icons/MultiplyIcon';
 import SearchHistoryResultsContext from '../store/search-history-results-context';
 
 const SearchHistoryItem = ({user}) => {
@@ -19,8 +21,7 @@ const SearchHistoryItem = ({user}) => {
   };
 
   const avatarComponent = (
-    <Avatar
-      size="5.2rem"
+    <SearchHistoryItemAvatar
       url={user.avatar}
       hasStory={user.hasStory}
       hasStoryBeenSeen={user.hasStoryBeenSeen}
@@ -33,7 +34,7 @@ const SearchHistoryItem = ({user}) => {
       <span>{user.name}</span>
       {user.isFollowed && (
         <>
-          <Dot />
+          <SearchHistoryUserAdditionalInfoDot />
           <span>Following</span>
         </>
       )}
@@ -42,13 +43,16 @@ const SearchHistoryItem = ({user}) => {
 
   const optionComponent = (
     <Button onMouseDown={removeHistoryItemHandler}>
-      <MultiplyIcon />
+      <RemoveHistoryItemButtonIcon />
     </Button>
   );
 
   return (
     <StyledSearchHistoryItem>
-      <a href={user.profile} onMouseDown={(e) => e.preventDefault()}>
+      <SearchHistoryItemLink
+        href={user.profile}
+        onMouseDown={(e) => e.preventDefault()}
+      >
         <SearchHistoryItemContent
           avatarComponent={avatarComponent}
           username={user.username}
@@ -56,7 +60,7 @@ const SearchHistoryItem = ({user}) => {
           optionComponent={optionComponent}
           usernameAsHeading
         />
-      </a>
+      </SearchHistoryItemLink>
     </StyledSearchHistoryItem>
   );
 };

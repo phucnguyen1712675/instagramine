@@ -20,7 +20,6 @@ const PostHeader = ({
   
   const avatarComponent = (
     <Avatar
-      size="4rem"
       url={avatar}
       hasStory={hasStory}
       hasStoryBeenSeen={hasStoryBeenSeen}

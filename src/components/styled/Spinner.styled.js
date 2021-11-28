@@ -19,7 +19,8 @@ export const StyledSpinner = styled.div`
   border-radius: 10px;
 
   div {
-    ${wh({w: '6%', h: '16%'})}
+		width: 6%;
+		height: 16%;
     background: ${({theme}) => theme.colors.secondary};
     position: absolute;
     left: 49%;

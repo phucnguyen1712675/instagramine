@@ -1,15 +1,17 @@
 import {useContext} from 'react';
 import {ThemeContext} from 'styled-components';
-import Avatar from './Avatar';
-import {Dot} from './styled/Lib';
 import {
   StyledUserMenu,
   UserMenuInner,
   NotificationButton,
   ThumbnailContent,
+  ThumbnailContentAvatar,
+  ThumbnailContentUserName,
+  ThumbnailContentJobDescription,
   EditButton,
   StatisticalContent,
   StatisticalContentInner,
+  StatisticalContentInnerDot,
   StatisticItem,
   StatisticNumber,
   StatisticName,
@@ -22,6 +24,9 @@ import {
   StoriesContentTitle,
   StoriesContentStoryList,
   StoriesContentStoryItem,
+  StoriesContentStoryItemInner,
+  StoriesContentStoryItemCateName,
+  StoriesContentCircleImgWrapper,
   StoriesContentCircleImg,
   PlayButton,
   CreatePostButton,
@@ -62,12 +67,18 @@ const UserMenu = () => {
     .slice(0, MAX_STORIES_NUMBER)
     .map((story, index) => (
       <StoriesContentStoryItem key={index}>
-        <div>
-          <StoriesContentCircleImg size={storyThumbnailSize}>
-            <img src={story.thumbnail} alt="" onError={onErrorImage} />
-          </StoriesContentCircleImg>
-          <p>{story.name}</p>
-        </div>
+        <StoriesContentStoryItemInner>
+          <StoriesContentCircleImgWrapper size={storyThumbnailSize}>
+            <StoriesContentCircleImg
+              src={story.thumbnail}
+              alt=""
+              onError={onErrorImage}
+            />
+          </StoriesContentCircleImgWrapper>
+          <StoriesContentStoryItemCateName>
+            {story.name}
+          </StoriesContentStoryItemCateName>
+        </StoriesContentStoryItemInner>
       </StoriesContentStoryItem>
     ))
     .concat(playStoriesButton);
@@ -79,14 +90,17 @@ const UserMenu = () => {
           <BellIcon />
         </NotificationButton>
         <ThumbnailContent>
-          <Avatar
+          <ThumbnailContentAvatar
             url={currentUser.avatar}
-            size="8rem"
             hasStory={currentUser.hasStory}
             hasStoryBeenSeen={currentUser.hasStoryBeenSeen}
           />
-          <h2>{currentUser.username}</h2>
-          <h5>{currentUser.job}</h5>
+          <ThumbnailContentUserName>
+            {currentUser.username}
+          </ThumbnailContentUserName>
+          <ThumbnailContentJobDescription>
+            {currentUser.job}
+          </ThumbnailContentJobDescription>
           <EditButton>Edit</EditButton>
         </ThumbnailContent>
         <StatisticalContent>
@@ -97,14 +111,14 @@ const UserMenu = () => {
               </StatisticNumber>
               <StatisticName>Posts</StatisticName>
             </StatisticItem>
-            <Dot />
+            <StatisticalContentInnerDot />
             <StatisticItem>
               <StatisticNumber>
                 {kFormatter(currentUser.followersNumber)}
               </StatisticNumber>
               <StatisticName>Followers</StatisticName>
             </StatisticItem>
-            <Dot />
+            <StatisticalContentInnerDot />
             <StatisticItem>
               <StatisticNumber>
                 {kFormatter(currentUser.followingNumber)}
