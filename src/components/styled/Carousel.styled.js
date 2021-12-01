@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import {Button, PostMediaWrapper, PostImage} from './Lib';
+import {Button, PostMediaWrapper} from './Lib';
 import {circle, hideComponent} from './Mixins';
+import PostImage from '../PostImage';
 
 const CarouselButtonWrapper = styled.div`
   position: absolute;
@@ -26,7 +27,7 @@ export const CarouselLeftButtonWrapper = styled(CarouselButtonWrapper)`
 `;
 
 export const CarouselRightButtonWrapper = styled(CarouselButtonWrapper)`
-	right: var(--padding-horizontal);
+  right: var(--padding-horizontal);
 `;
 
 export const StyledCarousel = styled(PostMediaWrapper)`

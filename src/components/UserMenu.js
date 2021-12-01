@@ -39,7 +39,7 @@ import {
   MAX_CHARS_BIO_USER_MENU,
 } from '../constants';
 import {kFormatter, socialLinkFormatter} from '../utils/formatter';
-import {onErrorImage} from '../utils/media';
+import {onErrorMedia} from '../utils/media';
 
 const UserMenu = () => {
   const {currentUser} = useContext(GlobalContext);
@@ -70,7 +70,7 @@ const UserMenu = () => {
             <StoriesContentCircleImg
               src={story.thumbnail}
               alt=""
-              onError={onErrorImage}
+              onError={onErrorMedia}
             />
           </StoriesContentCircleImgWrapper>
           <StoriesContentStoryItemName>

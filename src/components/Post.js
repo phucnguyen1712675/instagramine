@@ -5,10 +5,12 @@ import Carousel from './Carousel';
 import LikedButton from './LikedButton';
 import SavedButton from './SavedButton';
 import PostLikedUsersStatement from './PostLikedUsersStatement';
+import PostImage from './PostImage';
+import PostVideo from './PostVideo';
 import ReadMore from './ReadMore';
 import CommentIcon from './icons/CommentIcon';
 import ShareIcon from './icons/ShareIcon';
-import {PostMediaWrapper, PostImage} from './styled/Lib';
+import {PostMediaWrapper} from './styled/Lib';
 import {
   StyledPost,
   PostContent,
@@ -25,7 +27,6 @@ import {
   PostCaption,
   PostDate,
 } from './styled/Post.styled';
-import {onErrorImage} from '../utils/media';
 import {formatPostDate} from '../utils/formatter';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
 
@@ -35,7 +36,11 @@ const Post = ({post}) => {
   const mediaContent =
     post.media.length === 1 ? (
       <PostMediaWrapper>
-        <PostImage src={post.media[0]} onError={onErrorImage} />
+        {post.media[0].type === 'image' ? (
+          <PostImage src={post.media[0].url} />
+        ) : (
+          <PostVideo src={post.media[0].url} />
+        )}
       </PostMediaWrapper>
     ) : (
       <Carousel media={post.media} />

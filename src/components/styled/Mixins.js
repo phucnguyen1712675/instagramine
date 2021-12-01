@@ -52,3 +52,11 @@ export const hoverUnderline = ({color}) => css`
 export const hideComponent = `
 	display: none;
 `;
+
+export const mediaStyle = `
+	width: 100%;
+	aspect-ratio: 1;
+	object-fit: cover;
+	border-radius: 15px;
+	overflow: hidden;
+`;

@@ -59,14 +59,6 @@ export const PostMediaWrapper = styled.div`
   padding-right: var(--padding-horizontal);
 `;
 
-export const PostImage = styled.img`
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 15px;
-  overflow: hidden;
-`;
-
 export const Input = styled.input.attrs(() => ({
   type: 'text',
 }))`

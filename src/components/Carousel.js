@@ -12,15 +12,15 @@ import {
   CarouselNav,
   CarouselIndicator,
 } from './styled/Carousel.styled';
-import {validateImageUrl, onErrorImage} from '../utils/media';
+import {validateImageUrl} from '../utils/media';
 
 const Carousel = ({media}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = media.map((item, index) => (
     <CarouselSlide key={index} isActive={index === currentSlide}>
-      {validateImageUrl(item) ? (
-        <CarouselSlideImage src={item} onError={onErrorImage} />
+      {validateImageUrl(item.url) ? (
+        <CarouselSlideImage src={item.url} />
       ) : (
         <></>
       )}
@@ -67,7 +67,7 @@ const Carousel = ({media}) => {
 };
 
 Carousel.propTypes = {
-  media: PropTypes.arrayOf(PropTypes.string).isRequired,
+  media: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default Carousel;

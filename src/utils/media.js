@@ -14,7 +14,7 @@ export function doesImageExist(url) {
   });
 }
 
-export function onErrorImage(e) {
+export function onErrorMedia(e, errorImg = ONERROR_IMAGE_PLACEHOLDER) {
   e.target.onerror = null;
-  e.target.src = ONERROR_IMAGE_PLACEHOLDER;
+  e.target.src = errorImg;
 }
