@@ -22,7 +22,7 @@ export const GlobalContextProvider = ({children}) => {
 };
 
 GlobalContextProvider.propTypes = {
-  children: PropTypes.element.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default GlobalContext;

@@ -1,14 +1,11 @@
 import styled, {css} from 'styled-components';
 import {PostActionButton} from './Post.styled';
 
-const likedColor = css`
-  color: ${({theme}) => theme.colors.primary};
-`;
-
-export const StyledSavedButton = styled(PostActionButton).attrs(
-  ({isSaved}) => ({
-    amount: isSaved ? 1.2 : 0.8,
-  })
-)`
-  ${({isSaved}) => isSaved && likedColor}
+export const StyledSavedButton = styled(PostActionButton)`
+  ${({isSaved}) =>
+    isSaved &&
+    css`
+      --amount: 2.4;
+      color: ${({theme}) => theme.colors.primary};
+    `}
 `;

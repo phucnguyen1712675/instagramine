@@ -1,18 +1,18 @@
 import {useState} from 'react';
 import {NavigationButton} from './styled/MainNavigation.styled';
-import navIcons from '../constants/nav-icons';
+import {NAV_ICONS} from '../constants';
 
 const MainNavigation = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const navigateHandler = (idx) => {
-    setCurrentIndex(idx);
+  const navigateHandler = (index) => {
+    setCurrentIndex(index);
   };
 
-  const content = navIcons.map((btn, idx) => (
+  const content = NAV_ICONS.map((btn, index) => (
     <NavigationButton
       key={btn.id}
-      onClick={() => navigateHandler(idx)}
+      onClick={() => navigateHandler(index)}
       isActive={btn.id === currentIndex}
     >
       {btn.icon}

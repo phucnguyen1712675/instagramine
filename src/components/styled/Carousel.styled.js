@@ -21,9 +21,13 @@ export const CarouselButton = styled(Button)`
   }
 `;
 
-export const CarouselLeftButtonWrapper = styled(CarouselButtonWrapper)``;
+export const CarouselLeftButtonWrapper = styled(CarouselButtonWrapper)`
+  left: var(--padding-horizontal);
+`;
 
-export const CarouselRightButtonWrapper = styled(CarouselButtonWrapper)``;
+export const CarouselRightButtonWrapper = styled(CarouselButtonWrapper)`
+	right: var(--padding-horizontal);
+`;
 
 export const StyledCarousel = styled(PostMediaWrapper)`
   display: flex;
@@ -31,14 +35,6 @@ export const StyledCarousel = styled(PostMediaWrapper)`
   align-items: center;
   flex-direction: column;
   position: relative;
-
-  ${CarouselLeftButtonWrapper} {
-    left: ${({paddingHorizontal}) => paddingHorizontal};
-  }
-
-  ${CarouselRightButtonWrapper} {
-    right: ${({paddingHorizontal}) => paddingHorizontal};
-  }
 `;
 
 export const CarouselSlide = styled.div`

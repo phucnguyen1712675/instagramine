@@ -2,21 +2,20 @@ import styled, {css} from 'styled-components';
 import {HoverScaleButton} from './Lib';
 import {circle} from './Mixins';
 
-export const NavigationButton = styled(HoverScaleButton).attrs(() => ({
-  fontSize: '3rem',
-  sizeDot: '5px',
-}))`
-  ${({isActive}) =>
-    isActive &&
-    css`
-      position: relative;
+const ActiveNavigationButton = css`
+  position: relative;
 
-      &:after {
-        content: '';
-        ${({sizeDot}) => circle({w: sizeDot})};
-        background-color: #f31c3f;
-        position: absolute;
-        top: calc(100% + 5px);
-      }
-    `}
+  &:after {
+    --size-dot: 5px;
+    content: '';
+    ${circle({w: 'var(--size-dot)'})};
+    background-color: #f31c3f;
+    position: absolute;
+    top: calc(100% + 5px);
+  }
+`;
+
+export const NavigationButton = styled(HoverScaleButton)`
+  font-size: 3rem;
+  ${({isActive}) => isActive && ActiveNavigationButton}
 `;

@@ -12,7 +12,6 @@ const theme = {
     postAction: '#D7E0EB',
   },
   userMenuWidth: '360px',
-  storyThumbnailSize: '6rem',
 };
 
 export default theme;

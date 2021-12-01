@@ -6,11 +6,11 @@ import {
   Dot,
   CircleImg,
 } from './Lib';
-import {textStyle, circle} from './Mixins';
+import {textStyle, circle, hoverUnderline} from './Mixins';
 import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
 
-const gradientBackground = () => `
+const gradientBackground = `
 	background: linear-gradient(
 	99.27deg,
 	#ff1cf6 -35.3%,
@@ -18,10 +18,7 @@ const gradientBackground = () => `
 	#de2442 138.45%);
 `;
 
-export const StyledUserMenu = styled.div.attrs(() => ({
-  widthBorder: '1px',
-  paddingVertical: '36px',
-}))`
+export const StyledUserMenu = styled.div`
   --width-border: 1px;
   --padding-horizontal: 30px;
   --padding-vertical: 36px;
@@ -127,7 +124,7 @@ export const StatisticName = styled.div`
     })}
 `;
 
-export const BioContent = styled.div`
+export const BioContentContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -142,11 +139,25 @@ export const BioContentUsername = styled.div`
   line-height: 2.2rem;
 `;
 
-export const BioContentBio = styled(ReadMore)`
+export const BioContent = styled(ReadMore)`
   ${({theme}) => textStyle({color: theme.colors.secondary})}
   margin-top: 12px;
   line-height: 1.9rem;
 `;
+
+// export const StyledBioContent = styled.p`
+//   display: inline;
+//   ${styledBioContent}
+
+//   ${({shouldTruncate}) =>
+//     shouldTruncate &&
+//     `display: -webkit-box;
+//   -webkit-line-clamp: 1;
+//   -webkit-box-orient: vertical;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   word-break: break-word;`}
+// `;
 
 export const BioContentSocialLinks = styled.div`
   margin-top: 8px;
@@ -157,6 +168,7 @@ export const BioContentSocialLink = styled.a`
     textStyle({
       color: theme.colors.link,
     })}
+  ${({theme}) => hoverUnderline({color: theme.colors.link})}
 `;
 
 export const StoriesContent = styled.div``;
@@ -191,10 +203,10 @@ export const StoriesContentStoryItemInner = styled.div`
   flex-direction: column;
 `;
 
-export const StoriesContentStoryItemCateName = styled.p`
+export const StoriesContentStoryItemName = styled.p`
   ${textStyle({fontSize: '1.2rem'})}
   margin-top: 8px;
-  max-width: ${({theme}) => theme.storyThumbnailSize};
+  max-width: 6rem;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -204,6 +216,7 @@ export const StoriesContentStoryItemCateName = styled.p`
 `;
 
 export const StoriesContentCircleImgWrapper = styled(CircleImg)`
+  --size: 6rem;
   overflow: hidden;
 `;
 

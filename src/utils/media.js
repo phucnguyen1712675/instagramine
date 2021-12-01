@@ -1,4 +1,4 @@
-import {ONERROR_IMAGE_PLACEHOLDER} from '../constants/media';
+import {ONERROR_IMAGE_PLACEHOLDER} from '../constants';
 
 export function validateImageUrl(url) {
   return url.match(/^https?:\/\/.+\/.+$/);

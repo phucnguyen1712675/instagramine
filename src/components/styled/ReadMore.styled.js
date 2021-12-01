@@ -2,11 +2,12 @@ import styled from 'styled-components';
 import {hoverUnderline} from './Mixins';
 
 export const StyledReadMore = styled.p`
+  /* display: inline-block; */
   width: 100%;
 `;
 
 export const ReadOrHide = styled.a`
-	color: inherit;
+  color: inherit;
   font-weight: 800;
   ${hoverUnderline({color: 'inherit'})};
 `;

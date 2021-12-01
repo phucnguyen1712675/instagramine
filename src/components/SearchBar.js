@@ -7,7 +7,7 @@ import {
 } from './styled/SearchBar.styled';
 import {SearchHistoryResultsContextProvider} from '../store/search-history-results-context';
 import useBlur from '../hooks/useBlur';
-import {LOADING_DELAY} from '../constants/search-form';
+import {LOADING_DELAY} from '../constants';
 
 const SearchBar = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -23,7 +23,17 @@ const SearchBar = () => {
   let timeoutId;
 
   useEffect(() => {
+    const onSearch = (e) => {
+      if (e.target.value === '') {
+        setInputBlur();
+      }
+    };
+
     inputRef?.current?.addEventListener('search', onSearch);
+
+    return () => {
+      inputRef?.current?.removeEventListener('search', onSearch);
+    };
   }, []);
 
   useEffect(() => {
@@ -60,7 +70,9 @@ const SearchBar = () => {
     }
   }, [searchTerm]);
 
-  const handleChange = (e) => setSearchTerm(e.target.value);
+  const handleChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   const handleSubmit = (e) => e.preventDefault();
 
@@ -68,21 +80,15 @@ const SearchBar = () => {
 
   const onBlur = () => setIsFocused(false);
 
-  // On close search bar
-  const onSearch = () => setInputBlur();
-
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
       <SearchInput
         name="searchTerm"
-        placeholder="Search"
-        autoComplete="off"
         value={searchTerm}
         onChange={handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
         ref={inputRef}
-        // ref={(element) => ((element || {}).onsearch = onSearch)}
       />
       <SearchInputSearchIcon />
       <SearchHistoryResultsContextProvider>

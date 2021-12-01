@@ -27,7 +27,7 @@ import {
 } from './styled/Post.styled';
 import {onErrorImage} from '../utils/media';
 import {formatPostDate} from '../utils/formatter';
-import {POST_CAPTION_SHOW_CHAR} from '../constants/post';
+import {POST_CAPTION_SHOW_CHAR} from '../constants';
 
 const Post = ({post}) => {
   const postLikedUsersStatementRef = useRef(null);
@@ -47,7 +47,6 @@ const Post = ({post}) => {
     post.caption.length > POST_CAPTION_SHOW_CHAR ? (
       <PostCaption
         as={ReadMore}
-        showChar={POST_CAPTION_SHOW_CHAR}
         readMoreLink="https://www.instagram.com/p/B9yD_e0J2e1tZKaaw-jIJoYAvfeIYhQe7kSxZc0/"
       >
         {post.caption}

@@ -40,7 +40,7 @@ export const PostActions = styled.div`
 export const PostActionButton = styled(HoverBrighterButton)`
   --amount: 0.8;
   font-size: 1.6rem;
-  padding: ${({btnPadding}) => btnPadding};
+  padding: var(--padding-btn);
   color: ${({theme}) => theme.colors.postAction};
 
   &:last-child {
@@ -74,10 +74,7 @@ export const PostLikedUsersAvatar = styled(Avatar)`
   }
 `;
 
-export const PostCaptionContainer = styled.div.attrs(() => ({
-  paddingRight: '28px',
-  paddingLeft: '15px',
-}))`
+export const PostCaptionContainer = styled.div`
   --paddingRight: 28px;
   --paddingLeft: 15px;
   padding-top: 5px;

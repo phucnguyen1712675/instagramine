@@ -12,13 +12,15 @@ export const StyledSearchBar = styled.form`
 
 export const SearchInput = styled(Input).attrs(() => ({
   type: 'search',
+  autoComplete: 'off',
+  placeholder: 'Search',
 }))`
   --padding-cancel-button: 25px;
   ${wh}
   position: absolute;
   left: 0;
-  padding: 0 calc(50px - var(--padding-cancel-button)) 0 50px;
- 
+  padding-left: 50px;
+  padding-right: calc(50px - var(--padding-cancel-button));
 
   &::-webkit-search-cancel-button {
     position: relative;

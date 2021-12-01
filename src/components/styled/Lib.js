@@ -54,7 +54,7 @@ export const CircleImg = styled.div`
 `;
 
 export const PostMediaWrapper = styled.div`
-  --padding-horizontal: '5px';
+  --padding-horizontal: 5px;
   padding-left: var(--padding-horizontal);
   padding-right: var(--padding-horizontal);
 `;

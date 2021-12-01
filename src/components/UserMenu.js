@@ -1,5 +1,4 @@
 import {useContext} from 'react';
-import {ThemeContext} from 'styled-components';
 import {
   StyledUserMenu,
   UserMenuInner,
@@ -15,9 +14,9 @@ import {
   StatisticItem,
   StatisticNumber,
   StatisticName,
-  BioContent,
+  BioContentContainer,
   BioContentUsername,
-  BioContentBio,
+  BioContent,
   BioContentSocialLinks,
   BioContentSocialLink,
   StoriesContent,
@@ -25,7 +24,7 @@ import {
   StoriesContentStoryList,
   StoriesContentStoryItem,
   StoriesContentStoryItemInner,
-  StoriesContentStoryItemCateName,
+  StoriesContentStoryItemName,
   StoriesContentCircleImgWrapper,
   StoriesContentCircleImg,
   PlayButton,
@@ -37,14 +36,13 @@ import GlobalContext from '../store/global-context';
 import {
   MAX_SOCIAL_LINK_NUMBER,
   MAX_STORIES_NUMBER,
-} from '../constants/user-menu';
+  MAX_CHARS_BIO_USER_MENU,
+} from '../constants';
 import {kFormatter, socialLinkFormatter} from '../utils/formatter';
 import {onErrorImage} from '../utils/media';
 
 const UserMenu = () => {
   const {currentUser} = useContext(GlobalContext);
-
-  const {storyThumbnailSize} = useContext(ThemeContext);
 
   const socialLinksContent = currentUser.socialLinks
     .slice(0, MAX_SOCIAL_LINK_NUMBER)
@@ -59,7 +57,7 @@ const UserMenu = () => {
       <PlayButton>
         <PlayIcon />
       </PlayButton>
-      <p>Play All</p>
+      <StoriesContentStoryItemName>Play All</StoriesContentStoryItemName>
     </StoriesContentStoryItem>
   );
 
@@ -68,16 +66,16 @@ const UserMenu = () => {
     .map((story, index) => (
       <StoriesContentStoryItem key={index}>
         <StoriesContentStoryItemInner>
-          <StoriesContentCircleImgWrapper size={storyThumbnailSize}>
+          <StoriesContentCircleImgWrapper>
             <StoriesContentCircleImg
               src={story.thumbnail}
               alt=""
               onError={onErrorImage}
             />
           </StoriesContentCircleImgWrapper>
-          <StoriesContentStoryItemCateName>
+          <StoriesContentStoryItemName>
             {story.name}
-          </StoriesContentStoryItemCateName>
+          </StoriesContentStoryItemName>
         </StoriesContentStoryItemInner>
       </StoriesContentStoryItem>
     ))
@@ -127,18 +125,18 @@ const UserMenu = () => {
             </StatisticItem>
           </StatisticalContentInner>
         </StatisticalContent>
-        <BioContent>
+        <BioContentContainer>
           <BioContentUsername>{currentUser.name}</BioContentUsername>
-          <BioContentBio
-            showChar={80}
-            readMoreText="Read More"
-            showLessText="Show Less"
-            readMoreLink={currentUser.socialLinks[0]}
+          <BioContent
+            showChar={MAX_CHARS_BIO_USER_MENU}
+            readMoreText="(Read more)"
+            showLessText="(Show less)"
+            readMoreLink={currentUser.profile}
           >
             {currentUser.bio}
-          </BioContentBio>
+          </BioContent>
           <BioContentSocialLinks>{socialLinksContent}</BioContentSocialLinks>
-        </BioContent>
+        </BioContentContainer>
         <StoriesContent>
           <StoriesContentTitle>Your Stories</StoriesContentTitle>
           <StoriesContentStoryList>{storiesContent}</StoriesContentStoryList>
