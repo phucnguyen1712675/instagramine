@@ -38,11 +38,18 @@ import {
   MAX_STORIES_NUMBER,
   MAX_CHARS_BIO_USER_MENU,
 } from '../constants';
-import {kFormatter, socialLinkFormatter} from '../utils/formatter';
 import {onErrorMedia} from '../utils/media';
 
 const UserMenu = () => {
   const {currentUser} = useContext(GlobalContext);
+
+  const kFormatter = (num) =>
+    Math.abs(num) > 999
+      ? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + 'K'
+      : Math.sign(num) * Math.abs(num);
+
+  const socialLinkFormatter = (socialLink) =>
+    socialLink.replace('https://', 'www.');
 
   const socialLinksContent = currentUser.socialLinks
     .slice(0, MAX_SOCIAL_LINK_NUMBER)

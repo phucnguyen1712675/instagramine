@@ -16,7 +16,6 @@ const UserCard = ({
   additionalInfoComponent,
   optionComponent,
   usernameAsHeading,
-  asHeader,
   avatarComponent,
 }) => {
   const usernameHeading = usernameAsHeading ? (
@@ -39,15 +38,6 @@ const UserCard = ({
       <OptionWrapper>{optionComponent}</OptionWrapper>
     </>
   );
-
-  if (asHeader) {
-    return (
-      <StyledUserCard className={className} as="header">
-        {content}
-      </StyledUserCard>
-    );
-  }
-
   return <StyledUserCard className={className}>{content}</StyledUserCard>;
 };
 
@@ -58,13 +48,11 @@ UserCard.propTypes = {
   additionalInfoComponent: PropTypes.element.isRequired,
   optionComponent: PropTypes.element.isRequired,
   usernameAsHeading: PropTypes.bool,
-  asHeader: PropTypes.bool,
   avatarComponent: PropTypes.element.isRequired,
 };
 
 UserCard.defaultProps = {
   usernameAsHeading: false,
-  asHeader: false,
 };
 
 export default UserCard;

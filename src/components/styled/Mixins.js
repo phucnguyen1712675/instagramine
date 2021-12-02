@@ -1,15 +1,5 @@
 import {css} from 'styled-components';
 
-export const textStyle = ({
-  color,
-  fontSize = '1.4rem',
-  fontWeight = 500,
-}) => css`
-  color: ${({theme}) => color ?? theme.colors.primary};
-  font-size: ${fontSize};
-  font-weight: ${fontWeight};
-`;
-
 export const responsive = {
   mobile: {
     standard: (...args) => css`
@@ -19,6 +9,16 @@ export const responsive = {
     `,
   },
 };
+
+export const textStyle = ({
+  color,
+  fontSize = '1.4rem',
+  fontWeight = 500,
+}) => css`
+  color: ${({theme}) => color ?? theme.colors.primary};
+  font-size: ${fontSize};
+  font-weight: ${fontWeight};
+`;
 
 export const wh = ({w = '100%', h = w}) => `
   width: ${w};
@@ -51,12 +51,4 @@ export const hoverUnderline = ({color}) => css`
 
 export const hideComponent = `
 	display: none;
-`;
-
-export const mediaStyle = `
-	width: 100%;
-	aspect-ratio: 1;
-	object-fit: cover;
-	border-radius: 15px;
-	overflow: hidden;
 `;

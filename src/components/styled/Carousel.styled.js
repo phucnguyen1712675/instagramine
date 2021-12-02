@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import {Button, PostMediaWrapper} from './Lib';
 import {circle, hideComponent} from './Mixins';
-import PostImage from '../PostImage';
 
 const CarouselButtonWrapper = styled.div`
   position: absolute;
@@ -42,10 +41,6 @@ export const CarouselSlide = styled.div`
   width: 100%;
   ${({isActive}) => !isActive && hideComponent};
 `;
-
-export const CarouselSlideImage = styled(PostImage)``;
-
-export const CarouselSlideVideo = styled.video``;
 
 export const CarouselNav = styled.div`
   display: flex;

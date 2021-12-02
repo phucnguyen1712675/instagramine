@@ -13,8 +13,8 @@ const contentReducer = (state, action) => {
 };
 
 const MainContent = () => {
+  // eslint-disable-next-line no-unused-vars
   const [posts, dispatch] = useReducer(contentReducer, postsData);
-  console.log(dispatch);
 
   const postsContent = posts.map((post) => <Post key={post.id} post={post} />);
 

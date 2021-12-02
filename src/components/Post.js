@@ -1,18 +1,22 @@
 import {useRef} from 'react';
 import PropTypes from 'prop-types';
-import PostHeader from './PostHeader';
+import dateFormat from 'dateformat';
+import moment from 'moment';
 import Carousel from './Carousel';
 import LikedButton from './LikedButton';
 import SavedButton from './SavedButton';
+import Avatar from './Avatar';
 import PostLikedUsersStatement from './PostLikedUsersStatement';
-import PostImage from './PostImage';
-import PostVideo from './PostVideo';
 import ReadMore from './ReadMore';
 import CommentIcon from './icons/CommentIcon';
 import ShareIcon from './icons/ShareIcon';
 import {PostMediaWrapper} from './styled/Lib';
 import {
   StyledPost,
+  PostHeader,
+  PostHeaderLocation,
+  MoreOptionButton,
+  MoreOptionButtonIcon,
   PostContent,
   PostTopContent,
   PostBottomContent,
@@ -27,26 +31,42 @@ import {
   PostCaption,
   PostDate,
 } from './styled/Post.styled';
-import {formatPostDate} from '../utils/formatter';
+import PostMedia from './PostMedia';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
 
 const Post = ({post}) => {
   const postLikedUsersStatementRef = useRef(null);
 
+  const avatarComponent = (
+    <Avatar
+      url={post.avatar}
+      hasStory={post.hasStory}
+      hasStoryBeenSeen={post.hasStoryBeenSeen}
+      asLink={!post.hasStory}
+      profile={post.profile}
+    />
+  );
+
+  const additionalInfoComponent = (
+    <PostHeaderLocation href={location}>
+      {post.city}, {post.country}
+    </PostHeaderLocation>
+  );
+
+  const optionComponent = (
+    <MoreOptionButton>
+      <MoreOptionButtonIcon />
+    </MoreOptionButton>
+  );
+
   const mediaContent =
     post.media.length === 1 ? (
       <PostMediaWrapper>
-        {post.media[0].type === 'image' ? (
-          <PostImage src={post.media[0].url} />
-        ) : (
-          <PostVideo src={post.media[0].url} />
-        )}
+        <PostMedia type={post.media[0].type} url={post.media[0].url} />
       </PostMediaWrapper>
     ) : (
       <Carousel media={post.media} />
     );
-
-  const formattedPostDate = formatPostDate(post.date);
 
   const postCaptionContent =
     post.caption.length > POST_CAPTION_SHOW_CHAR ? (
@@ -60,6 +80,26 @@ const Post = ({post}) => {
       <PostCaption>{post.caption}</PostCaption>
     );
 
+  const getDiffDays = (date1, date2 = Date.now()) => {
+    const diffTime = Math.abs(date2 - date1);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const formatPostDate = (timestamp) => {
+    const convertedDate = new Date(timestamp * 1000);
+    const diffDays = getDiffDays(convertedDate);
+
+    if (diffDays > 7) {
+      const formattedDate = dateFormat(convertedDate, 'ddd, dd mmmm yyyy');
+      return formattedDate;
+    }
+    const timeAgo = moment(convertedDate).fromNow();
+    return timeAgo;
+  };
+
+  const formattedPostDate = formatPostDate(post.date);
+
   const changePostLikeAmountHandler = (isLiked) => {
     isLiked
       ? postLikedUsersStatementRef.current.decreaseLikeAmount()
@@ -69,14 +109,11 @@ const Post = ({post}) => {
   return (
     <StyledPost>
       <PostHeader
-        avatar={post.avatar}
-        hasStory={post.hasStory}
-        hasStoryBeenSeen={post.hasStoryBeenSeen}
+        avatarComponent={avatarComponent}
         username={post.username}
         profile={post.profile}
-        city={post.city}
-        country={post.country}
-        location={post.location}
+        additionalInfoComponent={additionalInfoComponent}
+        optionComponent={optionComponent}
       />
       <PostContent>
         <PostTopContent>{mediaContent}</PostTopContent>

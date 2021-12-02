@@ -2,28 +2,23 @@ import {useState} from 'react';
 import PropTypes from 'prop-types';
 import LeftChevron from './icons/LeftChevron';
 import RightChevron from './icons/RightChevron';
+import PostMedia from './PostMedia';
 import {
   StyledCarousel,
   CarouselButton,
   CarouselLeftButtonWrapper,
   CarouselRightButtonWrapper,
   CarouselSlide,
-  CarouselSlideImage,
   CarouselNav,
   CarouselIndicator,
 } from './styled/Carousel.styled';
-import {validateImageUrl} from '../utils/media';
 
 const Carousel = ({media}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = media.map((item, index) => (
     <CarouselSlide key={index} isActive={index === currentSlide}>
-      {validateImageUrl(item.url) ? (
-        <CarouselSlideImage src={item.url} />
-      ) : (
-        <></>
-      )}
+      <PostMedia type={item.type} url={item.url} />
     </CarouselSlide>
   ));
 

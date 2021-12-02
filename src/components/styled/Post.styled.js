@@ -1,8 +1,11 @@
 import styled from 'styled-components';
-import {textStyle} from './Mixins';
+import {textStyle, hoverUnderline} from './Mixins';
 import {HoverBrighterButton} from './Lib';
+import {InfoContentUsername} from './UserCard.styled';
+import UserCard from '../UserCard';
 import Avatar from '../Avatar';
 import QuotationMarkIcon from '../icons/QuotationMarkIcon';
+import ThreeDotsIcon from '../icons/ThreeDotsIcon';
 
 export const StyledPost = styled.div`
   display: flex;
@@ -12,6 +15,25 @@ export const StyledPost = styled.div`
   border-radius: 30px;
   box-shadow: 0px 10px 40px rgba(222, 230, 237, 0.4);
   overflow: hidden;
+`;
+
+export const PostHeader = styled(UserCard)`
+  ${InfoContentUsername} {
+    ${hoverUnderline}
+  }
+  flex-shrink: 0;
+`;
+
+export const PostHeaderLocation = styled.a`
+  color: inherit;
+`;
+
+export const MoreOptionButton = styled(HoverBrighterButton)`
+  font-size: 1.8rem;
+`;
+
+export const MoreOptionButtonIcon = styled(ThreeDotsIcon)`
+  color: ${({theme}) => theme.colors.blueAlphaAction};
 `;
 
 export const PostContent = styled.div`
