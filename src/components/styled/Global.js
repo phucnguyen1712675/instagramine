@@ -29,6 +29,7 @@ const GlobalStyles = createGlobalStyle`
 	  display: inline-block;
 	  text-decoration: none;
 		cursor: pointer;
+		color: inherit;
 	}
 
 	img, video {

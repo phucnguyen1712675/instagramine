@@ -3,8 +3,9 @@ import {HoverScaleButton} from './Lib';
 import LogoIcon from '../icons/LogoIcon';
 
 export const Layout = styled.div`
+	--width-user-menu: 360px;
   display: grid;
-  grid-template-columns: 90px auto ${({theme}) => theme.userMenuWidth};
+  grid-template-columns: 90px auto var(--width-user-menu);
   grid-template-rows: 90px calc(100vh - 90px);
   grid-template-areas:
     'sidebar header userMenu'

@@ -168,7 +168,7 @@ export const BioContentSocialLink = styled.a`
     textStyle({
       color: theme.colors.link,
     })}
-  ${({theme}) => hoverUnderline({color: theme.colors.link})}
+  ${hoverUnderline}
 `;
 
 export const StoriesContent = styled.div``;
@@ -253,9 +253,7 @@ export const CreatePostButton = styled(HoverBrighterButton)`
     content: '';
     position: absolute;
     top: 23px;
-    width: calc(
-      ${({theme}) => theme.userMenuWidth} - (var(--padding-vertical) + 28px) * 2
-    );
+    width: calc(var(--width-user-menu) - (var(--padding-vertical) + 28px) * 2);
     height: var(--height-blur);
     filter: blur(var(--height-blur));
     ${gradientBackground}

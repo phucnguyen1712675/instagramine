@@ -45,7 +45,7 @@ export const hideScrollBarScrolling = `
 export const hoverUnderline = ({color}) => css`
   &:hover {
     text-decoration: underline;
-    text-decoration-color: ${({theme}) => color ?? theme.colors.primary};
+    text-decoration-color: ${color ?? 'inherit'};
   }
 `;
 

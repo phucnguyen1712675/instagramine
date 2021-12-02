@@ -10,6 +10,5 @@ export const StyledPostLikedUsersStatement = styled.p`
 
 export const PostLikedUsersHighlight = styled.a`
   font-weight: 800;
-  color: inherit;
   ${hoverUnderline}
 `;

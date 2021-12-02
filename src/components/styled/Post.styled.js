@@ -24,9 +24,7 @@ export const PostHeader = styled(UserCard)`
   flex-shrink: 0;
 `;
 
-export const PostHeaderLocation = styled.a`
-  color: inherit;
-`;
+export const PostHeaderLocation = styled.a``;
 
 export const MoreOptionButton = styled(HoverBrighterButton)`
   font-size: 1.8rem;

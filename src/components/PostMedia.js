@@ -27,9 +27,13 @@ const PostMedia = ({className, type, url}) => {
     );
   }
 
-  return type === 'image' ? (
-    <PostImage className={className} src={url} onError={onErrorHandler} />
-  ) : (
+  if (type === 'image') {
+    return (
+      <PostImage className={className} src={url} onError={onErrorHandler} />
+    );
+  }
+
+  return (
     <PostVideo className={className} onError={onErrorHandler} controls>
       <source src={url} type="video/mp4" />
       Your browser does not support the video tag.
