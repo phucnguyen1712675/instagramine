@@ -6,7 +6,7 @@ import MultiplyIcon from '../icons/MultiplyIcon';
 
 export const StyledSearchHistoryItem = styled.li`
   &:hover {
-    background-color: rgba(250, 250, 250, 1);
+    background-color: ${({theme}) => theme.colors.menuItemHover};
   }
 `;
 

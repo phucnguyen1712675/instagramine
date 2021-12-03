@@ -1,9 +1,8 @@
 import styled from 'styled-components';
-import {HoverScaleButton} from './Lib';
 import LogoIcon from '../icons/LogoIcon';
 
 export const Layout = styled.div`
-	--width-user-menu: 360px;
+  --width-user-menu: 360px;
   display: grid;
   grid-template-columns: 90px auto var(--width-user-menu);
   grid-template-rows: 90px calc(100vh - 90px);
@@ -37,28 +36,20 @@ export const AppLogoIcon = styled(LogoIcon)`
 
 export const Sidebar = styled.aside`
   grid-area: sidebar;
-  display:flex;
-	align-items:center;
-	justify-content:center;
-	flex-direction:column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   position: relative;
   border: 1px solid ${({theme}) => theme.colors.primaryBorderDark};
 `;
 
 export const Nav = styled.nav`
-  display:flex;
-	align-items:center;
-	flex-direction:column;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
   justify-content: stretch;
   row-gap: 4rem;
 `;
 
-export const SettingButtonWrapper = styled.div`
-  position: absolute;
-  bottom: 34px;
-`;
-
-export const SettingButton = styled(HoverScaleButton)`
-  font-size: 2.4rem;
-`;

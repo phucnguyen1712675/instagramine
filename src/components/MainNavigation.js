@@ -1,5 +1,8 @@
 import {useState} from 'react';
-import {NavigationButton} from './styled/MainNavigation.styled';
+import Tooltip from './Tooltip';
+import {
+  NavigationButton,
+} from './styled/MainNavigation.styled';
 import {NAV_ICONS} from '../constants';
 
 const MainNavigation = () => {
@@ -9,14 +12,19 @@ const MainNavigation = () => {
     setCurrentIndex(index);
   };
 
-  const content = NAV_ICONS.map((btn, index) => (
-    <NavigationButton
-      key={btn.id}
-      onClick={() => navigateHandler(index)}
-      isActive={btn.id === currentIndex}
+  const content = NAV_ICONS.map((navItem, index) => (
+    <Tooltip
+      key={navItem.id}
+      content={navItem.content}
+      position="right"
     >
-      {btn.icon}
-    </NavigationButton>
+      <NavigationButton
+        onClick={() => navigateHandler(index)}
+        isActive={navItem.id === currentIndex}
+      >
+        {navItem.icon}
+      </NavigationButton>
+    </Tooltip>
   ));
 
   return content;

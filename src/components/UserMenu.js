@@ -2,11 +2,13 @@ import {useContext} from 'react';
 import {
   StyledUserMenu,
   UserMenuInner,
+  NotificationButtonWrapper,
   NotificationButton,
   ThumbnailContent,
   ThumbnailContentAvatar,
   ThumbnailContentUserName,
   ThumbnailContentJobDescription,
+  EditButtonWrapper,
   EditButton,
   StatisticalContent,
   StatisticalContentInner,
@@ -91,9 +93,11 @@ const UserMenu = () => {
   return (
     <StyledUserMenu>
       <UserMenuInner>
-        <NotificationButton>
-          <BellIcon />
-        </NotificationButton>
+        <NotificationButtonWrapper content="Notifications" position="left">
+          <NotificationButton>
+            <BellIcon />
+          </NotificationButton>
+        </NotificationButtonWrapper>
         <ThumbnailContent>
           <ThumbnailContentAvatar
             url={currentUser.avatar}
@@ -106,7 +110,9 @@ const UserMenu = () => {
           <ThumbnailContentJobDescription>
             {currentUser.job}
           </ThumbnailContentJobDescription>
-          <EditButton>Edit</EditButton>
+          <EditButtonWrapper content="Edit profile" position="left">
+            <EditButton>Edit</EditButton>
+          </EditButtonWrapper>
         </ThumbnailContent>
         <StatisticalContent>
           <StatisticalContentInner>

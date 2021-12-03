@@ -1,14 +1,9 @@
 import styled from 'styled-components';
-import {
-  HoverScaleButton,
-  Button,
-  HoverBrighterButton,
-  Dot,
-  CircleImg,
-} from './Lib';
+import {Button, HoverBrighterButton, Dot, CircleImg} from './Lib';
 import {textStyle, circle, hoverUnderline} from './Mixins';
 import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
+import Tooltip from '../Tooltip';
 
 const gradientBackground = `
 	background: linear-gradient(
@@ -39,11 +34,14 @@ export const UserMenuInner = styled.div`
   justify-content: flex-end;
 `;
 
-export const NotificationButton = styled(HoverScaleButton)`
+export const NotificationButtonWrapper = styled(Tooltip)`
   --distance: 24px;
   position: absolute;
   top: var(--padding-vertical);
   right: var(--padding-vertical);
+`;
+
+export const NotificationButton = styled(Button)`
   font-size: 2.4rem;
   padding: 8px;
 `;
@@ -73,8 +71,11 @@ export const ThumbnailContentJobDescription = styled.h5`
   ${({theme}) => textStyle({color: theme.colors.secondary})}
 `;
 
-export const EditButton = styled(HoverBrighterButton)`
+export const EditButtonWrapper = styled(Tooltip)`
   margin-top: 12px;
+`;
+
+export const EditButton = styled(HoverBrighterButton)`
   background-color: ${({theme}) => theme.colors.primary};
   color: #fff;
   padding: 0.7rem 2.7rem;

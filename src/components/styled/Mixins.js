@@ -1,14 +1,14 @@
 import {css} from 'styled-components';
 
-export const responsive = {
-  mobile: {
-    standard: (...args) => css`
-      @media (max-width: 600px) {
-        ${css(...args)};
-      }
-    `,
-  },
-};
+// export const responsive = {
+//   mobile: {
+//     standard: (...args) => css`
+//       @media (max-width: 600px) {
+//         ${css(...args)};
+//       }
+//     `,
+//   },
+// };
 
 export const textStyle = ({
   color,

@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {HoverScaleButton} from './Lib';
+import {Button} from './Lib';
 import {circle} from './Mixins';
 
 const ActiveNavigationButton = css`
@@ -15,7 +15,7 @@ const ActiveNavigationButton = css`
   }
 `;
 
-export const NavigationButton = styled(HoverScaleButton)`
+export const NavigationButton = styled(Button)`
   font-size: 3rem;
   ${({isActive}) => isActive && ActiveNavigationButton}
 `;

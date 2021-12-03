@@ -7,7 +7,7 @@ import MainContent from './components/MainContent';
 import UserMenu from './components/UserMenu';
 import SearchBar from './components/SearchBar';
 import MainNavigation from './components/MainNavigation';
-import SettingIcon from './components/icons/SettingIcon';
+import SettingButtonWrapper from './components/SettingButtonWrapper';
 import LogoTextIcon from './components/icons/LogoTextIcon';
 import {
   Layout,
@@ -16,8 +16,6 @@ import {
   AppLogoIcon,
   Sidebar,
   Nav,
-  SettingButtonWrapper,
-  SettingButton,
 } from './components/styled/App.styled';
 
 const App = () => {
@@ -35,11 +33,7 @@ const App = () => {
         <Sidebar>
           <Nav>
             <MainNavigation />
-            <SettingButtonWrapper>
-              <SettingButton>
-                <SettingIcon />
-              </SettingButton>
-            </SettingButtonWrapper>
+            <SettingButtonWrapper />
           </Nav>
         </Sidebar>
         <MainContent />

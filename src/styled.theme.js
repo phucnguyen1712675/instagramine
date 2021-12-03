@@ -1,8 +1,8 @@
-import {COLORS, BREAKPOINTS} from './constants';
+import {COLORS, DEVICES} from './constants';
 
 const theme = {
   colors: COLORS,
-  bp: BREAKPOINTS,
+  devices: DEVICES,
 };
 
 export default theme;
