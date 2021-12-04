@@ -2,57 +2,54 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   StyledUserCard,
-  InfoWrapper,
-  InfoContent,
-  InfoContentUsername,
-  AdditionalInfoContent,
+  TextContentWrapper,
+  TextContent,
+  TopText,
+  BottomText,
   OptionWrapper,
 } from './styled/UserCard.styled';
 
 const UserCard = ({
   className,
-  username,
+  topText,
   profile,
-  additionalInfoComponent,
+  bottomTextComponent,
   optionComponent,
-  usernameAsHeading,
+  topTextAsHeading,
   avatarComponent,
 }) => {
-  const usernameHeading = usernameAsHeading ? (
-    <InfoContentUsername as="h4">{username}</InfoContentUsername>
+  const topTextContent = topTextAsHeading ? (
+    <TopText as="h4">{topText}</TopText>
   ) : (
-    <InfoContentUsername href={profile}>{username}</InfoContentUsername>
+    <TopText href={profile}>{topText}</TopText>
   );
 
-  const content = (
-    <>
+  return (
+    <StyledUserCard className={className}>
       {avatarComponent}
-      <InfoWrapper>
-        <InfoContent>
-          {usernameHeading}
-          <AdditionalInfoContent>
-            {additionalInfoComponent}
-          </AdditionalInfoContent>
-        </InfoContent>
-      </InfoWrapper>
+      <TextContentWrapper>
+        <TextContent>
+          {topTextContent}
+          <BottomText>{bottomTextComponent}</BottomText>
+        </TextContent>
+      </TextContentWrapper>
       <OptionWrapper>{optionComponent}</OptionWrapper>
-    </>
+    </StyledUserCard>
   );
-  return <StyledUserCard className={className}>{content}</StyledUserCard>;
 };
 
 UserCard.propTypes = {
   className: PropTypes.string,
-  username: PropTypes.string.isRequired,
+  topText: PropTypes.string.isRequired,
   profile: PropTypes.string,
-  additionalInfoComponent: PropTypes.element.isRequired,
+  bottomTextComponent: PropTypes.element.isRequired,
   optionComponent: PropTypes.element.isRequired,
-  usernameAsHeading: PropTypes.bool,
+  topTextAsHeading: PropTypes.bool,
   avatarComponent: PropTypes.element.isRequired,
 };
 
 UserCard.defaultProps = {
-  usernameAsHeading: false,
+  topTextAsHeading: false,
 };
 
 export default UserCard;

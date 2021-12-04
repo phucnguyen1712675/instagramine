@@ -3,30 +3,30 @@ import {Button} from './Lib';
 import {textStyle} from './Mixins';
 
 export const StyledUserCard = styled.div`
-	--margin-left-info-content: 10px;
   display: flex;
   padding: 15px;
 `;
 
-export const InfoWrapper = styled.div`
+export const TextContentWrapper = styled.div`
   display: flex;
   align-items: center;
   flex-grow: 1;
 `;
 
-export const InfoContent = styled.div`
+export const TextContent = styled.div`
+  --margin-left-info-content: 10px;
   display: flex;
   flex-direction: column;
   font-size: 1.4rem;
   line-height: 1.4;
-	margin-left: var(--margin-left-info-content);
+  margin-left: var(--margin-left-info-content);
 `;
 
-export const InfoContentUsername = styled.a`
+export const TopText = styled.a`
   ${textStyle({fontWeight: 600})};
 `;
 
-export const AdditionalInfoContent = styled.div`
+export const BottomText = styled.div`
   display: flex;
   align-items: center;
   ${({theme}) =>

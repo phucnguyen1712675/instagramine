@@ -1,9 +1,9 @@
 import {useContext} from 'react';
+import NotificationButton from './NotificationButton';
+import PlayIcon from './icons/PlayIcon';
 import {
   StyledUserMenu,
   UserMenuInner,
-  NotificationButtonWrapper,
-  NotificationButton,
   ThumbnailContent,
   ThumbnailContentAvatar,
   ThumbnailContentUserName,
@@ -32,8 +32,6 @@ import {
   PlayButton,
   CreatePostButton,
 } from './styled/UserMenu.styled';
-import BellIcon from './icons/BellIcon';
-import PlayIcon from './icons/PlayIcon';
 import GlobalContext from '../store/global-context';
 import {
   MAX_SOCIAL_LINK_NUMBER,
@@ -93,11 +91,7 @@ const UserMenu = () => {
   return (
     <StyledUserMenu>
       <UserMenuInner>
-        <NotificationButtonWrapper content="Notifications" position="left">
-          <NotificationButton>
-            <BellIcon />
-          </NotificationButton>
-        </NotificationButtonWrapper>
+        <NotificationButton followRequests={[]} />
         <ThumbnailContent>
           <ThumbnailContentAvatar
             url={currentUser.avatar}

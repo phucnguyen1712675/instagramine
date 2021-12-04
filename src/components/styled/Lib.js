@@ -42,7 +42,7 @@ export const Dot = styled.span`
   background-color: ${({theme}) => theme.colors.secondary};
 `;
 
-export const CircleImg = styled.div`
+export const CircleImgWrapper = styled.div`
   --size: 4rem;
   ${circle({w: 'var(--size)'})}
 
@@ -76,4 +76,10 @@ export const Input = styled.input.attrs(() => ({
       outline: 1px solid ${theme.colors.blueAlphaAction};
     }
   `};
+`;
+
+export const FakeCheckbox = styled.input.attrs(() => ({
+  type: 'checkbox',
+}))`
+  display: none;
 `;

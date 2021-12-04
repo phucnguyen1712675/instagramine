@@ -1,4 +1,6 @@
 import styled, {css} from 'styled-components';
+import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
+import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import LogoIcon from '../icons/LogoIcon';
 
 export const Layout = styled.div`
@@ -43,7 +45,7 @@ export const Sidebar = styled.aside`
   justify-content: center;
   flex-direction: column;
   position: relative;
-	${({theme}) => css`
+  ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
     border: 1px solid ${theme.colors.primaryBorderDark};
   `};
@@ -55,4 +57,36 @@ export const Nav = styled.nav`
   flex-direction: column;
   justify-content: stretch;
   row-gap: 4rem;
+`;
+
+export const SettingButton = styled(OverlayMenuIconButtonWithTooltip)`
+  position: absolute;
+  bottom: 34px;
+
+  ${Menu} {
+    bottom: 50%;
+    left: calc(100% + 4px);
+  }
+`;
+
+export const SettingMenuItem = styled.li`
+  padding: 14px 20px;
+  font-size: 1.4rem;
+
+  &:hover {
+    background-color: ${({theme}) => theme.colors.menuItemHover};
+  }
+
+  &:last-child {
+    border-top: 1px solid #dbdbdb;
+  }
+`;
+
+export const SettingMenuItemLink = styled.a`
+  display: flex;
+  align-items: center;
+`;
+
+export const SettingMenuItemText = styled.span`
+  margin-left: 12px;
 `;

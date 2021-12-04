@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {StyledSpinner} from '../styled/Spinner.styled';
 
-const Spinner = () => {
+const Spinner = ({className}) => {
   return (
-    <StyledSpinner>
+    <StyledSpinner className={className}>
       <div className="bar1"></div>
       <div className="bar2"></div>
       <div className="bar3"></div>
@@ -18,6 +19,10 @@ const Spinner = () => {
       <div className="bar12"></div>
     </StyledSpinner>
   );
+};
+
+Spinner.propTypes = {
+  className: PropTypes.string,
 };
 
 export default Spinner;

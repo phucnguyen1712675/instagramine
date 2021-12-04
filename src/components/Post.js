@@ -23,7 +23,7 @@ import {
   PostActions,
   PostActionButton,
   PostLikedUsersInfo,
-  PostLikedUsersAvatars,
+  PostLikedUsersAvatarGroup,
   PostLikedUsersAvatar,
   PostCaptionContainer,
   PostCaptionWrapper,
@@ -47,7 +47,7 @@ const Post = ({post}) => {
     />
   );
 
-  const additionalInfoComponent = (
+  const bottomTextComponent = (
     <PostHeaderLocation href={location}>
       {post.city}, {post.country}
     </PostHeaderLocation>
@@ -110,9 +110,9 @@ const Post = ({post}) => {
     <StyledPost>
       <PostHeader
         avatarComponent={avatarComponent}
-        username={post.username}
+        topText={post.username}
         profile={post.profile}
-        additionalInfoComponent={additionalInfoComponent}
+        bottomTextComponent={bottomTextComponent}
         optionComponent={optionComponent}
       />
       <PostContent>
@@ -138,11 +138,11 @@ const Post = ({post}) => {
               likedUser={post.likedUser}
               otherLikedUserAmount={post.otherLikedUserAmount}
             />
-            <PostLikedUsersAvatars href={post.likedUsersLink}>
+            <PostLikedUsersAvatarGroup href={post.likedUsersLink}>
               {post.likedOtherUser.map((url, index) => (
                 <PostLikedUsersAvatar key={index} url={url} hasStory={false} />
               ))}
-            </PostLikedUsersAvatars>
+            </PostLikedUsersAvatarGroup>
           </PostLikedUsersInfo>
           <PostCaptionContainer>
             <PostCaptionWrapper>

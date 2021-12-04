@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import {Dot} from './Lib';
+import {TextContent} from './UserCard.styled';
 import Avatar from '../Avatar';
 import UserCard from '../UserCard';
 import MultiplyIcon from '../icons/MultiplyIcon';
@@ -15,8 +16,11 @@ export const SearchHistoryItemLink = styled.a`
 `;
 
 export const SearchHistoryItemContent = styled(UserCard)`
-  --margin-left-info-content: 12px;
   padding: 8px 16px;
+
+  ${TextContent} {
+    --margin-left-info-content: 12px;
+  }
 `;
 
 export const RemoveHistoryItemButtonIcon = styled(MultiplyIcon)`

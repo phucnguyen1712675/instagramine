@@ -29,7 +29,7 @@ const SearchHistoryItem = ({user}) => {
     />
   );
 
-  const additionalInfoComponent = (
+  const bottomTextComponent = (
     <SearchHistoryUserAdditionalInfo>
       <span>{user.name}</span>
       {user.isFollowed && (
@@ -55,10 +55,10 @@ const SearchHistoryItem = ({user}) => {
       >
         <SearchHistoryItemContent
           avatarComponent={avatarComponent}
-          username={user.username}
-          additionalInfoComponent={additionalInfoComponent}
+          topText={user.username}
+          bottomTextComponent={bottomTextComponent}
           optionComponent={optionComponent}
-          usernameAsHeading
+          topTextAsHeading
         />
       </SearchHistoryItemLink>
     </StyledSearchHistoryItem>

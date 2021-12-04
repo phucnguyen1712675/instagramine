@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components';
 import {textStyle, hoverUnderline} from './Mixins';
 import {HoverBrighterButton} from './Lib';
-import {InfoContentUsername} from './UserCard.styled';
+import {TopText} from './UserCard.styled';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
 import QuotationMarkIcon from '../icons/QuotationMarkIcon';
@@ -20,7 +20,7 @@ export const StyledPost = styled.div`
 `;
 
 export const PostHeader = styled(UserCard)`
-  ${InfoContentUsername} {
+  ${TopText} {
     ${hoverUnderline}
   }
   flex-shrink: 0;
@@ -55,8 +55,7 @@ export const PostActions = styled.div`
   --padding-btn: 0.8rem;
   display: flex;
   align-items: center;
-  padding-left: calc(15px - var(--padding-btn));
-  padding-right: calc(15px - var(--padding-btn));
+  padding: 7px calc(15px - var(--padding-btn)) 0;
 `;
 
 export const PostActionButton = styled(HoverBrighterButton)`
@@ -77,7 +76,7 @@ export const PostLikedUsersInfo = styled.div`
   padding: 7px 15px;
 `;
 
-export const PostLikedUsersAvatars = styled.a`
+export const PostLikedUsersAvatarGroup = styled.a`
   display: inline-flex;
   flex-direction: row-reverse;
 `;

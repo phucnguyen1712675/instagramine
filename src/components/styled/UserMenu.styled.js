@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {Button, HoverBrighterButton, Dot, CircleImg} from './Lib';
+import {Button, HoverBrighterButton, Dot, CircleImgWrapper} from './Lib';
 import {textStyle, circle, hoverUnderline} from './Mixins';
 import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
@@ -33,18 +33,6 @@ export const UserMenuInner = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-`;
-
-export const NotificationButtonWrapper = styled(Tooltip)`
-  --distance: 24px;
-  position: absolute;
-  top: var(--padding-vertical);
-  right: var(--padding-vertical);
-`;
-
-export const NotificationButton = styled(Button)`
-  font-size: 2.4rem;
-  padding: 8px;
 `;
 
 export const ThumbnailContent = styled.div`
@@ -147,20 +135,6 @@ export const BioContent = styled(ReadMore)`
   line-height: 1.9rem;
 `;
 
-// export const StyledBioContent = styled.p`
-//   display: inline;
-//   ${styledBioContent}
-
-//   ${({shouldTruncate}) =>
-//     shouldTruncate &&
-//     `display: -webkit-box;
-//   -webkit-line-clamp: 1;
-//   -webkit-box-orient: vertical;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   word-break: break-word;`}
-// `;
-
 export const BioContentSocialLinks = styled.div`
   margin-top: 8px;
 `;
@@ -217,7 +191,7 @@ export const StoriesContentStoryItemName = styled.p`
   word-break: break-word;
 `;
 
-export const StoriesContentCircleImgWrapper = styled(CircleImg)`
+export const StoriesContentCircleImgWrapper = styled(CircleImgWrapper)`
   --size: 6rem;
   overflow: hidden;
 `;

@@ -33,6 +33,7 @@ const GlobalStyles = createGlobalStyle`
 	}
 
 	img, video {
+		display: block;
 	  max-width: 100%;
 	  height: auto;
 	}

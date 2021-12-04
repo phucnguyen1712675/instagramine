@@ -77,7 +77,7 @@ export const TooltipContent = styled.div`
   white-space: nowrap;
   border-radius: 4px;
   padding: 6px 10px;
-	z-index: 2;
+	z-index: 1;
 
   &::before {
     content: '';

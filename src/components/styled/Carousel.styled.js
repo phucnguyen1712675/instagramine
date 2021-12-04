@@ -45,7 +45,7 @@ export const CarouselSlide = styled.div`
 export const CarouselNav = styled.div`
   display: flex;
   column-gap: 4px;
-  margin-top: 6px;
+  margin-top: 10px;
 `;
 
 export const CarouselIndicator = styled.span`
