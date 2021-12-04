@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {Button, HoverBrighterButton, Dot, CircleImg} from './Lib';
 import {textStyle, circle, hoverUnderline} from './Mixins';
 import Avatar from '../Avatar';
@@ -20,12 +20,13 @@ export const StyledUserMenu = styled.div`
   grid-area: userMenu;
   position: relative;
   display: flex;
-  background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
-  border-left: var(--width-border) solid
-    ${({theme}) => theme.colors.primaryBorderDark};
   padding: var(--padding-vertical) var(--padding-horizontal)
     var(--padding-vertical)
     calc(var(--padding-horizontal) - var(--width-border));
+  ${({theme}) => css`
+    background-color: ${theme.colors.bgComponentLightTheme};
+    border-left: var(--width-border) solid ${theme.colors.primaryBorderDark};
+  `}
 `;
 
 export const UserMenuInner = styled.div`

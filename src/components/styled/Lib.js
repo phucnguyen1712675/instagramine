@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {circle} from './Mixins';
 
 export const Button = styled.button`
@@ -65,12 +65,15 @@ export const Input = styled.input.attrs(() => ({
   padding: 0 50px;
   font-size: 1.8rem;
   font-weight: 400;
-  color: ${({theme}) => theme.colors.blueAlphaAction};
   background: #f8fbff;
   box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
   border-radius: 8px;
 
-  &:focus {
-    outline: 1px solid ${({theme}) => theme.colors.blueAlphaAction};
-  }
+  ${({theme}) => css`
+    color: ${theme.colors.blueAlphaAction};
+
+    &:focus {
+      outline: 1px solid ${theme.colors.blueAlphaAction};
+    }
+  `};
 `;

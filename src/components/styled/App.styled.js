@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import LogoIcon from '../icons/LogoIcon';
 
 export const Layout = styled.div`
@@ -16,10 +16,12 @@ export const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   padding: 0 20px;
-  border-bottom: 1px solid ${({theme}) => theme.colors.primaryBorder};
   box-shadow: 0px 10px 40px rgba(231, 237, 243, 0.4);
+  ${({theme}) => css`
+    background-color: ${theme.colors.bgComponentLightTheme};
+    border-bottom: 1px solid ${theme.colors.primaryBorder};
+  `};
 `;
 
 export const AppLogo = styled.a`
@@ -40,9 +42,11 @@ export const Sidebar = styled.aside`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   position: relative;
-  border: 1px solid ${({theme}) => theme.colors.primaryBorderDark};
+	${({theme}) => css`
+    background-color: ${theme.colors.bgComponentLightTheme};
+    border: 1px solid ${theme.colors.primaryBorderDark};
+  `};
 `;
 
 export const Nav = styled.nav`
@@ -52,4 +56,3 @@ export const Nav = styled.nav`
   justify-content: stretch;
   row-gap: 4rem;
 `;
-

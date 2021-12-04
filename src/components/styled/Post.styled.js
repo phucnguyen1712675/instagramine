@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {textStyle, hoverUnderline} from './Mixins';
 import {HoverBrighterButton} from './Lib';
 import {InfoContentUsername} from './UserCard.styled';
@@ -10,11 +10,13 @@ import ThreeDotsIcon from '../icons/ThreeDotsIcon';
 export const StyledPost = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
-  outline: 1px solid ${({theme}) => theme.colors.primaryBorder};
   border-radius: 30px;
   box-shadow: 0px 10px 40px rgba(222, 230, 237, 0.4);
   overflow: hidden;
+  ${({theme}) => css`
+    background-color: ${theme.colors.bgComponentLightTheme};
+    outline: 1px solid ${theme.colors.primaryBorder};
+  `}
 `;
 
 export const PostHeader = styled(UserCard)`

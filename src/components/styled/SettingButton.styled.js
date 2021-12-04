@@ -17,12 +17,13 @@ export const StyledSettingButton = styled.label`
   font-size: 2.4rem;
   cursor: pointer;
   position: relative;
+	line-height: 0;
 `;
 
 export const SettingMenu = styled.ul`
   position: absolute;
   bottom: 50%;
-  left: 100%;
+  left: calc(100% + 4px);
   border-radius: 6px;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);

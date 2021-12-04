@@ -77,6 +77,10 @@ const GlobalStyles = createGlobalStyle`
 	  opacity: 1;
 	  pointer-events: all;
 	}
+
+	svg {
+		display: block;
+	}
 `;
 
 export default GlobalStyles;

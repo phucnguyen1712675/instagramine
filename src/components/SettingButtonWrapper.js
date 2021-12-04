@@ -1,4 +1,7 @@
 import {useState, useRef, useEffect} from 'react';
+import SettingIcon from './icons/SettingIcon';
+import UserIcon from './icons/UserIcon';
+import MenuSettingIcon from './icons/MenuSettingIcon';
 import {
   StyledSettingButtonWrapper,
   StyledSettingButton,
@@ -8,9 +11,6 @@ import {
   SettingMenuItemLink,
   SettingMenuItemText,
 } from './styled/SettingButton.styled';
-import SettingIcon from './icons/SettingIcon';
-import UserIcon from './icons/UserIcon';
-import MenuSettingIcon from './icons/MenuSettingIcon';
 
 const SettingButtonWrapper = () => {
   const [checked, setChecked] = useState(false);
