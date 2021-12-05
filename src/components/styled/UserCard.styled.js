@@ -17,7 +17,6 @@ export const TextContent = styled.div`
   --margin-left-info-content: 10px;
   display: flex;
   flex-direction: column;
-  font-size: 1.4rem;
   line-height: 1.4;
   margin-left: var(--margin-left-info-content);
 `;

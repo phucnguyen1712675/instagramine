@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import {Dot, CircleImgWrapper, FakeCheckbox} from './Lib';
+import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem} from './Lib';
+import {hideScrollBarScrolling} from './Mixins';
 import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import {TextContent} from './UserCard.styled';
 import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
@@ -25,6 +26,8 @@ export const StyledNotificationButton = styled(
     height: 362px;
     ${({isLoading}) => isLoading && flexCenter}
     ${({isEmpty}) => isEmpty && flexCenter}
+		overflow-y: auto;
+    ${hideScrollBarScrolling}
   }
 
   ${FakeCheckbox}:checked ~ ${Menu} {
@@ -33,29 +36,17 @@ export const StyledNotificationButton = styled(
   }
 `;
 
-export const NotificationMenuItem = styled.li`
+export const AllRequestsItem = styled(MenuItem)`
   padding: 12px 16px;
-  font-size: 1.4rem;
-
-  &:hover {
-    background-color: ${({theme}) => theme.colors.menuItemHover};
-  }
 `;
 
-export const NotificationMenuItemLink = styled.a`
-  display: flex;
-  align-items: center;
-`;
-
-export const NotificationMenuItemContent = styled(UserCard)`
-  width: 100%;
-
+export const AllRequestsItemContent = styled(UserCard)`
   ${TextContent} {
     --margin-left-info-content: 16px;
   }
 `;
 
-export const NotificationMenuItemRequestText = styled.p`
+export const NotificationMenuItemBottomText = styled.p`
   font-size: 1.2rem;
 `;
 
@@ -81,6 +72,10 @@ export const NotificationMenuItemAvatarGroup = styled.div`
 `;
 
 export const NotificationMenuItemAvatarWrapper = styled(CircleImgWrapper)`
+  align-self: center;
+`;
+
+export const NotificationMenuItemAvatarGroupWrapper = styled(CircleImgWrapper)`
   --size: 3.2rem;
   position: absolute;
 
@@ -97,6 +92,18 @@ export const NotificationMenuItemAvatarWrapper = styled(CircleImgWrapper)`
 
 export const NotificationMenuItemAvatar = styled.img``;
 
-export const NotificationMenuItemText = styled.span`
-  margin-left: 12px;
+export const NoNotificationsText = styled.p`
+  font-size: 1.4rem;
+`;
+
+export const RequestItem = styled(MenuItem)`
+  padding: 12px 16px;
+`;
+
+export const RequestItemContent = styled(UserCard)`
+	padding: 0;
+
+  ${TextContent} {
+    --margin-left-info-content: 12px;
+  }
 `;

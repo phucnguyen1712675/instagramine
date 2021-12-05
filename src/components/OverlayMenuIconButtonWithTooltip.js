@@ -5,6 +5,7 @@ import {
   StyledOverlayMenuIconButtonWithTooltip,
   LabelButton,
   Menu,
+  OverlayLabel,
 } from './styled/OverlayMenuIconButtonWithTooltip.styled';
 
 const OverlayMenuIconButtonWithTooltip = ({
@@ -24,6 +25,7 @@ const OverlayMenuIconButtonWithTooltip = ({
   useEffect(() => {
     if (checked) {
       tooltipRef.current.setShowState(false);
+
       onOpen && onOpen();
 
       return () => {
@@ -44,6 +46,7 @@ const OverlayMenuIconButtonWithTooltip = ({
     >
       <FakeCheckbox id={checkboxId} onChange={onChangeHandler} />
       <LabelButton htmlFor={checkboxId}>{icon}</LabelButton>
+      <OverlayLabel htmlFor={checkboxId} />
       <Menu>{children}</Menu>
     </StyledOverlayMenuIconButtonWithTooltip>
   );

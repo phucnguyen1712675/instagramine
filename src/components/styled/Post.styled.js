@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {textStyle, hoverUnderline} from './Mixins';
+import {textStyle, hoverUnderline, brighterHover} from './Mixins';
 import {HoverBrighterButton} from './Lib';
 import {TopText} from './UserCard.styled';
 import UserCard from '../UserCard';
@@ -59,13 +59,18 @@ export const PostActions = styled.div`
 `;
 
 export const PostActionButton = styled(HoverBrighterButton)`
-  --amount: 0.8;
   font-size: 1.6rem;
   padding: var(--padding-btn);
   color: ${({theme}) => theme.colors.postAction};
 
   &:last-child {
     margin-left: auto;
+  }
+
+  ${brighterHover}
+
+  &:hover {
+    --amount: 0.8;
   }
 `;
 

@@ -42,8 +42,8 @@ UserCard.propTypes = {
   className: PropTypes.string,
   topText: PropTypes.string.isRequired,
   profile: PropTypes.string,
-  bottomTextComponent: PropTypes.element.isRequired,
-  optionComponent: PropTypes.element.isRequired,
+  bottomTextComponent: PropTypes.element,
+  optionComponent: PropTypes.element,
   topTextAsHeading: PropTypes.bool,
   avatarComponent: PropTypes.element.isRequired,
 };

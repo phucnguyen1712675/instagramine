@@ -1,13 +1,22 @@
 import styled, {css} from 'styled-components';
-import {circle} from './Mixins';
+import {circle, brighterHover} from './Mixins';
 
-export const Button = styled.button`
+export const Button = styled.button.attrs(() => ({
+  type: 'button',
+  disabled: false,
+}))`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 4px 15px;
   font-size: 1.4rem;
+  font-weight: 400;
   background: transparent;
+  overflow: hidden;
+  text-transform: none;
   cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
   border: none;
   outline: none;
   color: inherit;
@@ -18,6 +27,56 @@ export const Button = styled.button`
   appearance: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  ${({shape}) => {
+    switch (shape) {
+      case 'circle':
+        return css`
+          border-radius: 50%;
+        `;
+      default:
+        return css`
+          border-radius: 5px;
+        `;
+    }
+  }}
+
+  ${({type, theme, disabledHover}) => {
+    switch (type) {
+      case 'primary':
+        return css`
+          color: #fff;
+          background-color: ${theme.colors.link};
+          border: 1px solid transparent;
+          text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+          transition: filter 0.2s ease-out;
+          box-shadow: 0 2px #0000000b;
+
+          ${!disabledHover && brighterHover}
+        `;
+      case 'link':
+        return css`
+          color: ${theme.colors.link};
+          border: 1px solid transparent;
+
+          ${!disabledHover && brighterHover}
+        `;
+      default:
+        return css`
+          ${'' /* border-color: ${theme.colors.secondary}; */}
+          color: ${theme.colors.primary};
+          transition: color 0.2s ease-out, border-color 0.2s ease-out;
+
+          ${!disabledHover &&
+          `
+					&:hover {
+            color: ${theme.colors.link};
+            border-color: ${theme.colors.link};
+          }
+					`}
+        `;
+    }
+  }}
 `;
 
 export const HoverScaleButton = styled(Button)`
@@ -30,6 +89,7 @@ export const HoverScaleButton = styled(Button)`
 
 export const HoverBrighterButton = styled(Button)`
   --amount: 1.2;
+
   &:hover {
     filter: brightness(var(--amount));
   }
@@ -82,4 +142,12 @@ export const FakeCheckbox = styled.input.attrs(() => ({
   type: 'checkbox',
 }))`
   display: none;
+`;
+
+export const MenuItem = styled.li`
+  font-size: 1.4rem;
+
+  &:hover {
+    background-color: #fafafa;
+  }
 `;

@@ -1,4 +1,5 @@
 import styled, {css} from 'styled-components';
+import {MenuItem} from './Lib';
 import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
 import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import LogoIcon from '../icons/LogoIcon';
@@ -69,13 +70,8 @@ export const SettingButton = styled(OverlayMenuIconButtonWithTooltip)`
   }
 `;
 
-export const SettingMenuItem = styled.li`
+export const SettingMenuItem = styled(MenuItem)`
   padding: 14px 20px;
-  font-size: 1.4rem;
-
-  &:hover {
-    background-color: ${({theme}) => theme.colors.menuItemHover};
-  }
 
   &:last-child {
     border-top: 1px solid #dbdbdb;

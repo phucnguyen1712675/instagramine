@@ -52,3 +52,10 @@ export const hoverUnderline = ({color}) => css`
 export const hideComponent = `
 	display: none;
 `;
+
+export const brighterHover = `
+  &:hover {
+		--amount: 1.2;
+    filter: brightness(var(--amount));
+  }
+`;

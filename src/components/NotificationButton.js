@@ -5,20 +5,24 @@ import RightChevron from './icons/RightChevron';
 import Spinner from './icons/Spinner';
 import {
   StyledNotificationButton,
-  NotificationMenuItem,
-  NotificationMenuItemLink,
-  NotificationMenuItemContent,
-  NotificationMenuItemRequestText,
+  AllRequestsItem,
+  AllRequestsItemContent,
+  NotificationMenuItemBottomText,
   NotificationMenuItemOption,
   NotificationMenuItemDot,
   NotificationMenuItemAvatarGroup,
+  NotificationMenuItemAvatarGroupWrapper,
   NotificationMenuItemAvatarWrapper,
-  NotificationMenuItemAvatar,
+  NoNotificationsText,
+  RequestItem,
+  RequestItemContent,
 } from './styled/NotificationButton.styled';
 import {onErrorMedia} from '../utils/media';
 
 const NotificationButton = ({followRequests}) => {
   const [isLoading, setIsLoading] = useState(false);
+
+  const [showRequests, setShowRequests] = useState(false);
 
   let timeoutId;
 
@@ -30,33 +34,16 @@ const NotificationButton = ({followRequests}) => {
     }, 1000);
   };
 
-  const clearTimeoutId = () => clearTimeout(timeoutId);
+  const onCloseNotificationMenu = () => {
+    clearTimeout(timeoutId);
+    setShowRequests(false);
+  };
+
+  const onClickAllRequestsHandler = () => {
+    setShowRequests(true);
+  };
 
   const followRequestsLength = followRequests.length;
-
-  const followRequestsReviewContent = followRequests
-    .slice(0, 2)
-    .map((requester, index) => (
-      <NotificationMenuItemAvatarWrapper key={index}>
-        <NotificationMenuItemAvatar
-          src={requester.avatar}
-          alt=""
-          onError={onErrorMedia}
-        />
-      </NotificationMenuItemAvatarWrapper>
-    ));
-
-  const avatarComponent = (
-    <NotificationMenuItemAvatarGroup>
-      {followRequestsReviewContent}
-    </NotificationMenuItemAvatarGroup>
-  );
-
-  const bottomTextComponent = (
-    <NotificationMenuItemRequestText>
-      {followRequests[0].username} and {followRequestsLength - 1} others
-    </NotificationMenuItemRequestText>
-  );
 
   const optionComponent = (
     <NotificationMenuItemOption>
@@ -65,23 +52,71 @@ const NotificationButton = ({followRequests}) => {
     </NotificationMenuItemOption>
   );
 
-  const content = isLoading ? (
-    <Spinner />
-  ) : followRequestsLength > 0 ? (
-    <NotificationMenuItem>
-      <NotificationMenuItemLink href="#">
-        <NotificationMenuItemContent
-          avatarComponent={avatarComponent}
-          topText="Follow Requests"
-          bottomTextComponent={bottomTextComponent}
-          optionComponent={optionComponent}
+  let content;
+
+  if (isLoading) {
+    content = <Spinner />;
+  } else if (!showRequests) {
+    if (followRequestsLength > 0) {
+      content = (
+        <AllRequestsItem onClick={onClickAllRequestsHandler}>
+          <AllRequestsItemContent
+            avatarComponent={
+              followRequestsLength > 1 ? (
+                <NotificationMenuItemAvatarGroup>
+                  {followRequests.slice(0, 2).map((user, index) => (
+                    <NotificationMenuItemAvatarGroupWrapper key={index}>
+                      <img src={user.avatar} alt="" onError={onErrorMedia} />
+                    </NotificationMenuItemAvatarGroupWrapper>
+                  ))}
+                </NotificationMenuItemAvatarGroup>
+              ) : (
+                <NotificationMenuItemAvatarWrapper>
+                  <img
+                    src={followRequests[0].avatar}
+                    alt=""
+                    onError={onErrorMedia}
+                  />
+                </NotificationMenuItemAvatarWrapper>
+              )
+            }
+            topText="Follow Requests"
+            bottomTextComponent={
+              <NotificationMenuItemBottomText>
+                {followRequests[0].username} and {followRequestsLength - 1}{' '}
+                others
+              </NotificationMenuItemBottomText>
+            }
+            optionComponent={optionComponent}
+            topTextAsHeading
+          />
+        </AllRequestsItem>
+      );
+    } else {
+      content = <NoNotificationsText>No notifications</NoNotificationsText>;
+    }
+  } else {
+    content = followRequests.map((user) => (
+      <RequestItem key={user.id}>
+        <RequestItemContent
+          avatarComponent={
+            <NotificationMenuItemAvatarWrapper>
+              <img src={user.avatar} alt="" onError={onErrorMedia} />
+            </NotificationMenuItemAvatarWrapper>
+          }
+          topText={user.username}
+          bottomTextComponent={
+            user.name ? (
+              <NotificationMenuItemBottomText>
+                {user.name}
+              </NotificationMenuItemBottomText>
+            ) : null
+          }
           topTextAsHeading
         />
-      </NotificationMenuItemLink>
-    </NotificationMenuItem>
-  ) : (
-    <p>No notifications</p>
-  );
+      </RequestItem>
+    ));
+  }
 
   return (
     <StyledNotificationButton
@@ -90,7 +125,7 @@ const NotificationButton = ({followRequests}) => {
       tooltipPosition="left"
       icon={<BellIcon />}
       onOpen={setTimeoutLoading}
-      onClose={clearTimeoutId}
+      onClose={onCloseNotificationMenu}
       isLoading={isLoading}
       isEmpty={followRequestsLength === 0}
     >

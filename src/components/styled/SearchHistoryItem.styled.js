@@ -1,15 +1,11 @@
 import styled from 'styled-components';
-import {Dot} from './Lib';
+import {Dot, MenuItem} from './Lib';
 import {TextContent} from './UserCard.styled';
 import Avatar from '../Avatar';
 import UserCard from '../UserCard';
 import MultiplyIcon from '../icons/MultiplyIcon';
 
-export const StyledSearchHistoryItem = styled.li`
-  &:hover {
-    background-color: ${({theme}) => theme.colors.menuItemHover};
-  }
-`;
+export const StyledSearchHistoryItem = styled(MenuItem)``;
 
 export const SearchHistoryItemLink = styled.a`
   display: block;

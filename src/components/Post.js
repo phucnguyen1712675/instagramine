@@ -123,10 +123,10 @@ const Post = ({post}) => {
               isLiked={post.isLiked}
               changePostLikeAmountHandler={changePostLikeAmountHandler}
             />
-            <PostActionButton>
+            <PostActionButton disabledHover>
               <CommentIcon />
             </PostActionButton>
-            <PostActionButton>
+            <PostActionButton disabledHover>
               <ShareIcon />
             </PostActionButton>
             <SavedButton isSaved={post.isSaved} />

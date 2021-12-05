@@ -91,7 +91,7 @@ const UserMenu = () => {
   return (
     <StyledUserMenu>
       <UserMenuInner>
-        <NotificationButton followRequests={[]} />
+        <NotificationButton followRequests={currentUser.followRequests} />
         <ThumbnailContent>
           <ThumbnailContentAvatar
             url={currentUser.avatar}
