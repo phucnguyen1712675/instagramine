@@ -54,8 +54,10 @@ export const hideComponent = `
 `;
 
 export const brighterHover = `
-  &:hover {
+	transition: filter 0.2s ease-out;
+	
+	&:hover {
 		--amount: 1.2;
-    filter: brightness(var(--amount));
-  }
+	  filter: brightness(var(--amount));
+	}
 `;

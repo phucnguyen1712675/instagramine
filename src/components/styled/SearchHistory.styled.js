@@ -54,13 +54,11 @@ export const SearchHistoryHeaderTitle = styled.h3`
   })};
 `;
 
-export const ClearAllButton = styled(Button)`
-  display: inline-flex;
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.link,
-      fontWeight: 600,
-    })};
+export const ClearAllButton = styled(Button).attrs(() => ({
+  type: 'link',
+}))`
+  padding: 0;
+	font-weight: 600;
 `;
 
 export const SearchHistoryList = styled.ul`

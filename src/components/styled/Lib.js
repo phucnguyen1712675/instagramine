@@ -28,12 +28,19 @@ export const Button = styled.button.attrs(() => ({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  ${({shape}) => {
+  ${({shape, type, theme}) => {
     switch (shape) {
-      case 'circle':
+      case 'circle': {
+        if (type !== 'primary') {
+          return css`
+            border-radius: 50%;
+            border: 1px solid ${theme.colors.primary};
+          `;
+        }
         return css`
           border-radius: 50%;
         `;
+      }
       default:
         return css`
           border-radius: 5px;
@@ -41,25 +48,24 @@ export const Button = styled.button.attrs(() => ({
     }
   }}
 
-  ${({type, theme, disabledHover}) => {
+  ${({type, theme, disabledDefaultHover}) => {
     switch (type) {
       case 'primary':
         return css`
           color: #fff;
-          background-color: ${theme.colors.link};
+          background-color: ${theme.colors.primary};
           border: 1px solid transparent;
           text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
-          transition: filter 0.2s ease-out;
           box-shadow: 0 2px #0000000b;
 
-          ${!disabledHover && brighterHover}
+          ${!disabledDefaultHover && brighterHover}
         `;
       case 'link':
         return css`
           color: ${theme.colors.link};
           border: 1px solid transparent;
 
-          ${!disabledHover && brighterHover}
+          ${!disabledDefaultHover && brighterHover}
         `;
       default:
         return css`
@@ -67,32 +73,10 @@ export const Button = styled.button.attrs(() => ({
           color: ${theme.colors.primary};
           transition: color 0.2s ease-out, border-color 0.2s ease-out;
 
-          ${!disabledHover &&
-          `
-					&:hover {
-            color: ${theme.colors.link};
-            border-color: ${theme.colors.link};
-          }
-					`}
+          ${!disabledDefaultHover && brighterHover}
         `;
     }
   }}
-`;
-
-export const HoverScaleButton = styled(Button)`
-  transition: transform 0.2s ease-out;
-
-  &:hover {
-    transform: scale(1.2);
-  }
-`;
-
-export const HoverBrighterButton = styled(Button)`
-  --amount: 1.2;
-
-  &:hover {
-    filter: brightness(var(--amount));
-  }
 `;
 
 export const Dot = styled.span`

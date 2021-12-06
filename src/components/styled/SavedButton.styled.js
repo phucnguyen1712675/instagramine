@@ -5,7 +5,10 @@ export const StyledSavedButton = styled(PostActionButton)`
   ${({isSaved}) =>
     isSaved &&
     css`
-      --amount: 2.4;
       color: ${({theme}) => theme.colors.primary};
+
+      &:hover {
+        --amount: 2.4;
+      }
     `}
 `;

@@ -5,7 +5,10 @@ export const StyledLikedButton = styled(PostActionButton)`
   ${({isLiked}) =>
     isLiked &&
     `
-			--amount: 1.2;
   		color: #f0304e;
+
+			&:hover {
+				--amount: 1.2;
+			}
 		`}
 `;

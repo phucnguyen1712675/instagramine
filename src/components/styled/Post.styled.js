@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components';
 import {textStyle, hoverUnderline, brighterHover} from './Mixins';
-import {HoverBrighterButton} from './Lib';
+import {Button} from './Lib';
 import {TopText} from './UserCard.styled';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
@@ -28,8 +28,9 @@ export const PostHeader = styled(UserCard)`
 
 export const PostHeaderLocation = styled.a``;
 
-export const MoreOptionButton = styled(HoverBrighterButton)`
+export const MoreOptionButton = styled(Button)`
   font-size: 1.8rem;
+  ${brighterHover}
 `;
 
 export const MoreOptionButtonIcon = styled(ThreeDotsIcon)`
@@ -58,7 +59,7 @@ export const PostActions = styled.div`
   padding: 7px calc(15px - var(--padding-btn)) 0;
 `;
 
-export const PostActionButton = styled(HoverBrighterButton)`
+export const PostActionButton = styled(Button)`
   font-size: 1.6rem;
   padding: var(--padding-btn);
   color: ${({theme}) => theme.colors.postAction};

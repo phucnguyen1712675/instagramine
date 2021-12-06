@@ -15,7 +15,7 @@ const MainNavigation = () => {
       <NavigationButton
         onClick={() => navigateHandler(index)}
         isActive={navItem.id === currentIndex}
-        disabledHover
+        disabledDefaultHover
       >
         {navItem.icon}
       </NavigationButton>

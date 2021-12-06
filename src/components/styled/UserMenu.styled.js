@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components';
-import {Button, HoverBrighterButton, Dot, CircleImgWrapper} from './Lib';
-import {textStyle, circle, hoverUnderline} from './Mixins';
+import {Button, Dot, CircleImgWrapper} from './Lib';
+import {textStyle, wh, hoverUnderline} from './Mixins';
 import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
 import Tooltip from '../Tooltip';
@@ -64,11 +64,10 @@ export const EditButtonWrapper = styled(Tooltip)`
   margin-top: 12px;
 `;
 
-export const EditButton = styled(HoverBrighterButton)`
-  background-color: ${({theme}) => theme.colors.primary};
-  color: #fff;
+export const EditButton = styled(Button).attrs(() => ({
+  type: 'primary',
+}))`
   padding: 0.7rem 2.7rem;
-  border-radius: 5px;
 `;
 
 export const StatisticalContent = styled.div`
@@ -204,13 +203,21 @@ export const StoriesContentCircleImg = styled.img`
   }
 `;
 
-export const PlayButton = styled(Button)`
-  ${circle({w: '6rem'})}
-  border: 2px solid ${({theme}) => theme.colors.primary};
+export const PlayButton = styled(Button).attrs(() => ({
+  shape: 'circle',
+}))`
+  ${wh({w: '6rem'})}
+  border-width: 2px;
   font-size: 2.4rem;
+  transition: color 0.2s ease-out, border-color 0.2s ease-out;
+
+  &:hover {
+    color: ${({theme}) => theme.colors.link};
+    border-color: ${({theme}) => theme.colors.link};
+  }
 `;
 
-export const CreatePostButton = styled(HoverBrighterButton)`
+export const CreatePostButton = styled(Button)`
   width: 100%;
   margin-top: 45px;
   padding: 15px 0;
@@ -218,10 +225,8 @@ export const CreatePostButton = styled(HoverBrighterButton)`
   line-height: 1.3;
   position: relative;
   z-index: 1;
-  ${textStyle({
-    color: '#fff',
-    fontWeight: 800,
-  })}
+  color: #fff;
+  font-weight: 800;
   ${gradientBackground}
 
   &:after {
