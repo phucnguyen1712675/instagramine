@@ -10,7 +10,6 @@ export const Button = styled.button.attrs(() => ({
   align-items: center;
   padding: 4px 15px;
   font-size: 1.4rem;
-  font-weight: 400;
   background: transparent;
   overflow: hidden;
   text-transform: none;
@@ -28,7 +27,39 @@ export const Button = styled.button.attrs(() => ({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  ${({shape, type, theme}) => {
+  ${({disabledDefaultHover}) => !disabledDefaultHover && brighterHover}
+
+  ${({type, theme}) => {
+    switch (type) {
+      case 'primary':
+        return css`
+          font-weight: 600;
+          color: #fff;
+          background-color: ${theme.colors.link};
+          border: 1px solid ${theme.colors.link};
+          text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+          box-shadow: 0 2px #0000000b;
+        `;
+      case 'link':
+        return css`
+          font-weight: 600;
+          color: ${theme.colors.link};
+          border: 1px solid transparent;
+        `;
+      case 'icon':
+        return css`
+          color: ${theme.colors.primary};
+        `;
+      default:
+        return css`
+          font-weight: 600;
+          color: ${theme.colors.primary};
+          border: 1px solid ${theme.colors.borderGray};
+        `;
+    }
+  }}
+
+	${({shape, type, theme}) => {
     switch (shape) {
       case 'circle': {
         if (type !== 'primary') {
@@ -44,36 +75,6 @@ export const Button = styled.button.attrs(() => ({
       default:
         return css`
           border-radius: 5px;
-        `;
-    }
-  }}
-
-  ${({type, theme, disabledDefaultHover}) => {
-    switch (type) {
-      case 'primary':
-        return css`
-          color: #fff;
-          background-color: ${theme.colors.primary};
-          border: 1px solid transparent;
-          text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
-          box-shadow: 0 2px #0000000b;
-
-          ${!disabledDefaultHover && brighterHover}
-        `;
-      case 'link':
-        return css`
-          color: ${theme.colors.link};
-          border: 1px solid transparent;
-
-          ${!disabledDefaultHover && brighterHover}
-        `;
-      default:
-        return css`
-          ${'' /* border-color: ${theme.colors.secondary}; */}
-          color: ${theme.colors.primary};
-          transition: color 0.2s ease-out, border-color 0.2s ease-out;
-
-          ${!disabledDefaultHover && brighterHover}
         `;
     }
   }}

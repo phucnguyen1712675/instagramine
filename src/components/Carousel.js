@@ -44,14 +44,14 @@ const Carousel = ({media}) => {
       {slides}
       {currentSlide > 0 && (
         <CarouselLeftButtonWrapper onClick={prevItemHandler}>
-          <CarouselButton>
+          <CarouselButton disabledDefaultHover>
             <LeftChevron />
           </CarouselButton>
         </CarouselLeftButtonWrapper>
       )}
       {currentSlide < mediaLength - 1 && (
         <CarouselRightButtonWrapper onClick={nextItemHandler}>
-          <CarouselButton>
+          <CarouselButton disabledDefaultHover>
             <RightChevron />
           </CarouselButton>
         </CarouselRightButtonWrapper>

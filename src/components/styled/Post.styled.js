@@ -1,11 +1,10 @@
 import styled, {css} from 'styled-components';
-import {textStyle, hoverUnderline, brighterHover} from './Mixins';
+import {textStyle, hoverUnderline} from './Mixins';
 import {Button} from './Lib';
 import {TopText} from './UserCard.styled';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
 import QuotationMarkIcon from '../icons/QuotationMarkIcon';
-import ThreeDotsIcon from '../icons/ThreeDotsIcon';
 
 export const StyledPost = styled.div`
   display: flex;
@@ -15,7 +14,7 @@ export const StyledPost = styled.div`
   overflow: hidden;
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
-    outline: 1px solid ${theme.colors.primaryBorder};
+    outline: 1px solid ${theme.colors.borderBlue};
   `}
 `;
 
@@ -28,12 +27,10 @@ export const PostHeader = styled(UserCard)`
 
 export const PostHeaderLocation = styled.a``;
 
-export const MoreOptionButton = styled(Button)`
+export const MoreOptionButton = styled(Button).attrs(() => ({
+  type: 'icon',
+}))`
   font-size: 1.8rem;
-  ${brighterHover}
-`;
-
-export const MoreOptionButtonIcon = styled(ThreeDotsIcon)`
   color: ${({theme}) => theme.colors.blueAlphaAction};
 `;
 
@@ -59,7 +56,10 @@ export const PostActions = styled.div`
   padding: 7px calc(15px - var(--padding-btn)) 0;
 `;
 
-export const PostActionButton = styled(Button)`
+export const PostActionButton = styled(Button).attrs(() => ({
+  type: 'icon',
+}))`
+  border-radius: unset;
   font-size: 1.6rem;
   padding: var(--padding-btn);
   color: ${({theme}) => theme.colors.postAction};
@@ -67,8 +67,6 @@ export const PostActionButton = styled(Button)`
   &:last-child {
     margin-left: auto;
   }
-
-  ${brighterHover}
 
   &:hover {
     --amount: 0.8;

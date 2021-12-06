@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import {Button, PostMediaWrapper} from './Lib';
-import {circle, hideComponent} from './Mixins';
+import {wh, circle, hideComponent} from './Mixins';
 
 const CarouselButtonWrapper = styled.div`
   position: absolute;
@@ -10,10 +10,15 @@ const CarouselButtonWrapper = styled.div`
   cursor: pointer;
 `;
 
-export const CarouselButton = styled(Button)`
-  ${circle({w: '2.4rem'})}
-  color: rgba(0, 0, 0, 0.5);
+export const CarouselButton = styled(Button).attrs(() => ({
+  type: 'icon',
+  shape: 'circle',
+}))`
+  ${wh({w: '2.4rem'})}
+  border-color: transparent;
   font-size: 1rem;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.5);
   background-color: rgba(255, 255, 255, 0.8);
 
   ${CarouselButtonWrapper}:hover & {

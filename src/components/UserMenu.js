@@ -61,7 +61,7 @@ const UserMenu = () => {
 
   const playStoriesButton = (
     <StoriesContentStoryItem key={MAX_STORIES_NUMBER}>
-      <PlayButton>
+      <PlayButton disabledDefaultHover>
         <PlayIcon />
       </PlayButton>
       <StoriesContentStoryItemName>Play All</StoriesContentStoryItemName>

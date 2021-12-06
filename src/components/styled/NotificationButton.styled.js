@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem} from './Lib';
+import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem, Button} from './Lib';
 import {hideScrollBarScrolling} from './Mixins';
 import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import {TextContent} from './UserCard.styled';
@@ -97,13 +97,43 @@ export const NoNotificationsText = styled.p`
 `;
 
 export const RequestItem = styled(MenuItem)`
-  padding: 12px 16px;
+	--padding-horizontal: 16px;
+  padding: 12px var(--padding-horizontal);
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    border-bottom: 1px solid ${({theme}) => theme.colors.borderGray};
+    height: 0;
+    position: absolute;
+    right: var(--padding-horizontal);
+    bottom: 0;
+    left: 58px;
+  }
 `;
 
 export const RequestItemContent = styled(UserCard)`
-	padding: 0;
+  padding: 0;
 
   ${TextContent} {
     --margin-left-info-content: 12px;
   }
 `;
+
+export const RequestItemButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+`;
+
+const RequestItemButton = styled(Button)`
+  && {
+    padding: 5px 9px;
+  }
+`;
+
+export const RequestItemConfirmButton = styled(RequestItemButton).attrs(() => ({
+  type: 'primary',
+}))``;
+
+export const RequestItemDeleteButton = styled(RequestItemButton)``;

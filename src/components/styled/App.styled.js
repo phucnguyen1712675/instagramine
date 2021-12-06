@@ -23,7 +23,7 @@ export const Header = styled.header`
   box-shadow: 0px 10px 40px rgba(231, 237, 243, 0.4);
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
-    border-bottom: 1px solid ${theme.colors.primaryBorder};
+    border-bottom: 1px solid ${theme.colors.borderBlue};
   `};
 `;
 
@@ -48,7 +48,7 @@ export const Sidebar = styled.aside`
   position: relative;
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
-    border: 1px solid ${theme.colors.primaryBorderDark};
+    border: 1px solid ${theme.colors.borderDarkBlue};
   `};
 `;
 

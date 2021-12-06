@@ -10,13 +10,13 @@ import PostLikedUsersStatement from './PostLikedUsersStatement';
 import ReadMore from './ReadMore';
 import CommentIcon from './icons/CommentIcon';
 import ShareIcon from './icons/ShareIcon';
+import ThreeDotsIcon from './icons/ThreeDotsIcon';
 import {PostMediaWrapper} from './styled/Lib';
 import {
   StyledPost,
   PostHeader,
   PostHeaderLocation,
   MoreOptionButton,
-  MoreOptionButtonIcon,
   PostContent,
   PostTopContent,
   PostBottomContent,
@@ -55,7 +55,7 @@ const Post = ({post}) => {
 
   const optionComponent = (
     <MoreOptionButton>
-      <MoreOptionButtonIcon />
+      <ThreeDotsIcon />
     </MoreOptionButton>
   );
 

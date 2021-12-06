@@ -58,7 +58,6 @@ export const ClearAllButton = styled(Button).attrs(() => ({
   type: 'link',
 }))`
   padding: 0;
-	font-weight: 600;
 `;
 
 export const SearchHistoryList = styled.ul`

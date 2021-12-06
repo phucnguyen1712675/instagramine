@@ -9,8 +9,9 @@ import SavedListIcon from './components/icons/SavedListIcon';
 export const COLORS = {
   bgApp: '#fbfcfd',
   bgComponentLightTheme: '#fff',
-  primaryBorder: '#F0F6FD',
-  primaryBorderDark: '#EBF1FB',
+  borderBlue: '#F0F6FD',
+  borderDarkBlue: '#EBF1FB',
+  borderGray: '#dbdbdb',
   borderSeenStory: '#E5E5E5',
   blueAlphaAction: '#afc1d9',
   link: '#338DF6',

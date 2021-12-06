@@ -43,7 +43,6 @@ const GlobalStyles = createGlobalStyle`
 	}
 
 	button {
-		padding: 0;
 		font-family: inherit;
 	}
 

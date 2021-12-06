@@ -16,6 +16,9 @@ import {
   NoNotificationsText,
   RequestItem,
   RequestItemContent,
+  RequestItemButtonGroup,
+  RequestItemConfirmButton,
+  RequestItemDeleteButton,
 } from './styled/NotificationButton.styled';
 import {onErrorMedia} from '../utils/media';
 
@@ -105,6 +108,7 @@ const NotificationButton = ({followRequests}) => {
             </NotificationMenuItemAvatarWrapper>
           }
           topText={user.username}
+          topTextAsHeading
           bottomTextComponent={
             user.name ? (
               <NotificationMenuItemBottomText>
@@ -112,7 +116,16 @@ const NotificationButton = ({followRequests}) => {
               </NotificationMenuItemBottomText>
             ) : null
           }
-          topTextAsHeading
+          optionComponent={
+            <RequestItemButtonGroup>
+              <RequestItemConfirmButton>
+                Confirm
+              </RequestItemConfirmButton>
+              <RequestItemDeleteButton disabledDefaultHover>
+                Delete
+              </RequestItemDeleteButton>
+            </RequestItemButtonGroup>
+          }
         />
       </RequestItem>
     ));

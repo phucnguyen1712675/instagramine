@@ -25,7 +25,7 @@ export const StyledUserMenu = styled.div`
     calc(var(--padding-horizontal) - var(--width-border));
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
-    border-left: var(--width-border) solid ${theme.colors.primaryBorderDark};
+    border-left: var(--width-border) solid ${theme.colors.borderDarkBlue};
   `}
 `;
 
@@ -64,10 +64,13 @@ export const EditButtonWrapper = styled(Tooltip)`
   margin-top: 12px;
 `;
 
-export const EditButton = styled(Button).attrs(() => ({
-  type: 'primary',
-}))`
-  padding: 0.7rem 2.7rem;
+export const EditButton = styled(Button)`
+  padding: 7px 27px;
+  ${({theme}) => `
+			color: #fff;
+			background-color: ${theme.colors.primary};
+      border-color: ${theme.colors.primary};
+		`}
 `;
 
 export const StatisticalContent = styled.div`
@@ -204,6 +207,7 @@ export const StoriesContentCircleImg = styled.img`
 `;
 
 export const PlayButton = styled(Button).attrs(() => ({
+  type: 'icon',
   shape: 'circle',
 }))`
   ${wh({w: '6rem'})}

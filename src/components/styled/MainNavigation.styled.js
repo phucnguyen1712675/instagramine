@@ -15,7 +15,13 @@ const ActiveNavigationButton = css`
   }
 `;
 
-export const NavigationButton = styled(Button)`
+export const NavigationButton = styled(Button).attrs(() => ({
+  type: 'icon',
+}))`
+  color: unset;
+  border-radius: unset;
+	overflow: unset;
+  padding: 0;
   font-size: 3rem;
   ${({isActive}) => isActive && ActiveNavigationButton}
 `;
