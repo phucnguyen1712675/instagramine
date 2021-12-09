@@ -25,7 +25,7 @@ const Tooltip = forwardRef(
       >
         {show && (
           <TooltipContent
-            position={position}
+            $position={position}
             dangerouslySetInnerHTML={{__html: content}}
           />
         )}

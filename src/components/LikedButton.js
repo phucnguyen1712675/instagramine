@@ -15,8 +15,9 @@ const LikedButton = ({isLiked, changePostLikeAmountHandler}) => {
 
   return (
     <StyledLikedButton
-      isLiked={isLikedState}
+      type="text"
       onClick={onClickLikeButtonHandler}
+      $isLiked={isLikedState}
     >
       <HeaderICon />
     </StyledLikedButton>

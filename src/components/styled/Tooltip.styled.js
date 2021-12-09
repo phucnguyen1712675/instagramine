@@ -76,16 +76,24 @@ export const TooltipContent = styled.div`
   transform: translateX(-50%);
   white-space: nowrap;
   border-radius: 4px;
-  padding: 6px 10px;
-	z-index: 1;
+  padding: 7px 15px;
+  z-index: 1;
 
   &::before {
     content: '';
     position: absolute;
   }
 
-  ${({position}) => position === 'top' && TopPosition}
-  ${({position}) => position === 'right' && RightPosition}
-  ${({position}) => position === 'bottom' && BottomPosition}
-  ${({position}) => position === 'left' && LeftPosition}
+  ${({$position}) => {
+    switch ($position) {
+      case 'top':
+        return TopPosition;
+      case 'right':
+        return RightPosition;
+      case 'bottom':
+        return BottomPosition;
+      default:
+        return LeftPosition;
+    }
+  }}
 `;

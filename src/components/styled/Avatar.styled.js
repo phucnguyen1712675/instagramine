@@ -1,22 +1,16 @@
-import styled, {css} from 'styled-components';
+import styled from 'styled-components';
 import {CircleImgWrapper} from './Lib';
-
-const hasStoryBackground = `
-  background: linear-gradient(45deg, gold, fuchsia);
-`;
-
-const hasStoryBeenSeenBackground = css`
-  background: ${({theme}) => theme.colors.borderSeenStory};
-`;
 
 export const StyledAvatar = styled(CircleImgWrapper)`
   --padding-space: 2px;
   padding: var(--padding-space);
   cursor: pointer;
   user-select: none;
-  ${({hasStory, hasStoryBeenSeen}) =>
-    hasStory &&
-    (hasStoryBeenSeen ? hasStoryBeenSeenBackground : hasStoryBackground)};
+  ${({$hasStory, $hasStoryBeenSeen, theme}) =>
+    $hasStory &&
+    ($hasStoryBeenSeen
+      ? `background: ${theme.colors.borderSeenStory};`
+      : 'background: linear-gradient(45deg, gold, fuchsia);')};
 `;
 
 export const AvatarImg = styled.img`

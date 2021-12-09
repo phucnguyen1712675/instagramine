@@ -1,17 +1,10 @@
 import styled, {css} from 'styled-components';
-import {Button, Dot, CircleImgWrapper} from './Lib';
-import {textStyle, wh, hoverUnderline} from './Mixins';
+import {Dot, CircleImgWrapper} from './Lib';
+import {wh, hoverUnderline, linkColorHover} from './Mixins';
 import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
 import Tooltip from '../Tooltip';
-
-const gradientBackground = `
-	background: linear-gradient(
-	99.27deg,
-	#ff1cf6 -35.3%,
-	rgba(253, 96, 28, 0.74) 66.33%,
-	#de2442 138.45%);
-`;
+import Button from '../Button';
 
 export const StyledUserMenu = styled.div`
   --width-border: 1px;
@@ -20,19 +13,35 @@ export const StyledUserMenu = styled.div`
   grid-area: userMenu;
   position: relative;
   display: flex;
-  padding: var(--padding-vertical) var(--padding-horizontal)
-    var(--padding-vertical)
-    calc(var(--padding-horizontal) - var(--width-border));
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: var(--padding-vertical);
+  padding-right: var(--padding-horizontal);
+  padding-bottom: var(--padding-vertical);
+  padding-left: calc(var(--padding-horizontal) - var(--width-border));
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
     border-left: var(--width-border) solid ${theme.colors.borderDarkBlue};
   `}
 `;
 
-export const UserMenuInner = styled.div`
+export const UserMenuTopContent = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+`;
+
+export const UserMenuMiddleContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+`;
+
+export const UserMenuBottomContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 240px;
 `;
 
 export const ThumbnailContent = styled.div`
@@ -50,14 +59,15 @@ export const ThumbnailContentAvatar = styled(Avatar)`
 
 export const ThumbnailContentUserName = styled.h2`
   margin-top: 16px;
-  ${textStyle({
-    fontSize: '2rem',
-    fontWeight: 600,
-  })}
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.4;
 `;
 
 export const ThumbnailContentJobDescription = styled.h5`
-  ${({theme}) => textStyle({color: theme.colors.secondary})}
+  color: ${({theme}) => theme.colors.secondary};
+  font-size: 1.4rem;
+  font-weight: 500;
 `;
 
 export const EditButtonWrapper = styled(Tooltip)`
@@ -67,17 +77,23 @@ export const EditButtonWrapper = styled(Tooltip)`
 export const EditButton = styled(Button)`
   padding: 7px 27px;
   ${({theme}) => `
-			color: #fff;
 			background-color: ${theme.colors.primary};
       border-color: ${theme.colors.primary};
 		`}
+`;
+
+export const SectionTitle = styled.div`
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 2.2rem;
 `;
 
 export const StatisticalContent = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 32px;
+  flex-grow: 0;
+  padding: 32px 0 16px;
 `;
 
 export const StatisticalContentInner = styled.div`
@@ -102,37 +118,25 @@ export const StatisticItem = styled.div`
 `;
 
 export const StatisticNumber = styled.div`
-  ${textStyle({
-    fontSize: '1.6rem',
-    fontWeight: 600,
-  })}
+  font-size: 1.6rem;
+  font-weight: 600;
 `;
 
 export const StatisticName = styled.div`
-  ${({theme}) =>
-    textStyle({
-      fontSize: '1.2rem',
-      color: theme.colors.secondary,
-    })}
+  color: ${({theme}) => theme.colors.secondary};
+  font-size: 1.2rem;
 `;
 
 export const BioContentContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  height: 25vh;
-`;
-
-export const BioContentUsername = styled.div`
-  ${textStyle({
-    fontSize: '1.6rem',
-    fontWeight: 600,
-  })}
-  line-height: 2.2rem;
+  flex-grow: 1;
+  padding: 15px 0;
 `;
 
 export const BioContent = styled(ReadMore)`
-  ${({theme}) => textStyle({color: theme.colors.secondary})}
+  color: ${({theme}) => theme.colors.secondary};
   margin-top: 12px;
   line-height: 1.9rem;
 `;
@@ -142,20 +146,13 @@ export const BioContentSocialLinks = styled.div`
 `;
 
 export const BioContentSocialLink = styled.a`
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.link,
-    })}
+  color: ${({theme}) => theme.colors.link};
   ${hoverUnderline}
 `;
 
-export const StoriesContent = styled.div``;
-
-export const StoriesContentTitle = styled.h3`
-  ${textStyle({
-    fontSize: '1.6rem',
-    fontWeight: 600,
-  })}
+export const StoriesContent = styled.div`
+  padding: 15px 0;
+  flex-grow: 1;
 `;
 
 export const StoriesContentStoryList = styled.ul`
@@ -182,7 +179,7 @@ export const StoriesContentStoryItemInner = styled.div`
 `;
 
 export const StoriesContentStoryItemName = styled.p`
-  ${textStyle({fontSize: '1.2rem'})}
+  font-size: 1.2rem;
   margin-top: 8px;
   max-width: 6rem;
   display: -webkit-box;
@@ -206,31 +203,29 @@ export const StoriesContentCircleImg = styled.img`
   }
 `;
 
-export const PlayButton = styled(Button).attrs(() => ({
-  type: 'icon',
-  shape: 'circle',
-}))`
+export const PlayButton = styled(Button)`
   ${wh({w: '6rem'})}
-  border-width: 2px;
+  padding: 0;
   font-size: 2.4rem;
-  transition: color 0.2s ease-out, border-color 0.2s ease-out;
+  border: 2px solid ${({theme}) => theme.colors.primary};
+  ${linkColorHover}
+`;
 
-  &:hover {
-    color: ${({theme}) => theme.colors.link};
-    border-color: ${({theme}) => theme.colors.link};
-  }
+const gradientBackground = `
+	background: linear-gradient(
+	99.27deg,
+	#ff1cf6 -35.3%,
+	rgba(253, 96, 28, 0.74) 66.33%,
+	#de2442 138.45%);
 `;
 
 export const CreatePostButton = styled(Button)`
-  width: 100%;
-  margin-top: 45px;
   padding: 15px 0;
-  border-radius: 5px;
   line-height: 1.3;
   position: relative;
   z-index: 1;
-  color: #fff;
   font-weight: 800;
+  border: unset;
   ${gradientBackground}
 
   &:after {

@@ -17,7 +17,7 @@ const Carousel = ({media}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = media.map((item, index) => (
-    <CarouselSlide key={index} isActive={index === currentSlide}>
+    <CarouselSlide key={index} $isActive={index === currentSlide}>
       <PostMedia type={item.type} url={item.url} />
     </CarouselSlide>
   ));
@@ -27,7 +27,7 @@ const Carousel = ({media}) => {
 
   for (let i = 0; i < mediaLength; i++) {
     carouselIndicators.push(
-      <CarouselIndicator key={i} isActive={i === currentSlide} />
+      <CarouselIndicator key={i} $isActive={i === currentSlide} />
     );
   }
 
@@ -44,14 +44,14 @@ const Carousel = ({media}) => {
       {slides}
       {currentSlide > 0 && (
         <CarouselLeftButtonWrapper onClick={prevItemHandler}>
-          <CarouselButton disabledDefaultHover>
+          <CarouselButton shape="circle" disabledHover>
             <LeftChevron />
           </CarouselButton>
         </CarouselLeftButtonWrapper>
       )}
       {currentSlide < mediaLength - 1 && (
         <CarouselRightButtonWrapper onClick={nextItemHandler}>
-          <CarouselButton disabledDefaultHover>
+          <CarouselButton shape="circle" disabledHover>
             <RightChevron />
           </CarouselButton>
         </CarouselRightButtonWrapper>

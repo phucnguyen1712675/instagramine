@@ -1,11 +1,9 @@
 import styled from 'styled-components';
-import {hoverUnderline, textStyle} from './Mixins';
+import {hoverUnderline} from './Mixins';
 
 export const StyledPostLikedUsersStatement = styled.p`
-  ${textStyle({
-    fontSize: '1.2rem',
-    fontWeight: 400,
-  })};
+	font-size: 1.2rem;
+	font-weight: 400;
 `;
 
 export const PostLikedUsersHighlight = styled.a`

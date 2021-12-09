@@ -33,7 +33,7 @@ const SearchHistory = forwardRef((props, ref) => {
       <SearchHistoryHeader>
         <SearchHistoryHeaderTitle>Recent</SearchHistoryHeaderTitle>
         {users.length > 0 && (
-          <ClearAllButton onMouseDown={clearAllHandler}>
+          <ClearAllButton type="link" onMouseDown={clearAllHandler}>
             Clear All
           </ClearAllButton>
         )}
@@ -51,7 +51,7 @@ const SearchHistory = forwardRef((props, ref) => {
   );
 
   return (
-    <StyledSearchHistory isLoading={isLoading} {...props}>
+    <StyledSearchHistory $isLoading={isLoading}>
       {content}
     </StyledSearchHistory>
   );

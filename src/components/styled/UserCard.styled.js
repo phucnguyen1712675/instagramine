@@ -1,6 +1,4 @@
 import styled from 'styled-components';
-import {Button} from './Lib';
-import {textStyle} from './Mixins';
 
 export const StyledUserCard = styled.div`
   display: flex;
@@ -22,24 +20,17 @@ export const TextContent = styled.div`
 `;
 
 export const TopText = styled.a`
-  ${textStyle({fontWeight: 600})};
+  font-weight: 600;
 `;
 
 export const BottomText = styled.div`
   display: flex;
   align-items: center;
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.secondary,
-      fontWeight: 400,
-      fontSize: '1rem',
-    })};
+  color: ${({theme}) => theme.colors.secondary};
+  font-size: 1rem;
+  font-weight: 400;
 `;
 
 export const OptionWrapper = styled.div`
   align-self: center;
-
-  ${Button} {
-    padding: 0.5em;
-  }
 `;

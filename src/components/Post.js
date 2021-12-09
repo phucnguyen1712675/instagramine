@@ -54,7 +54,7 @@ const Post = ({post}) => {
   );
 
   const optionComponent = (
-    <MoreOptionButton>
+    <MoreOptionButton type="text">
       <ThreeDotsIcon />
     </MoreOptionButton>
   );
@@ -94,7 +94,9 @@ const Post = ({post}) => {
       const formattedDate = dateFormat(convertedDate, 'ddd, dd mmmm yyyy');
       return formattedDate;
     }
+
     const timeAgo = moment(convertedDate).fromNow();
+
     return timeAgo;
   };
 
@@ -123,10 +125,10 @@ const Post = ({post}) => {
               isLiked={post.isLiked}
               changePostLikeAmountHandler={changePostLikeAmountHandler}
             />
-            <PostActionButton>
+            <PostActionButton type="text">
               <CommentIcon />
             </PostActionButton>
-            <PostActionButton>
+            <PostActionButton type="text">
               <ShareIcon />
             </PostActionButton>
             <SavedButton isSaved={post.isSaved} />

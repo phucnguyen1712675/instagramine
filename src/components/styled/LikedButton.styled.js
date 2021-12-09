@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import {PostActionButton} from './Post.styled';
 
 export const StyledLikedButton = styled(PostActionButton)`
-  ${({isLiked}) =>
-    isLiked &&
+  ${({$isLiked}) =>
+    $isLiked &&
     `
   		color: #f0304e;
 

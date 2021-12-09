@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components';
-import {Button} from './Lib';
 import {circle} from './Mixins';
+import Button from '../Button';
 
 const ActiveNavigationButton = css`
   position: relative;
@@ -15,13 +15,11 @@ const ActiveNavigationButton = css`
   }
 `;
 
-export const NavigationButton = styled(Button).attrs(() => ({
-  type: 'icon',
-}))`
+export const NavigationButton = styled(Button)`
   color: unset;
   border-radius: unset;
-	overflow: unset;
+  overflow: unset;
   padding: 0;
   font-size: 3rem;
-  ${({isActive}) => isActive && ActiveNavigationButton}
+  ${({$isActive}) => $isActive && ActiveNavigationButton}
 `;

@@ -1,9 +1,9 @@
 import styled, {css} from 'styled-components';
-import {textStyle, hoverUnderline} from './Mixins';
-import {Button} from './Lib';
+import {hoverUnderline} from './Mixins';
 import {TopText} from './UserCard.styled';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
+import Button from '../Button';
 import QuotationMarkIcon from '../icons/QuotationMarkIcon';
 
 export const StyledPost = styled.div`
@@ -22,16 +22,23 @@ export const PostHeader = styled(UserCard)`
   ${TopText} {
     ${hoverUnderline}
   }
+	padding-right: 10px;
   flex-shrink: 0;
+`;
+
+const darkerButtonHover = `
+	&:hover {
+		--amount: 0.8;
+	}
 `;
 
 export const PostHeaderLocation = styled.a``;
 
-export const MoreOptionButton = styled(Button).attrs(() => ({
-  type: 'icon',
-}))`
+export const MoreOptionButton = styled(Button)`
   font-size: 1.8rem;
   color: ${({theme}) => theme.colors.blueAlphaAction};
+  padding: 5px;
+	${darkerButtonHover}
 `;
 
 export const PostContent = styled.div`
@@ -56,20 +63,14 @@ export const PostActions = styled.div`
   padding: 7px calc(15px - var(--padding-btn)) 0;
 `;
 
-export const PostActionButton = styled(Button).attrs(() => ({
-  type: 'icon',
-}))`
-  border-radius: unset;
+export const PostActionButton = styled(Button)`
   font-size: 1.6rem;
   padding: var(--padding-btn);
   color: ${({theme}) => theme.colors.postAction};
+	${darkerButtonHover}
 
   &:last-child {
     margin-left: auto;
-  }
-
-  &:hover {
-    --amount: 0.8;
   }
 `;
 
@@ -111,11 +112,9 @@ export const PostDate = styled.time`
   display: inline-block;
   margin-top: 2px;
   padding-left: calc(var(--paddingRight) - var(--paddingLeft));
-  ${({theme}) =>
-    textStyle({
-      color: theme.colors.secondary,
-      fontSize: '1rem',
-    })};
+  color: ${({theme}) => theme.colors.secondary};
+  font-size: 1rem;
+  font-weight: 500;
 `;
 
 export const PostCaptionWrapper = styled.div`
@@ -129,5 +128,5 @@ export const PostCaptionWrapperIcon = styled(QuotationMarkIcon)`
 `;
 
 export const PostCaption = styled.p`
-  ${textStyle({fontSize: '1.2rem'})};
+  font-size: 1.2rem;
 `;

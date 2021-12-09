@@ -26,8 +26,8 @@ const Avatar = ({
         as="a"
         href={profile}
         className={className}
-        hasStory={hasStory}
-        hasStoryBeenSeen={hasStoryBeenSeenState}
+        $hasStory={hasStory}
+        $hasStoryBeenSeen={hasStoryBeenSeenState}
       >
         <AvatarImg src={url} alt="" onError={onErrorMedia} />
       </StyledAvatar>
@@ -37,13 +37,13 @@ const Avatar = ({
   return (
     <StyledAvatar
       className={className}
-      hasStory={hasStory}
-      hasStoryBeenSeen={hasStoryBeenSeenState}
       onClick={
         !disableOnClickHandler && !hasStoryBeenSeenState
           ? onClickStoryHandler
           : null
       }
+      $hasStory={hasStory}
+      $hasStoryBeenSeen={hasStoryBeenSeenState}
     >
       <AvatarImg src={url} alt="" onError={onErrorMedia} />
     </StyledAvatar>

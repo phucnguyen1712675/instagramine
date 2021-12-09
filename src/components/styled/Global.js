@@ -1,4 +1,4 @@
-import {createGlobalStyle} from 'styled-components';
+import {createGlobalStyle, css} from 'styled-components';
 
 const GlobalStyles = createGlobalStyle`
 	* {
@@ -16,16 +16,21 @@ const GlobalStyles = createGlobalStyle`
 	body {
 	  margin: 0;
 	  padding: 0;
-		background-color: ${({theme}) => theme.colors.bgApp};
+		font-size: 1.4rem;	
+		font-weight: 500;
+		${({theme}) => css`
+      color: ${theme.colors.primary};
+      background-color: ${theme.colors.bgApp};
+    `};
 	}
 
-	:where(ul, ol) {
+	ul, ol {
 	  list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	a {
+	a {	z
 	  display: inline-block;
 	  text-decoration: none;
 		cursor: pointer;
@@ -52,14 +57,14 @@ const GlobalStyles = createGlobalStyle`
 
 	input {
 		border: none;
+	}
 
-		&::placeholder {
-			color: inherit;
-			font-size: inherit;
-			font-weight: inherit;
-			line-height: inherit;
-			user-select: none;
-		}
+	input::placeholder {
+		color: inherit;
+		font-size: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+		user-select: none;
 	}
 
 	input[type="search"]::-webkit-search-cancel-button {

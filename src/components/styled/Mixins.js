@@ -1,25 +1,5 @@
 import {css} from 'styled-components';
 
-// export const responsive = {
-//   mobile: {
-//     standard: (...args) => css`
-//       @media (max-width: 600px) {
-//         ${css(...args)};
-//       }
-//     `,
-//   },
-// };
-
-export const textStyle = ({
-  color,
-  fontSize = '1.4rem',
-  fontWeight = 500,
-}) => css`
-  color: ${({theme}) => color ?? theme.colors.primary};
-  font-size: ${fontSize};
-  font-weight: ${fontWeight};
-`;
-
 export const wh = ({w = '100%', h = w}) => `
   width: ${w};
   height: ${h};
@@ -49,10 +29,6 @@ export const hoverUnderline = ({color}) => css`
   }
 `;
 
-export const hideComponent = `
-	display: none;
-`;
-
 export const brighterHover = `
 	transition: filter 0.2s ease-out;
 	
@@ -60,4 +36,15 @@ export const brighterHover = `
 		--amount: 1.2;
 	  filter: brightness(var(--amount));
 	}
+`;
+
+export const linkColorHover = css`
+  transition: color 0.2s ease-out, border-color 0.2s ease-out;
+
+  &:hover {
+    ${({theme}) => `
+			color: ${theme.colors.link};
+    	border-color: ${theme.colors.link};
+		`};
+  }
 `;

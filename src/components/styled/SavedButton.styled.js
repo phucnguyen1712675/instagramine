@@ -2,8 +2,8 @@ import styled, {css} from 'styled-components';
 import {PostActionButton} from './Post.styled';
 
 export const StyledSavedButton = styled(PostActionButton)`
-  ${({isSaved}) =>
-    isSaved &&
+  ${({$isSaved}) =>
+    $isSaved &&
     css`
       color: ${({theme}) => theme.colors.primary};
 

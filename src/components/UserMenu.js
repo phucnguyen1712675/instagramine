@@ -3,13 +3,15 @@ import NotificationButton from './NotificationButton';
 import PlayIcon from './icons/PlayIcon';
 import {
   StyledUserMenu,
-  UserMenuInner,
-  ThumbnailContent,
+  UserMenuTopContent,
+  UserMenuMiddleContent,
+  UserMenuBottomContent,
   ThumbnailContentAvatar,
   ThumbnailContentUserName,
   ThumbnailContentJobDescription,
   EditButtonWrapper,
   EditButton,
+  SectionTitle,
   StatisticalContent,
   StatisticalContentInner,
   StatisticalContentInnerDot,
@@ -17,12 +19,10 @@ import {
   StatisticNumber,
   StatisticName,
   BioContentContainer,
-  BioContentUsername,
   BioContent,
   BioContentSocialLinks,
   BioContentSocialLink,
   StoriesContent,
-  StoriesContentTitle,
   StoriesContentStoryList,
   StoriesContentStoryItem,
   StoriesContentStoryItemInner,
@@ -61,9 +61,12 @@ const UserMenu = () => {
 
   const playStoriesButton = (
     <StoriesContentStoryItem key={MAX_STORIES_NUMBER}>
-      <PlayButton disabledDefaultHover>
-        <PlayIcon />
-      </PlayButton>
+      <PlayButton
+        size="large"
+        shape="circle"
+        icon={<PlayIcon />}
+        disabledHover
+      />
       <StoriesContentStoryItemName>Play All</StoriesContentStoryItemName>
     </StoriesContentStoryItem>
   );
@@ -90,24 +93,25 @@ const UserMenu = () => {
 
   return (
     <StyledUserMenu>
-      <UserMenuInner>
-        <NotificationButton followRequests={currentUser.followRequests} />
-        <ThumbnailContent>
-          <ThumbnailContentAvatar
-            url={currentUser.avatar}
-            hasStory={currentUser.hasStory}
-            hasStoryBeenSeen={currentUser.hasStoryBeenSeen}
-          />
-          <ThumbnailContentUserName>
-            {currentUser.username}
-          </ThumbnailContentUserName>
-          <ThumbnailContentJobDescription>
-            {currentUser.job}
-          </ThumbnailContentJobDescription>
-          <EditButtonWrapper content="Edit profile" position="left">
-            <EditButton>Edit</EditButton>
-          </EditButtonWrapper>
-        </ThumbnailContent>
+      <UserMenuTopContent>
+        <ThumbnailContentAvatar
+          url={currentUser.avatar}
+          hasStory={currentUser.hasStory}
+          hasStoryBeenSeen={currentUser.hasStoryBeenSeen}
+        />
+        <ThumbnailContentUserName>
+          {currentUser.username}
+        </ThumbnailContentUserName>
+        <ThumbnailContentJobDescription>
+          {currentUser.job}
+        </ThumbnailContentJobDescription>
+        <EditButtonWrapper content="Edit profile" position="left">
+          <EditButton type="primary" size="large">
+            Edit
+          </EditButton>
+        </EditButtonWrapper>
+      </UserMenuTopContent>
+      <UserMenuMiddleContent>
         <StatisticalContent>
           <StatisticalContentInner>
             <StatisticItem>
@@ -133,7 +137,7 @@ const UserMenu = () => {
           </StatisticalContentInner>
         </StatisticalContent>
         <BioContentContainer>
-          <BioContentUsername>{currentUser.name}</BioContentUsername>
+          <SectionTitle>{currentUser.name}</SectionTitle>
           <BioContent
             showChar={MAX_CHARS_BIO_USER_MENU}
             readMoreText="(Read more)"
@@ -144,12 +148,17 @@ const UserMenu = () => {
           </BioContent>
           <BioContentSocialLinks>{socialLinksContent}</BioContentSocialLinks>
         </BioContentContainer>
+      </UserMenuMiddleContent>
+      <UserMenuBottomContent>
         <StoriesContent>
-          <StoriesContentTitle>Your Stories</StoriesContentTitle>
+          <SectionTitle>Your Stories</SectionTitle>
           <StoriesContentStoryList>{storiesContent}</StoriesContentStoryList>
         </StoriesContent>
-        <CreatePostButton>Create Post</CreatePostButton>
-      </UserMenuInner>
+        <CreatePostButton type="primary" size="large" block>
+          Create Post
+        </CreatePostButton>
+      </UserMenuBottomContent>
+      <NotificationButton followRequests={currentUser.followRequests} />
     </StyledUserMenu>
   );
 };

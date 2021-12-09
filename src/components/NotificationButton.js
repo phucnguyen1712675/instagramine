@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import PropTypes from 'prop-types';
+import RequestItemButtonGroup from './RequestItemButtonGroup';
 import BellIcon from './icons/BellIcon';
 import RightChevron from './icons/RightChevron';
 import Spinner from './icons/Spinner';
@@ -16,9 +17,6 @@ import {
   NoNotificationsText,
   RequestItem,
   RequestItemContent,
-  RequestItemButtonGroup,
-  RequestItemConfirmButton,
-  RequestItemDeleteButton,
 } from './styled/NotificationButton.styled';
 import {onErrorMedia} from '../utils/media';
 
@@ -47,13 +45,6 @@ const NotificationButton = ({followRequests}) => {
   };
 
   const followRequestsLength = followRequests.length;
-
-  const optionComponent = (
-    <NotificationMenuItemOption>
-      <NotificationMenuItemDot />
-      <RightChevron />
-    </NotificationMenuItemOption>
-  );
 
   let content;
 
@@ -90,7 +81,12 @@ const NotificationButton = ({followRequests}) => {
                 others
               </NotificationMenuItemBottomText>
             }
-            optionComponent={optionComponent}
+            optionComponent={
+              <NotificationMenuItemOption>
+                <NotificationMenuItemDot />
+                <RightChevron />
+              </NotificationMenuItemOption>
+            }
             topTextAsHeading
           />
         </AllRequestsItem>
@@ -116,16 +112,7 @@ const NotificationButton = ({followRequests}) => {
               </NotificationMenuItemBottomText>
             ) : null
           }
-          optionComponent={
-            <RequestItemButtonGroup>
-              <RequestItemConfirmButton>
-                Confirm
-              </RequestItemConfirmButton>
-              <RequestItemDeleteButton disabledDefaultHover>
-                Delete
-              </RequestItemDeleteButton>
-            </RequestItemButtonGroup>
-          }
+          optionComponent={<RequestItemButtonGroup />}
         />
       </RequestItem>
     ));
@@ -139,8 +126,8 @@ const NotificationButton = ({followRequests}) => {
       icon={<BellIcon />}
       onOpen={setTimeoutLoading}
       onClose={onCloseNotificationMenu}
-      isLoading={isLoading}
-      isEmpty={followRequestsLength === 0}
+      $isLoading={isLoading}
+      $isEmpty={followRequestsLength === 0}
     >
       {content}
     </StyledNotificationButton>

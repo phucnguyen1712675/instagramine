@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem, Button} from './Lib';
+import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem} from './Lib';
 import {hideScrollBarScrolling} from './Mixins';
 import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import {TextContent} from './UserCard.styled';
@@ -24,8 +24,8 @@ export const StyledNotificationButton = styled(
     right: calc(100% + 4px);
     width: 500px;
     height: 362px;
-    ${({isLoading}) => isLoading && flexCenter}
-    ${({isEmpty}) => isEmpty && flexCenter}
+    ${({$isLoading}) => $isLoading && flexCenter}
+    ${({$isEmpty}) => $isEmpty && flexCenter}
 		overflow-y: auto;
     ${hideScrollBarScrolling}
   }
@@ -90,14 +90,12 @@ export const NotificationMenuItemAvatarGroupWrapper = styled(CircleImgWrapper)`
   }
 `;
 
-export const NotificationMenuItemAvatar = styled.img``;
-
 export const NoNotificationsText = styled.p`
   font-size: 1.4rem;
 `;
 
 export const RequestItem = styled(MenuItem)`
-	--padding-horizontal: 16px;
+  --padding-horizontal: 16px;
   padding: 12px var(--padding-horizontal);
   position: relative;
 
@@ -108,7 +106,7 @@ export const RequestItem = styled(MenuItem)`
     position: absolute;
     right: var(--padding-horizontal);
     bottom: 0;
-    left: 58px;
+    left: 64px;
   }
 `;
 
@@ -119,21 +117,3 @@ export const RequestItemContent = styled(UserCard)`
     --margin-left-info-content: 12px;
   }
 `;
-
-export const RequestItemButtonGroup = styled.div`
-  display: flex;
-  align-items: center;
-  column-gap: 8px;
-`;
-
-const RequestItemButton = styled(Button)`
-  && {
-    padding: 5px 9px;
-  }
-`;
-
-export const RequestItemConfirmButton = styled(RequestItemButton).attrs(() => ({
-  type: 'primary',
-}))``;
-
-export const RequestItemDeleteButton = styled(RequestItemButton)``;

@@ -13,9 +13,10 @@ const MainNavigation = () => {
   const content = NAV_ICONS.map((navItem, index) => (
     <Tooltip key={navItem.id} content={navItem.content} position="right">
       <NavigationButton
+        type="text"
         onClick={() => navigateHandler(index)}
-        isActive={navItem.id === currentIndex}
-        disabledDefaultHover
+        disabledHover
+        $isActive={navItem.id === currentIndex}
       >
         {navItem.icon}
       </NavigationButton>

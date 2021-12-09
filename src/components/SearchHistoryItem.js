@@ -1,6 +1,5 @@
 import {useContext} from 'react';
 import PropTypes from 'prop-types';
-import {Button} from './styled/Lib';
 import {
   StyledSearchHistoryItem,
   SearchHistoryItemLink,
@@ -8,6 +7,7 @@ import {
   RemoveHistoryItemButtonIcon,
   SearchHistoryItemAvatar,
   SearchHistoryUserAdditionalInfo,
+  CloseButton,
   SearchHistoryUserAdditionalInfoDot,
 } from './styled/SearchHistoryItem.styled';
 import SearchHistoryResultsContext from '../store/search-history-results-context';
@@ -42,9 +42,13 @@ const SearchHistoryItem = ({user}) => {
   );
 
   const optionComponent = (
-    <Button onMouseDown={removeHistoryItemHandler}>
+    <CloseButton
+      type="text"
+      onMouseDown={removeHistoryItemHandler}
+      disabledHover
+    >
       <RemoveHistoryItemButtonIcon />
-    </Button>
+    </CloseButton>
   );
 
   return (

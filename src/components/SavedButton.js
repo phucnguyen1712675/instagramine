@@ -13,7 +13,11 @@ const SavedButton = ({isSaved}) => {
   };
 
   return (
-    <StyledSavedButton isSaved={isSavedState} onClick={savePostHandler}>
+    <StyledSavedButton
+      type="text"
+      onClick={savePostHandler}
+      $isSaved={isSavedState}
+    >
       <SavedIcon />
     </StyledSavedButton>
   );
