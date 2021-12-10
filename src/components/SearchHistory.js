@@ -1,6 +1,6 @@
 import {useState, useContext, forwardRef, useImperativeHandle} from 'react';
 import SearchHistoryItem from './SearchHistoryItem';
-import Spinner from './icons/Spinner';
+import Spinner from './Spinner';
 import {
   StyledSearchHistory,
   NoResultsText,

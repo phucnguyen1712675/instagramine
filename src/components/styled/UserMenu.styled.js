@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components';
 import {Dot, CircleImgWrapper} from './Lib';
-import {wh, hoverUnderline, linkColorHover} from './Mixins';
+import {wh, hoverUnderline, buttonColorHover} from './Mixins';
 import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
 import Tooltip from '../Tooltip';
@@ -208,7 +208,7 @@ export const PlayButton = styled(Button)`
   padding: 0;
   font-size: 2.4rem;
   border: 2px solid ${({theme}) => theme.colors.primary};
-  ${linkColorHover}
+  ${buttonColorHover}
 `;
 
 const gradientBackground = `

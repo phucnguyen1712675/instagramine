@@ -10,19 +10,9 @@ const rotate = keyframes`
   }
 `;
 
-export const StyledSpinner = styled.div`
-  position: relative;
-  ${wh({w: '5.4rem'})}
-  display: inline-block;
-  background: transparent;
-  padding: 10px;
-  border-radius: 10px;
-`;
-
-const Bar = styled.div`
+export const Bar = styled.div`
   width: 6%;
   height: 16%;
-  background: ${({theme}) => theme.colors.secondary};
   position: absolute;
   left: 49%;
   top: 43%;
@@ -30,6 +20,20 @@ const Bar = styled.div`
   -webkit-border-radius: 50px;
   -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   -webkit-animation: ${rotate} 1s linear infinite;
+`;
+
+export const StyledSpinner = styled.div`
+  --color-spinner: ${({theme}) => theme.colors.secondary};
+  ${wh({w: '5.4rem'})}
+  position: relative;
+  display: inline-block;
+  background: transparent;
+  padding: 10px;
+  border-radius: 10px;
+
+  ${Bar} {
+    background-color: var(--color-spinner);
+  }
 `;
 
 export const Bar1 = styled(Bar)`

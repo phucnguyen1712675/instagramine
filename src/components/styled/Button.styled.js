@@ -1,5 +1,98 @@
 import styled, {css} from 'styled-components';
-import {brighterHover, linkColorHover} from './Mixins';
+import {brighterHover, buttonColorHover, wh} from './Mixins';
+import Spinner from '../Spinner';
+
+const smallSize = `
+  font-size: 1.4rem;
+  padding: 0 7px;
+`;
+
+const largeSize = `
+  font-size: 1.6rem;
+  padding: 6.4px 15px;
+`;
+
+const mediumSize = `
+  font-size: 1.4rem;
+  padding: 4px 15px;
+`;
+
+const circleShape = `
+  border-radius: 50%;
+`;
+
+const roundShape = `
+  border-radius: 40px;
+`;
+
+const defaultShape = `
+  border-radius: 5px;
+`;
+
+export const ButtonSpinner = styled(Spinner)`
+  padding: 0;
+  ${wh({w: '2.6rem'})}
+`;
+
+const primaryType = css`
+  font-weight: 600;
+  color: #fff;
+  ${({theme}) => `
+  	background-color: ${theme.colors.link};
+  	border: 1px solid ${theme.colors.link};
+	`}
+  text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+  box-shadow: 0 2px #0000000b;
+
+  ${({$disabledHover}) => !$disabledHover && brighterHover}
+
+  ${ButtonSpinner} {
+    --color-spinner: #fff;
+  }
+`;
+
+const linkType = css`
+  font-weight: 600;
+  color: ${({theme}) => theme.colors.link};
+  border: 1px solid transparent;
+
+  ${({$disabledHover}) => !$disabledHover && brighterHover}
+`;
+
+const textType = css`
+  color: ${({theme}) => theme.colors.primary};
+  border: 1px solid transparent;
+
+  ${({$disabledHover}) => !$disabledHover && brighterHover}
+`;
+
+const defaultType = css`
+  font-weight: 600;
+  ${({theme}) => `
+  	color: ${theme.colors.primary};
+  	border: 1px solid ${theme.colors.borderGray};
+	`}
+
+  ${({$disabledHover}) => !$disabledHover && buttonColorHover}
+`;
+
+const loadingStyle = css`
+  cursor: default;
+  position: relative;
+  ${({$type}) => $type === 'primary' && 'border: unset;'}
+
+  &::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: -1px;
+    z-index: 1;
+    background-color: #fff;
+    border-radius: inherit;
+    opacity: 0.35;
+    transition: opacity 0.2s ease-out;
+  }
+`;
 
 export const StyledButton = styled.button`
   display: flex;
@@ -29,72 +122,37 @@ export const StyledButton = styled.button`
   ${({$size}) => {
     switch ($size) {
       case 'small':
-        return css`
-          font-size: 1.4rem;
-          padding: 0 7px;
-        `;
+        return smallSize;
       case 'large':
-        return css`
-          font-size: 1.6rem;
-          padding: 6.4px 15px;
-        `;
+        return largeSize;
       default:
-        return css`
-          font-size: 1.4rem;
-          padding: 4px 15px;
-        `;
+        return mediumSize;
     }
   }}
 
 	${({$shape}) => {
     switch ($shape) {
       case 'circle':
-        return css`
-          border-radius: 50%;
-        `;
+        return circleShape;
       case 'round':
-        return css`
-          border-radius: 40px;
-        `;
+        return roundShape;
       default:
-        return css`
-          border-radius: 5px;
-        `;
+        return defaultShape;
     }
   }}
 
-  ${({$type, theme}) => {
+  ${({$type}) => {
     switch ($type) {
       case 'primary':
-        return css`
-          font-weight: 600;
-          color: #fff;
-          background-color: ${theme.colors.link};
-          border: 1px solid ${theme.colors.link};
-          text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
-          box-shadow: 0 2px #0000000b;
-          ${({$disabledHover}) => !$disabledHover && brighterHover}
-        `;
+        return primaryType;
       case 'link':
-        return css`
-          font-weight: 600;
-          color: ${theme.colors.link};
-          border: 1px solid transparent;
-          ${({$disabledHover}) => !$disabledHover && brighterHover}
-        `;
+        return linkType;
       case 'text':
-        return css`
-          color: ${theme.colors.primary};
-          border: 1px solid transparent;
-          ${({$disabledHover}) => !$disabledHover && brighterHover}
-        `;
+        return textType;
       default:
-        return css`
-          font-weight: 600;
-          color: ${theme.colors.primary};
-          border: 1px solid ${theme.colors.borderGray};
-          ${({$disabledHover}) => !$disabledHover && linkColorHover}
-        `;
+        return defaultType;
     }
   }}
+
+	${({$loading}) => $loading && loadingStyle}
 `;

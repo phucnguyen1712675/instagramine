@@ -38,13 +38,13 @@ export const brighterHover = `
 	}
 `;
 
-export const linkColorHover = css`
+export const buttonColorHover = ({color}) => css`
   transition: color 0.2s ease-out, border-color 0.2s ease-out;
 
   &:hover {
     ${({theme}) => `
-			color: ${theme.colors.link};
-    	border-color: ${theme.colors.link};
+			color: ${color ?? theme.colors.link};
+    	border-color: ${color ?? theme.colors.link};
 		`};
   }
 `;

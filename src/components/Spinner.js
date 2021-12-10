@@ -14,7 +14,7 @@ import {
   Bar10,
   Bar11,
   Bar12,
-} from '../styled/Spinner.styled';
+} from './styled/Spinner.styled';
 
 const Spinner = ({className}) => {
   return (

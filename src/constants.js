@@ -18,6 +18,8 @@ export const COLORS = {
   primary: '#1B1D28',
   secondary: '#76777E',
   postAction: '#D7E0EB',
+  likedButton: '#f0304e',
+  danger: '#f0304e',
 };
 
 const SIZES = {

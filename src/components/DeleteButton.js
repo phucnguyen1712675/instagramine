@@ -1,28 +1,30 @@
-import {useState, forwardRef, useImperativeHandle} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import Button from './Button';
-import {DeleteButtonWrapper} from './styled/DeleteButton.styled';
+import {
+  DeleteButtonWrapper,
+  StyledDeleteButton,
+} from './styled/DeleteButton.styled';
 
-const DeleteButton = forwardRef(({className, children, onClick}, ref) => {
-  const [disabled, setDisabled] = useState(true);
-
-  useImperativeHandle(ref, () => ({
-    setDisabledState: (disabled) => setDisabled(disabled),
-  }));
-
+const DeleteButton = ({className, children, onClick, loading, disabled}) => {
   return (
     <DeleteButtonWrapper className={className} $disabled={disabled}>
-      <Button disabled={disabled} onClick={onClick} $disabledHover>
+      <StyledDeleteButton
+        disabled={disabled}
+        onClick={onClick}
+        loading={loading}
+        disabledHover
+      >
         {children}
-      </Button>
+      </StyledDeleteButton>
     </DeleteButtonWrapper>
   );
-});
-
+};
 DeleteButton.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node.isRequired,
   onClick: PropTypes.func,
+  disabled: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 DeleteButton.displayName = 'DeleteButton';

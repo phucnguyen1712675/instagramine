@@ -1,14 +1,14 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {PostActionButton} from './Post.styled';
 
 export const StyledLikedButton = styled(PostActionButton)`
-  ${({$isLiked}) =>
+  ${({$isLiked, theme}) =>
     $isLiked &&
-    `
-  		color: #f0304e;
+    css`
+      color: ${theme.colors.likedButton};
 
-			&:hover {
-				--amount: 1.2;
-			}
-		`}
+      &:hover {
+        --amount: 1.2;
+      }
+    `}
 `;

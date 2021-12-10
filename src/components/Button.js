@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Spinner from './icons/Spinner';
-import {StyledButton} from './styled/Button.styled';
+import {StyledButton, ButtonSpinner} from './styled/Button.styled';
 
 const Button = ({
   className,
@@ -22,13 +21,11 @@ const Button = ({
   let content;
 
   if (loading) {
-    content = <Spinner />;
+    content = <ButtonSpinner />;
+  } else if (icon) {
+    content = icon;
   } else {
-    if (icon) {
-      content = icon;
-    } else {
-      content = children;
-    }
+    content = children;
   }
 
   return (
@@ -44,6 +41,7 @@ const Button = ({
       $danger={danger}
       $size={size}
       $disabledHover={disabledHover}
+      $loading={loading}
     >
       {content}
     </StyledButton>

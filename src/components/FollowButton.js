@@ -2,13 +2,14 @@ import {useState} from 'react';
 import PropTypes from 'prop-types';
 import Button from './Button';
 
-const FollowButton = ({className}) => {
+const FollowButton = ({className, onClick}) => {
   const [isFollowing, setIsFollowing] = useState(false);
 
   const toggleIsFollowing = () => setIsFollowing((prevState) => !prevState);
 
   const onClickHandler = () => {
     toggleIsFollowing();
+    onClick && onClick();
   };
 
   if (isFollowing) {
@@ -28,6 +29,7 @@ const FollowButton = ({className}) => {
 
 FollowButton.propTypes = {
   className: PropTypes.string,
+  onClick: PropTypes.func,
 };
 
 export default FollowButton;

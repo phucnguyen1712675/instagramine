@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
 import BellIcon from './icons/BellIcon';
 import RightChevron from './icons/RightChevron';
-import Spinner from './icons/Spinner';
+import Spinner from './Spinner';
 import {
   StyledNotificationButton,
   AllRequestsItem,
