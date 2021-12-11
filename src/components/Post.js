@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {useState} from 'react';
 import PropTypes from 'prop-types';
 import dateFormat from 'dateformat';
 import moment from 'moment';
@@ -6,7 +6,6 @@ import Carousel from './Carousel';
 import LikedButton from './LikedButton';
 import SavedButton from './SavedButton';
 import Avatar from './Avatar';
-import PostLikedUsersStatement from './PostLikedUsersStatement';
 import ReadMore from './ReadMore';
 import CommentIcon from './icons/CommentIcon';
 import ShareIcon from './icons/ShareIcon';
@@ -23,6 +22,8 @@ import {
   PostActions,
   PostActionButton,
   PostLikedUsersInfo,
+  PostLikedUsersStatement,
+  PostLikedUsersHighlight,
   PostLikedUsersAvatarGroup,
   PostLikedUsersAvatar,
   PostCaptionContainer,
@@ -35,7 +36,7 @@ import PostMedia from './PostMedia';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
 
 const Post = ({post}) => {
-  const postLikedUsersStatementRef = useRef(null);
+  const [likeAmount, setLikeAmount] = useState(post.otherLikedUserAmount);
 
   const avatarComponent = (
     <Avatar
@@ -104,8 +105,8 @@ const Post = ({post}) => {
 
   const changePostLikeAmountHandler = (isLiked) => {
     isLiked
-      ? postLikedUsersStatementRef.current.decreaseLikeAmount()
-      : postLikedUsersStatementRef.current.increaseLikeAmount();
+      ? setLikeAmount((prevState) => prevState - 1)
+      : setLikeAmount((prevState) => prevState + 1);
   };
 
   return (
@@ -134,12 +135,16 @@ const Post = ({post}) => {
             <SavedButton isSaved={post.isSaved} />
           </PostActions>
           <PostLikedUsersInfo>
-            <PostLikedUsersStatement
-              ref={postLikedUsersStatementRef}
-              likedUsersLink={post.likedUsersLink}
-              likedUser={post.likedUser}
-              otherLikedUserAmount={post.otherLikedUserAmount}
-            />
+            <PostLikedUsersStatement>
+              <span>Liked by </span>
+              <PostLikedUsersHighlight href={post.likedUsersLink}>
+                {post.likedUser}
+              </PostLikedUsersHighlight>
+              <span> and </span>
+              <PostLikedUsersHighlight href={post.likedUsersLink}>
+                {likeAmount} others
+              </PostLikedUsersHighlight>
+            </PostLikedUsersStatement>
             <PostLikedUsersAvatarGroup href={post.likedUsersLink}>
               {post.likedOtherUser.map((url, index) => (
                 <PostLikedUsersAvatar key={index} url={url} hasStory={false} />

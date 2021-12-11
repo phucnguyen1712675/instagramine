@@ -1,5 +1,4 @@
-import {useState} from 'react';
-import PropTypes from 'prop-types';
+import {useState, useContext} from 'react';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
 import BellIcon from './icons/BellIcon';
 import RightChevron from './icons/RightChevron';
@@ -18,9 +17,12 @@ import {
   RequestItem,
   RequestItemContent,
 } from './styled/NotificationButton.styled';
+import FollowRequestsContext from '../store/follow-requests-context';
 import {onErrorMedia} from '../utils/media';
 
-const NotificationButton = ({followRequests}) => {
+const NotificationButton = () => {
+  const {followRequests} = useContext(FollowRequestsContext);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [showRequests, setShowRequests] = useState(false);
@@ -112,7 +114,7 @@ const NotificationButton = ({followRequests}) => {
               </NotificationMenuItemBottomText>
             ) : null
           }
-          optionComponent={<RequestItemButtonGroup />}
+          optionComponent={<RequestItemButtonGroup userId={user.id} />}
         />
       </RequestItem>
     ));
@@ -132,10 +134,6 @@ const NotificationButton = ({followRequests}) => {
       {content}
     </StyledNotificationButton>
   );
-};
-
-NotificationButton.propTypes = {
-  followRequests: PropTypes.array.isRequired,
 };
 
 export default NotificationButton;

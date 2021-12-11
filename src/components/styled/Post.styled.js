@@ -22,7 +22,7 @@ export const PostHeader = styled(UserCard)`
   ${TopText} {
     ${hoverUnderline}
   }
-	padding-right: 10px;
+  padding-right: 10px;
   flex-shrink: 0;
 `;
 
@@ -38,7 +38,7 @@ export const MoreOptionButton = styled(Button)`
   font-size: 1.8rem;
   color: ${({theme}) => theme.colors.blueAlphaAction};
   padding: 5px;
-	${darkerButtonHover}
+  ${darkerButtonHover}
 `;
 
 export const PostContent = styled.div`
@@ -67,7 +67,7 @@ export const PostActionButton = styled(Button)`
   font-size: 1.6rem;
   padding: var(--padding-btn);
   color: ${({theme}) => theme.colors.postAction};
-	${darkerButtonHover}
+  ${darkerButtonHover}
 
   &:last-child {
     margin-left: auto;
@@ -79,6 +79,16 @@ export const PostLikedUsersInfo = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 7px 15px;
+`;
+
+export const PostLikedUsersStatement = styled.p`
+  font-size: 1.2rem;
+  font-weight: 400;
+`;
+
+export const PostLikedUsersHighlight = styled.a`
+  font-weight: 800;
+  ${hoverUnderline}
 `;
 
 export const PostLikedUsersAvatarGroup = styled.a`

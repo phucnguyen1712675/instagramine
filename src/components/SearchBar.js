@@ -1,34 +1,46 @@
-import {useState, useEffect, useRef} from 'react';
-import SearchHistory from './SearchHistory';
+import {useReducer, useEffect, useRef} from 'react';
+import Spinner from './Spinner';
+import SearchItemList from './SearchItemList';
+import {VisuallyHidden} from './styled/Lib';
 import {
   StyledSearchBar,
   SearchInput,
   SearchInputSearchIcon,
+  SearchHistory,
+  SearchHistoryHeader,
+  SearchHistoryHeaderTitle,
+  ClearAllButton,
+  NoResultsText,
 } from './styled/SearchBar.styled';
-import {SearchHistoryResultsContextProvider} from '../store/search-history-results-context';
 import useBlur from '../hooks/useBlur';
-import {LOADING_DELAY} from '../constants';
+import SearchBarReducer from '../reducers/search-bar-reducer';
+import {
+  SET_HAS_OPENED,
+  SET_IS_LOADING,
+  SET_QUERY,
+  REMOVE_ALL_USERS,
+  FILTER_USERS,
+} from '../actions/search-bar-actions';
+import searchHistoryData from '../data/search-history.json';
 
 const SearchBar = () => {
-  const [isFocused, setIsFocused] = useState(false);
+  const [state, dispatch] = useReducer(SearchBarReducer, {
+    hasOpened: false,
+    isLoading: true,
+    history: searchHistoryData,
+    filteredUsers: [],
+    query: '',
+  });
 
-  const [hasSearchHistoryOpened, setHasSearchHistoryOpened] = useState(false);
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const searchHistoryRef = useRef(null);
+  const {hasOpened, isLoading, history, filteredUsers, query} = state;
 
   const [inputRef, setInputBlur] = useBlur();
 
-  let timeoutId;
+  const queryRef = useRef(query);
+
+  queryRef.current = query;
 
   useEffect(() => {
-    const onSearch = (e) => {
-      if (e.target.value === '') {
-        setInputBlur();
-      }
-    };
-
     inputRef?.current?.addEventListener('search', onSearch);
 
     return () => {
@@ -36,64 +48,97 @@ const SearchBar = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isFocused && !hasSearchHistoryOpened) {
-      setHasSearchHistoryOpened(true);
-
-      timeoutId = setTimeout(() => {
-        searchHistoryRef.current.setIsLoadingState(false);
-      }, LOADING_DELAY);
-
-      return () => {
-        const isLoading = searchHistoryRef.current.getIsLoadingState();
-        isLoading && searchHistoryRef.current.setIsLoadingState(false);
-
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    if (searchTerm !== '') {
-      searchHistoryRef.current.setIsLoadingState(true);
-
-      timeoutId = setTimeout(() => {
-        searchHistoryRef.current.setIsLoadingState(false);
-      }, LOADING_DELAY);
-
-      return () => {
-        const isLoading = searchHistoryRef.current.getIsLoadingState();
-        isLoading && searchHistoryRef.current.setIsLoadingState(false);
-
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [searchTerm]);
-
   const handleChange = (e) => {
-    setSearchTerm(e.target.value);
+    const query = e.target.value;
+
+    if (query) {
+      dispatch({type: FILTER_USERS, payload: query});
+
+      setTimeout(() => {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }, 1000);
+    } else {
+      dispatch({type: SET_QUERY, payload: query});
+    }
   };
 
-  const handleSubmit = (e) => e.preventDefault();
+  const onFocus = () => {
+    if (hasOpened) {
+      return;
+    }
 
-  const onFocus = () => setIsFocused(true);
+    dispatch({type: SET_HAS_OPENED, payload: true});
 
-  const onBlur = () => setIsFocused(false);
+    setTimeout(() => {
+      dispatch({type: SET_IS_LOADING, payload: false});
+    }, 1000);
+  };
+
+  const onSearch = () => {
+    if (!query) {
+      setInputBlur();
+    }
+  };
+
+  const clearAllHandler = () => {
+    dispatch({type: REMOVE_ALL_USERS});
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
+  let searchHistoryContent;
+
+  if (isLoading) {
+    searchHistoryContent = <Spinner />;
+  } else if (query) {
+    if (filteredUsers.length > 0) {
+      searchHistoryContent = (
+        <SearchItemList users={filteredUsers} dispatch={dispatch} />
+      );
+    } else {
+      searchHistoryContent = <NoResultsText>No results found.</NoResultsText>;
+    }
+  } else if (history.length > 0) {
+    searchHistoryContent = (
+      <>
+        <SearchHistoryHeader>
+          <SearchHistoryHeaderTitle>Recent</SearchHistoryHeaderTitle>
+          <ClearAllButton type="link" onMouseDown={clearAllHandler}>
+            Clear All
+          </ClearAllButton>
+        </SearchHistoryHeader>
+        <SearchItemList users={history} hasQuery={false} dispatch={dispatch} />
+      </>
+    );
+  } else {
+    searchHistoryContent = <NoResultsText>No recent searches.</NoResultsText>;
+  }
 
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
+      <label htmlFor="search_input">
+        <VisuallyHidden>Search users</VisuallyHidden>
+      </label>
       <SearchInput
-        name="searchTerm"
-        value={searchTerm}
+        ref={inputRef}
+        id="search_input"
+        name="query"
+        value={query}
         onChange={handleChange}
         onFocus={onFocus}
-        onBlur={onBlur}
-        ref={inputRef}
       />
       <SearchInputSearchIcon />
-      <SearchHistoryResultsContextProvider>
-        <SearchHistory ref={searchHistoryRef} />
-      </SearchHistoryResultsContextProvider>
+      <SearchHistory
+        $shouldCenterChild={
+          isLoading ||
+          (query && filteredUsers.length <= 0) ||
+          history.length <= 0
+        }
+      >
+        {searchHistoryContent}
+      </SearchHistory>
     </StyledSearchBar>
   );
 };

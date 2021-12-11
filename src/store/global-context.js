@@ -8,11 +8,13 @@ const GlobalContext = createContext({});
 export const GlobalContextProvider = ({children}) => {
   const [state, dispatch] = useReducer(AppReducer, globalData);
 
+  const {currentUser} = state;
+
   const signIn = (username, password) =>
     dispatch({type: 'SIGN_IN', payload: {username, password}});
 
   const context = {
-    currentUser: state.currentUser,
+    currentUser,
     signIn,
   };
 

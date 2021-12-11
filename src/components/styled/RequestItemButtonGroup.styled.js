@@ -1,7 +1,5 @@
 import styled from 'styled-components';
-import {StyledDeleteButton} from './DeleteButton.styled';
-import DeleteButton from '../DeleteButton';
-import FollowButton from '../FollowButton';
+import {buttonColorHover} from './Mixins';
 import Button from '../Button';
 
 export const StyledRequestItemButtonGroup = styled.div`
@@ -20,14 +18,14 @@ export const RequestItemConfirmButton = styled(Button)`
   width: 69.5px;
 `;
 
-export const RequestItemFollowButton = styled(FollowButton)`
+export const RequestItemFollowButton = styled(Button)`
   ${requestItemButtonStyle}
-  width: 63px;
+  width: ${({$isFollowed}) => ($isFollowed ? '82px' : '63px')};
 `;
 
-export const RequestItemDeleteButton = styled(DeleteButton)`
-  ${StyledDeleteButton} {
-    ${requestItemButtonStyle}
-    width: 62px;
-  }
+export const RequestItemDeleteButton = styled(Button)`
+  ${requestItemButtonStyle}
+  ${({theme, loading}) =>
+    !loading && buttonColorHover({color: theme.colors.danger})}
+  width: 62px;
 `;

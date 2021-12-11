@@ -1,11 +1,14 @@
-import {useReducer, useRef} from 'react';
+import {useReducer, useRef, useContext} from 'react';
+import PropTypes from 'prop-types';
+import {DisabledButtonWrapper} from './styled/Lib';
 import {
   StyledRequestItemButtonGroup,
   RequestItemConfirmButton,
   RequestItemFollowButton,
   RequestItemDeleteButton,
 } from './styled/RequestItemButtonGroup.styled';
-import Reducer from '../reducers/request-item-button-group-reducer';
+import FollowRequestsContext from '../store/follow-requests-context';
+import RequestItemReducer from '../reducers/request-item-button-group-reducer';
 import {
   SET_IS_CONFIRM_BUTTON_LOADING,
   SET_IS_DELETE_BUTTON_LOADING,
@@ -15,8 +18,10 @@ import {
   USER_HAS_BEEN_FOLLOWED,
 } from '../actions/request-item-button-group-actions';
 
-const RequestItemButtonGroup = () => {
-  const [state, dispatch] = useReducer(Reducer, {
+const RequestItemButtonGroup = ({userId}) => {
+  const {confirmRequest, removeRequest} = useContext(FollowRequestsContext);
+
+  const [state, dispatch] = useReducer(RequestItemReducer, {
     isConfirmed: false,
     isDeleted: false,
     isFollowed: false,
@@ -25,17 +30,26 @@ const RequestItemButtonGroup = () => {
     isFollowButtonLoading: false,
   });
 
-  const isConfirmedRef = useRef(state.isConfirmed);
+  const {
+    isConfirmed,
+    isDeleted,
+    isFollowed,
+    isConfirmButtonLoading,
+    isDeleteButtonLoading,
+    isFollowButtonLoading,
+  } = state;
 
-  const isDeletedRef = useRef(state.isDeleted);
+  const isConfirmedRef = useRef(isConfirmed);
 
-  const isFollowedRef = useRef(state.isFollowed);
+  const isDeletedRef = useRef(isDeleted);
 
-  isConfirmedRef.current = state.isConfirmed;
+  const isFollowedRef = useRef(isFollowed);
 
-  isDeletedRef.current = state.isDeleted;
+  isConfirmedRef.current = isConfirmed;
 
-  isFollowedRef.current = state.isFollowed;
+  isDeletedRef.current = isDeleted;
+
+  isFollowedRef.current = isFollowed;
 
   const confirmHandler = () => {
     dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
@@ -48,6 +62,8 @@ const RequestItemButtonGroup = () => {
           isConfirmButtonLoading: false,
         },
       });
+
+      confirmRequest(userId);
     }, 1000);
   };
 
@@ -62,6 +78,8 @@ const RequestItemButtonGroup = () => {
           isDeleteButtonLoading: false,
         },
       });
+
+      removeRequest(userId);
     }, 1000);
   };
 
@@ -79,33 +97,46 @@ const RequestItemButtonGroup = () => {
     }, 1000);
   };
 
-  const content = !state.isConfirmed ? (
+  const content = !isConfirmed ? (
     <>
-      <RequestItemConfirmButton
-        type="primary"
-        loading={state.isConfirmButtonLoading}
-        onClick={confirmHandler}
-      >
-        Confirm
-      </RequestItemConfirmButton>
-      <RequestItemDeleteButton
-        loading={state.isDeleteButtonLoading}
-        disabled={state.isConfirmButtonLoading}
-        onClick={deleteHandler}
-      >
-        Delete
-      </RequestItemDeleteButton>
+      <DisabledButtonWrapper $disabled={isDeleteButtonLoading}>
+        <RequestItemConfirmButton
+          type="primary"
+          loading={isConfirmButtonLoading}
+          disabled={isDeleteButtonLoading}
+          onClick={confirmHandler}
+        >
+          Confirm
+        </RequestItemConfirmButton>
+      </DisabledButtonWrapper>
+      <DisabledButtonWrapper $disabled={isConfirmButtonLoading}>
+        <RequestItemDeleteButton
+          loading={isDeleteButtonLoading}
+          disabled={isConfirmButtonLoading}
+          onClick={deleteHandler}
+        >
+          Delete
+        </RequestItemDeleteButton>
+      </DisabledButtonWrapper>
     </>
   ) : (
-    <RequestItemFollowButton
-      loading={state.isFollowButtonLoading}
-      onClick={followHandler}
-    >
-      Follow
-    </RequestItemFollowButton>
+    <DisabledButtonWrapper $disabled={isFollowButtonLoading}>
+      <RequestItemFollowButton
+        type={!isFollowed ? 'primary' : 'default'}
+        loading={isFollowButtonLoading}
+        onClick={followHandler}
+        $isFollowed={isFollowed}
+      >
+        {isFollowed ? 'Following' : 'Follow'}
+      </RequestItemFollowButton>
+    </DisabledButtonWrapper>
   );
 
   return <StyledRequestItemButtonGroup>{content}</StyledRequestItemButtonGroup>;
+};
+
+RequestItemButtonGroup.propTypes = {
+  userId: PropTypes.number.isRequired,
 };
 
 export default RequestItemButtonGroup;

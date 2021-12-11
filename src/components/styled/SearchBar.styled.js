@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import {wh} from './Mixins';
+import {wh, hideScrollBarScrolling} from './Mixins';
 import {Input} from './Lib';
+import Button from '../Button';
 import SearchIcon from '../icons/SearchIcon';
 
 export const StyledSearchBar = styled.form`
@@ -42,4 +43,54 @@ export const SearchInputSearchIcon = styled(SearchIcon)`
   ${SearchInput}:focus ~ & {
     display: none;
   }
+`;
+
+const flexCenter = `
+	justify-content: center;
+	align-items: center;
+`;
+
+export const SearchHistory = styled.div`
+  --width-search-history-diff: 75px;
+  position: absolute;
+  top: calc(100% + 14px);
+  left: calc(-1 * var(--width-search-history-diff) / 2);
+  width: calc(var(--width-search-bar) + var(--width-search-history-diff));
+  height: 362px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
+  background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
+  z-index: 1;
+  overflow-y: auto;
+  display: none;
+  flex-direction: column;
+  ${hideScrollBarScrolling}
+  ${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
+
+  ${SearchInput}:focus ~ & {
+    display: flex;
+  }
+`;
+
+export const NoResultsText = styled.p`
+  color: ${({theme}) => theme.colors.secondary};
+  font-weight: 400;
+  text-align: center;
+`;
+
+export const SearchHistoryHeader = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 8px;
+`;
+
+export const SearchHistoryHeaderTitle = styled.h3`
+  display: inline-block;
+  font-size: 1.6rem;
+  font-weight: 600;
+`;
+
+export const ClearAllButton = styled(Button)`
+  padding: 0;
 `;

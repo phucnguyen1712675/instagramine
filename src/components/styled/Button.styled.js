@@ -73,7 +73,8 @@ const defaultType = css`
   	border: 1px solid ${theme.colors.borderGray};
 	`}
 
-  ${({$disabledHover}) => !$disabledHover && buttonColorHover}
+  ${({$disabledHover, $loading}) =>
+    !$disabledHover && !$loading && buttonColorHover}
 `;
 
 const loadingStyle = css`
@@ -111,14 +112,6 @@ export const StyledButton = styled.button`
   text-decoration: none;
   appearance: none;
 
-  &:disabled,
-  &[disabled] {
-    pointer-events: none;
-    color: rgba(27, 29, 40, 0.5);
-  }
-
-  ${({$block}) => $block && 'width: 100%;'}
-
   ${({$size}) => {
     switch ($size) {
       case 'small':
@@ -153,6 +146,26 @@ export const StyledButton = styled.button`
         return defaultType;
     }
   }}
+  ${({$block}) => $block && 'width: 100%;'}
 
 	${({$loading}) => $loading && loadingStyle}
+
+	&:disabled,
+  &[disabled] {
+    pointer-events: none;
+
+    ${({$type}) => {
+    switch ($type) {
+      case 'primary':
+      case 'link':
+      case 'text':
+        return `
+          border-color: transparent;
+          background-color: rgba(51, 141, 246, 0.8);
+        `;
+      default:
+        return 'color: rgba(27, 29, 40, 0.5);';
+    }
+  }}
+  }
 `;

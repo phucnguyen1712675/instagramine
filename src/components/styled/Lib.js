@@ -57,3 +57,19 @@ export const MenuItem = styled.li`
     background-color: #fafafa;
   }
 `;
+
+export const DisabledButtonWrapper = styled.div`
+  display: inline-block;
+
+  ${({$disabled}) => $disabled && 'cursor: not-allowed;'}
+`;
+
+export const VisuallyHidden = styled.span`
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+`;

@@ -33,6 +33,7 @@ import {
   CreatePostButton,
 } from './styled/UserMenu.styled';
 import GlobalContext from '../store/global-context';
+import {FollowRequestsContextProvider} from '../store/follow-requests-context';
 import {
   MAX_SOCIAL_LINK_NUMBER,
   MAX_STORIES_NUMBER,
@@ -158,7 +159,9 @@ const UserMenu = () => {
           Create Post
         </CreatePostButton>
       </UserMenuBottomContent>
-      <NotificationButton followRequests={currentUser.followRequests} />
+      <FollowRequestsContextProvider>
+        <NotificationButton />
+      </FollowRequestsContextProvider>
     </StyledUserMenu>
   );
 };

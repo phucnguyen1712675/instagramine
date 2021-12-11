@@ -2,6 +2,7 @@ import React from 'react';
 import {ThemeProvider} from 'styled-components';
 import theme from './styled.theme';
 import {GlobalContextProvider} from './store/global-context';
+import {SearchHistoryResultsContextProvider} from './store/search-history-results-context';
 import GlobalStyles from './components/styled/Global';
 import MainContent from './components/MainContent';
 import UserMenu from './components/UserMenu';
@@ -34,7 +35,9 @@ const App = () => {
             <AppLogoIcon />
             <LogoTextIcon />
           </AppLogo>
-          <SearchBar />
+          <SearchHistoryResultsContextProvider>
+            <SearchBar />
+          </SearchHistoryResultsContextProvider>
         </Header>
         <Sidebar>
           <Nav>

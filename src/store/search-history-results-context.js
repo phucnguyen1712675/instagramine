@@ -9,6 +9,8 @@ const initialState = {
   // eslint-disable-next-line no-unused-vars
   removeUser: (userId) => {},
   removeAllUsers: () => {},
+  // eslint-disable-next-line no-unused-vars
+  filteredUsers: (query) => {},
 };
 
 const SearchHistoryResultsContext = createContext(initialState);
@@ -16,18 +18,37 @@ const SearchHistoryResultsContext = createContext(initialState);
 export const SearchHistoryResultsContextProvider = ({children}) => {
   const [users, setUsers] = useState(searchHistoryData);
 
-  const addUser = (user) => setUsers((prevUsers) => [...prevUsers, user]);
+  const addUser = (user) => {
+    setUsers((prevUsers) => [...prevUsers, user]);
+  };
 
-  const removeUser = (userId) =>
+  const removeUser = (userId) => {
     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+  };
 
-  const removeAllUsers = () => setUsers([]);
+  const removeAllUsers = () => {
+    setUsers([]);
+  };
+
+  const filteredUsers = (query) => {
+    if (!query) {
+      return;
+    }
+
+    const filteredUsers = users.filter((user) => {
+      const username = user.username.toLowerCase();
+      return username.includes(query);
+    });
+
+    setUsers(filteredUsers);
+  };
 
   const context = {
     users,
     addUser,
     removeUser,
     removeAllUsers,
+    filteredUsers,
   };
 
   return (
