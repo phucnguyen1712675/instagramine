@@ -3,24 +3,25 @@ import PropTypes from 'prop-types';
 import dateFormat from 'dateformat';
 import moment from 'moment';
 import Carousel from './Carousel';
-import LikedButton from './LikedButton';
-import SavedButton from './SavedButton';
 import Avatar from './Avatar';
 import ReadMore from './ReadMore';
 import CommentIcon from './icons/CommentIcon';
 import ShareIcon from './icons/ShareIcon';
 import ThreeDotsIcon from './icons/ThreeDotsIcon';
+import HeartICon from './icons/HeartIcon';
+import SavedIcon from './icons/SavedIcon';
 import {PostMediaWrapper} from './styled/Lib';
 import {
   StyledPost,
   PostHeader,
-  PostHeaderLocation,
   MoreOptionButton,
   PostContent,
   PostTopContent,
   PostBottomContent,
   PostActions,
   PostActionButton,
+  LikedButton,
+  SavedButton,
   PostLikedUsersInfo,
   PostLikedUsersStatement,
   PostLikedUsersHighlight,
@@ -38,27 +39,9 @@ import {POST_CAPTION_SHOW_CHAR} from '../constants';
 const Post = ({post}) => {
   const [likeAmount, setLikeAmount] = useState(post.otherLikedUserAmount);
 
-  const avatarComponent = (
-    <Avatar
-      url={post.avatar}
-      hasStory={post.hasStory}
-      hasStoryBeenSeen={post.hasStoryBeenSeen}
-      asLink={!post.hasStory}
-      profile={post.profile}
-    />
-  );
+  const [isLiked, setIsLiked] = useState(post.isLiked);
 
-  const bottomTextComponent = (
-    <PostHeaderLocation href={location}>
-      {post.city}, {post.country}
-    </PostHeaderLocation>
-  );
-
-  const optionComponent = (
-    <MoreOptionButton type="text">
-      <ThreeDotsIcon />
-    </MoreOptionButton>
-  );
+  const [isSaved, setIsSaved] = useState(post.isSaved);
 
   const mediaContent =
     post.media.length === 1 ? (
@@ -103,36 +86,67 @@ const Post = ({post}) => {
 
   const formattedPostDate = formatPostDate(post.date);
 
-  const changePostLikeAmountHandler = (isLiked) => {
+  const likeButtonHandler = () => {
     isLiked
       ? setLikeAmount((prevState) => prevState - 1)
       : setLikeAmount((prevState) => prevState + 1);
+
+    setIsLiked((prevState) => !prevState);
+  };
+
+  const savePostHandler = () => {
+    setIsSaved((prevState) => !prevState);
   };
 
   return (
     <StyledPost>
       <PostHeader
-        avatarComponent={avatarComponent}
+        avatarComponent={
+          <Avatar
+            url={post.avatar}
+            hasStory={post.hasStory}
+            hasStoryBeenSeen={post.hasStoryBeenSeen}
+            asLink={!post.hasStory}
+            profile={post.profile}
+          />
+        }
         topText={post.username}
         profile={post.profile}
-        bottomTextComponent={bottomTextComponent}
-        optionComponent={optionComponent}
+        bottomTextComponent={
+          <a href={location}>
+            {post.city}, {post.country}
+          </a>
+        }
+        optionComponent={
+          <MoreOptionButton>
+            <ThreeDotsIcon />
+          </MoreOptionButton>
+        }
       />
       <PostContent>
         <PostTopContent>{mediaContent}</PostTopContent>
         <PostBottomContent>
           <PostActions mediaLength={post.media.length}>
             <LikedButton
-              isLiked={post.isLiked}
-              changePostLikeAmountHandler={changePostLikeAmountHandler}
-            />
+              type="text"
+              onClick={likeButtonHandler}
+              $isLiked={isLiked}
+            >
+              <HeartICon />
+            </LikedButton>
             <PostActionButton type="text">
               <CommentIcon />
             </PostActionButton>
             <PostActionButton type="text">
               <ShareIcon />
             </PostActionButton>
-            <SavedButton isSaved={post.isSaved} />
+            <SavedButton
+              type="text"
+              onClick={savePostHandler}
+              $isSaved={isSaved}
+            >
+              <SavedIcon />
+            </SavedButton>
           </PostActions>
           <PostLikedUsersInfo>
             <PostLikedUsersStatement>
@@ -147,7 +161,7 @@ const Post = ({post}) => {
             </PostLikedUsersStatement>
             <PostLikedUsersAvatarGroup href={post.likedUsersLink}>
               {post.likedOtherUser.map((url, index) => (
-                <PostLikedUsersAvatar key={index} url={url} hasStory={false} />
+                <PostLikedUsersAvatar key={index} url={url} />
               ))}
             </PostLikedUsersAvatarGroup>
           </PostLikedUsersInfo>

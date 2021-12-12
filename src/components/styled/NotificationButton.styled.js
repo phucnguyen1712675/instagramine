@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem} from './Lib';
 import {hideScrollBarScrolling} from './Mixins';
 import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
@@ -6,7 +6,7 @@ import {TextContent} from './UserCard.styled';
 import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
 import UserCard from '../UserCard';
 
-const flexCenter = `
+const flexCenter = css`
 	align-items: center;
 	justify-content: center;
 `;

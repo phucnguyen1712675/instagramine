@@ -1,4 +1,4 @@
-import {useState, useContext} from 'react';
+import {useState} from 'react';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
 import BellIcon from './icons/BellIcon';
 import RightChevron from './icons/RightChevron';
@@ -17,11 +17,11 @@ import {
   RequestItem,
   RequestItemContent,
 } from './styled/NotificationButton.styled';
-import FollowRequestsContext from '../store/follow-requests-context';
 import {onErrorMedia} from '../utils/media';
+import followRequestsData from '../data/follow-requests.json';
 
 const NotificationButton = () => {
-  const {followRequests} = useContext(FollowRequestsContext);
+  const [followRequests, setFollowRequests] = useState(followRequestsData);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,6 +44,15 @@ const NotificationButton = () => {
 
   const onClickAllRequestsHandler = () => {
     setShowRequests(true);
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const confirmRequest = (userId) => {};
+
+  const removeRequest = (userId) => {
+    setFollowRequests((prevRequests) =>
+      prevRequests.filter((user) => user.id !== userId)
+    );
   };
 
   const followRequestsLength = followRequests.length;
@@ -114,7 +123,13 @@ const NotificationButton = () => {
               </NotificationMenuItemBottomText>
             ) : null
           }
-          optionComponent={<RequestItemButtonGroup userId={user.id} />}
+          optionComponent={
+            <RequestItemButtonGroup
+              userId={user.id}
+              confirmRequest={confirmRequest}
+              removeRequest={removeRequest}
+            />
+          }
         />
       </RequestItem>
     ));

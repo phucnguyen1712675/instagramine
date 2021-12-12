@@ -2,30 +2,30 @@ import styled, {css} from 'styled-components';
 import {brighterHover, buttonColorHover, wh} from './Mixins';
 import Spinner from '../Spinner';
 
-const smallSize = `
+const smallSize = css`
   font-size: 1.4rem;
   padding: 0 7px;
 `;
 
-const largeSize = `
+const largeSize = css`
   font-size: 1.6rem;
   padding: 6.4px 15px;
 `;
 
-const mediumSize = `
+const mediumSize = css`
   font-size: 1.4rem;
   padding: 4px 15px;
 `;
 
-const circleShape = `
+const circleShape = css`
   border-radius: 50%;
 `;
 
-const roundShape = `
+const roundShape = css`
   border-radius: 40px;
 `;
 
-const defaultShape = `
+const defaultShape = css`
   border-radius: 5px;
 `;
 

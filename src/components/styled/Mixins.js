@@ -1,17 +1,17 @@
 import {css} from 'styled-components';
 
-export const wh = ({w = '100%', h = w}) => `
+export const wh = ({w = '100%', h = w}) => css`
   width: ${w};
   height: ${h};
 `;
 
-export const circle = ({w = '100%', h = w}) => `
+export const circle = ({w = '100%', h = w}) => css`
   ${wh({w, h})};
   border-radius: 100%;
-	overflow: hidden;
+  overflow: hidden;
 `;
 
-export const hideScrollBarScrolling = `
+export const hideScrollBarScrolling = css`
   /* Hide scrollbar for IE, Edge and Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
@@ -29,13 +29,13 @@ export const hoverUnderline = ({color}) => css`
   }
 `;
 
-export const brighterHover = `
-	transition: filter 0.2s ease-out;
-	
-	&:hover {
-		--amount: 1.2;
-	  filter: brightness(var(--amount));
-	}
+export const brighterHover = css`
+  transition: filter 0.2s ease-out;
+
+  &:hover {
+    --amount: 1.2;
+    filter: brightness(var(--amount));
+  }
 `;
 
 export const buttonColorHover = ({color}) => css`

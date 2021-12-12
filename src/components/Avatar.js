@@ -53,7 +53,7 @@ const Avatar = ({
 Avatar.propTypes = {
   className: PropTypes.string,
   url: PropTypes.string.isRequired,
-  hasStory: PropTypes.bool.isRequired,
+  hasStory: PropTypes.bool,
   hasStoryBeenSeen: function (props, propName, componentName) {
     if (
       props['hasStory'] &&
@@ -78,6 +78,7 @@ Avatar.propTypes = {
 
 Avatar.defaultProps = {
   asLink: false,
+  hasStory: false,
   disableOnClickHandler: false,
 };
 

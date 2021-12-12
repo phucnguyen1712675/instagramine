@@ -25,17 +25,4 @@ export const Menu = styled.ul`
   }
 `;
 
-export const OverlayLabel = styled.label`
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-	background-color: transparent;
-	z-index: 2;
-	display: none;
 
-	${FakeCheckbox}:checked ~ & {
-    display: block;
-  }
-`;

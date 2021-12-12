@@ -1,11 +1,10 @@
 import {useState, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {FakeCheckbox} from './styled/Lib';
+import {FakeCheckbox, OverlayLabel} from './styled/Lib';
 import {
   StyledOverlayMenuIconButtonWithTooltip,
   LabelButton,
   Menu,
-  OverlayLabel,
 } from './styled/OverlayMenuIconButtonWithTooltip.styled';
 
 const OverlayMenuIconButtonWithTooltip = ({

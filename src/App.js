@@ -1,8 +1,6 @@
 import React from 'react';
 import {ThemeProvider} from 'styled-components';
 import theme from './styled.theme';
-import {GlobalContextProvider} from './store/global-context';
-import {SearchHistoryResultsContextProvider} from './store/search-history-results-context';
 import GlobalStyles from './components/styled/Global';
 import MainContent from './components/MainContent';
 import UserMenu from './components/UserMenu';
@@ -35,9 +33,7 @@ const App = () => {
             <AppLogoIcon />
             <LogoTextIcon />
           </AppLogo>
-          <SearchHistoryResultsContextProvider>
-            <SearchBar />
-          </SearchHistoryResultsContextProvider>
+          <SearchBar />
         </Header>
         <Sidebar>
           <Nav>
@@ -67,12 +63,11 @@ const App = () => {
           </Nav>
         </Sidebar>
         <MainContent />
-        <GlobalContextProvider>
-          <UserMenu />
-        </GlobalContextProvider>
+        <UserMenu />
       </Layout>
     </ThemeProvider>
   );
 };
 
 export default App;
+	

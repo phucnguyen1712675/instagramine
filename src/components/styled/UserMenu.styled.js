@@ -211,7 +211,7 @@ export const PlayButton = styled(Button)`
   ${buttonColorHover}
 `;
 
-const gradientBackground = `
+const gradientBackground = css`
 	background: linear-gradient(
 	99.27deg,
 	#ff1cf6 -35.3%,

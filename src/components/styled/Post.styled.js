@@ -26,19 +26,21 @@ export const PostHeader = styled(UserCard)`
   flex-shrink: 0;
 `;
 
-const darkerButtonHover = `
-	&:hover {
-		--amount: 0.8;
-	}
+const darkerButtonHover = css`
+  &:hover {
+    --amount: 0.8;
+  }
 `;
 
-export const PostHeaderLocation = styled.a``;
-
-export const MoreOptionButton = styled(Button)`
+export const MoreOptionButton = styled.label`
   font-size: 1.8rem;
+  cursor: pointer;
   color: ${({theme}) => theme.colors.blueAlphaAction};
-  padding: 5px;
-  ${darkerButtonHover}
+  transition: color 0.2s ease-out;
+
+  &:hover {
+    color: hsl(214, 36%, 57%);
+  }
 `;
 
 export const PostContent = styled.div`
@@ -72,6 +74,30 @@ export const PostActionButton = styled(Button)`
   &:last-child {
     margin-left: auto;
   }
+`;
+
+export const LikedButton = styled(PostActionButton)`
+  ${({$isLiked, theme}) =>
+    $isLiked &&
+    css`
+      color: ${theme.colors.likedButton};
+
+      &:hover {
+        --amount: 1.2;
+      }
+    `}
+`;
+
+export const SavedButton = styled(PostActionButton)`
+  ${({$isSaved}) =>
+    $isSaved &&
+    css`
+      color: ${({theme}) => theme.colors.primary};
+
+      &:hover {
+        --amount: 2.4;
+      }
+    `}
 `;
 
 export const PostLikedUsersInfo = styled.div`

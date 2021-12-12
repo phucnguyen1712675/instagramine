@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import React from 'react';
 import NotificationButton from './NotificationButton';
 import PlayIcon from './icons/PlayIcon';
 import {
@@ -32,18 +32,15 @@ import {
   PlayButton,
   CreatePostButton,
 } from './styled/UserMenu.styled';
-import GlobalContext from '../store/global-context';
-import {FollowRequestsContextProvider} from '../store/follow-requests-context';
 import {
   MAX_SOCIAL_LINK_NUMBER,
   MAX_STORIES_NUMBER,
   MAX_CHARS_BIO_USER_MENU,
 } from '../constants';
 import {onErrorMedia} from '../utils/media';
+import currentUser from '../data/current-user';
 
 const UserMenu = () => {
-  const {currentUser} = useContext(GlobalContext);
-
   const kFormatter = (num) =>
     Math.abs(num) > 999
       ? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + 'K'
@@ -159,9 +156,7 @@ const UserMenu = () => {
           Create Post
         </CreatePostButton>
       </UserMenuBottomContent>
-      <FollowRequestsContextProvider>
-        <NotificationButton />
-      </FollowRequestsContextProvider>
+      <NotificationButton />
     </StyledUserMenu>
   );
 };

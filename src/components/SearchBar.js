@@ -125,6 +125,7 @@ const SearchBar = () => {
         ref={inputRef}
         id="search_input"
         name="query"
+        placeholder="Search"
         value={query}
         onChange={handleChange}
         onFocus={onFocus}

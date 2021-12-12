@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {wh, hideScrollBarScrolling} from './Mixins';
 import {Input} from './Lib';
 import Button from '../Button';
@@ -14,7 +14,6 @@ export const StyledSearchBar = styled.form`
 export const SearchInput = styled(Input).attrs(() => ({
   type: 'search',
   autoComplete: 'off',
-  placeholder: 'Search',
 }))`
   --padding-cancel-button: 25px;
   position: absolute;
@@ -45,9 +44,9 @@ export const SearchInputSearchIcon = styled(SearchIcon)`
   }
 `;
 
-const flexCenter = `
-	justify-content: center;
-	align-items: center;
+const flexCenter = css`
+  justify-content: center;
+  align-items: center;
 `;
 
 export const SearchHistory = styled.div`

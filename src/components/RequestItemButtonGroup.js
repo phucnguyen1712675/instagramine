@@ -1,4 +1,4 @@
-import {useReducer, useRef, useContext} from 'react';
+import {useReducer, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {DisabledButtonWrapper} from './styled/Lib';
 import {
@@ -7,7 +7,6 @@ import {
   RequestItemFollowButton,
   RequestItemDeleteButton,
 } from './styled/RequestItemButtonGroup.styled';
-import FollowRequestsContext from '../store/follow-requests-context';
 import RequestItemReducer from '../reducers/request-item-button-group-reducer';
 import {
   SET_IS_CONFIRM_BUTTON_LOADING,
@@ -18,9 +17,7 @@ import {
   USER_HAS_BEEN_FOLLOWED,
 } from '../actions/request-item-button-group-actions';
 
-const RequestItemButtonGroup = ({userId}) => {
-  const {confirmRequest, removeRequest} = useContext(FollowRequestsContext);
-
+const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
   const [state, dispatch] = useReducer(RequestItemReducer, {
     isConfirmed: false,
     isDeleted: false,
@@ -137,6 +134,8 @@ const RequestItemButtonGroup = ({userId}) => {
 
 RequestItemButtonGroup.propTypes = {
   userId: PropTypes.number.isRequired,
+  confirmRequest: PropTypes.func.isRequired,
+  removeRequest: PropTypes.func.isRequired,
 };
 
 export default RequestItemButtonGroup;

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {buttonColorHover} from './Mixins';
 import Button from '../Button';
 
@@ -8,7 +8,7 @@ export const StyledRequestItemButtonGroup = styled.div`
   column-gap: 8px;
 `;
 
-const requestItemButtonStyle = `
+const requestItemButtonStyle = css`
 	padding: 0;
 	height: 30px;
 `;
