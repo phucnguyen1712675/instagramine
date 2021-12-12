@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useReducer} from 'react';
 import PropTypes from 'prop-types';
 import dateFormat from 'dateformat';
 import moment from 'moment';
@@ -35,13 +35,17 @@ import {
 } from './styled/Post.styled';
 import PostMedia from './PostMedia';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
+import PostReducer from '../reducers/post-reducer';
+import {SET_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
 
 const Post = ({post}) => {
-  const [likeAmount, setLikeAmount] = useState(post.otherLikedUserAmount);
+  const [state, dispatch] = useReducer(PostReducer, {
+    likeAmount: post.likeAmount,
+    isLiked: post.isLiked,
+    isSaved: post.isSaved,
+  });
 
-  const [isLiked, setIsLiked] = useState(post.isLiked);
-
-  const [isSaved, setIsSaved] = useState(post.isSaved);
+  const {likeAmount, isLiked, isSaved} = state;
 
   const mediaContent =
     post.media.length === 1 ? (
@@ -87,15 +91,15 @@ const Post = ({post}) => {
   const formattedPostDate = formatPostDate(post.date);
 
   const likeButtonHandler = () => {
-    isLiked
-      ? setLikeAmount((prevState) => prevState - 1)
-      : setLikeAmount((prevState) => prevState + 1);
-
-    setIsLiked((prevState) => !prevState);
+    if (isLiked) {
+      dispatch({type: UNLIKE_POST});
+    } else {
+      dispatch({type: LIKE_POST});
+    }
   };
 
   const savePostHandler = () => {
-    setIsSaved((prevState) => !prevState);
+    dispatch({type: SET_IS_SAVED, payload: !isSaved});
   };
 
   return (
@@ -179,7 +183,40 @@ const Post = ({post}) => {
 };
 
 Post.propTypes = {
-  post: PropTypes.object.isRequired,
+  post: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    avatar: PropTypes.string.isRequired,
+    profile: PropTypes.string.isRequired,
+    hasStory: PropTypes.bool.isRequired,
+    hasStoryBeenSeen: function (props, propName, componentName) {
+      if (
+        props['hasStory'] &&
+        (props[propName] == undefined || typeof props[propName] != 'boolean')
+      ) {
+        return new Error(
+          `Please provide 'hasStoryBeenSeen' prop for ${componentName}!`
+        );
+      }
+    },
+    username: PropTypes.string.isRequired,
+    city: PropTypes.string.isRequired,
+    country: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    media: PropTypes.arrayOf(
+      PropTypes.shape({
+        url: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+    isLiked: PropTypes.bool.isRequired,
+    isSaved: PropTypes.bool.isRequired,
+    likedUser: PropTypes.string.isRequired,
+    likedOtherUser: PropTypes.arrayOf(PropTypes.string).isRequired,
+    likeAmount: PropTypes.number.isRequired,
+    likedUsersLink: PropTypes.string.isRequired,
+    caption: PropTypes.string.isRequired,
+    date: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 export default Post;
