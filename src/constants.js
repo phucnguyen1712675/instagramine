@@ -94,3 +94,7 @@ export const MAX_SOCIAL_LINK_NUMBER = 3;
 export const MAX_STORIES_NUMBER = 3;
 
 export const MAX_CHARS_BIO_USER_MENU = 49;
+
+export const PATHS = {
+  LOGIN_PAGE: 'login',
+};

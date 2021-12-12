@@ -1,27 +1,11 @@
-import {
-  SET_LIKE_AMOUNT,
-  SET_IS_LIKED,
-  SET_IS_SAVED,
-  LIKE_POST,
-  UNLIKE_POST,
-} from '../actions/post-actions';
+import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
 
 export default (state, action) => {
   switch (action.type) {
-    case SET_LIKE_AMOUNT:
+    case TOGGLE_IS_SAVED:
       return {
         ...state,
-        likeAmount: action.payload,
-      };
-    case SET_IS_LIKED:
-      return {
-        ...state,
-        isLiked: action.payload,
-      };
-    case SET_IS_SAVED:
-      return {
-        ...state,
-        isSaved: action.payload,
+        isSaved: !state.isSaved,
       };
     case LIKE_POST:
       return {

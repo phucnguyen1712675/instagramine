@@ -56,7 +56,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
   };
 };
 
-export default useForm;
+export {useForm};
 
 // function App() {
 //   const {

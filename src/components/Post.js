@@ -36,7 +36,7 @@ import {
 import PostMedia from './PostMedia';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
 import PostReducer from '../reducers/post-reducer';
-import {SET_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
+import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
 
 const Post = ({post}) => {
   const [state, dispatch] = useReducer(PostReducer, {
@@ -99,7 +99,7 @@ const Post = ({post}) => {
   };
 
   const savePostHandler = () => {
-    dispatch({type: SET_IS_SAVED, payload: !isSaved});
+    dispatch({type: TOGGLE_IS_SAVED});
   };
 
   return (

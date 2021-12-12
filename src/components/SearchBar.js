@@ -12,7 +12,7 @@ import {
   ClearAllButton,
   NoResultsText,
 } from './styled/SearchBar.styled';
-import useBlur from '../hooks/useBlur';
+import {useBlur} from '../hooks/useBlur';
 import SearchBarReducer from '../reducers/search-bar-reducer';
 import {
   SET_HAS_OPENED,
