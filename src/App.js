@@ -1,11 +1,11 @@
 import React from 'react';
 import {Routes, Route} from 'react-router-dom';
-import AppStyles from './AppStyles';
 import {PATHS} from './constants';
 import HomePage from './routes/HomePage';
 import LoginPage from './routes/LoginPage';
 import NoMatchPage from './routes/NoMatchPage';
 import {AuthContextProvider} from './store/auth-context';
+import AppStyles from './components/AppStyles';
 import RequireAuth from './components/RequireAuth';
 
 const App = () => {

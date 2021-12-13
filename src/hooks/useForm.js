@@ -1,48 +1,95 @@
-import {useState} from 'react';
+import {useReducer} from 'react';
+
+const SET_VALUES = 'SET_VALUES';
+const SET_ERRORS = 'SET_ERRORS';
+const HANDLE_BLUR = 'HANDLE_BLUR';
+const RESET = 'RESET';
+// const SET_TOUCHED_VALUES = 'SET_TOUCHED_VALUES';
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case SET_VALUES: {
+      const {name, value} = action.payload;
+
+      return {
+        ...state,
+        values: {
+          ...state.values,
+          [name]: value,
+        },
+      };
+    }
+    case SET_ERRORS:
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          ...action.payload,
+        },
+      };
+    case HANDLE_BLUR: {
+      const {name, error} = action.payload;
+
+      return {
+        ...state,
+        touchedValues: {
+          ...state.touchedValues,
+          [name]: true,
+        },
+        errors: {
+          ...state.errors,
+          ...error,
+        },
+      };
+    }
+    case RESET:
+      return {
+        ...state,
+        values: action.payload,
+        touchedValues: {},
+        errors: {},
+      };
+    default:
+      return state;
+  }
+};
 
 const useForm = ({initialValues, onSubmit, validate}) => {
-  const [values, setValues] = useState(initialValues || {});
-  const [touchedValues, setTouchedValues] = useState({});
-  const [errors, setErrors] = useState({});
+  const [state, dispatch] = useReducer(reducer, {
+    values: initialValues ?? {},
+    touchedValues: {},
+    errors: {},
+  });
+
+  const {values, touchedValues, errors} = state;
 
   const handleChange = (event) => {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    setValues({
-      ...values,
-      [name]: value,
-    });
+
+    dispatch({type: SET_VALUES, payload: {name, value}});
   };
 
   const handleBlur = (event) => {
     const target = event.target;
     const name = target.name;
-    setTouchedValues({
-      ...touchedValues,
-      [name]: true,
-    });
-    const e = validate(values);
-    setErrors({
-      ...errors,
-      ...e,
-    });
+    const error = validate(values);
+
+    dispatch({type: HANDLE_BLUR, payload: {name, error}});
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const e = validate(values);
-    setErrors({
-      ...errors,
-      ...e,
-    });
-    onSubmit({values, e});
+    const error = validate(values);
+
+    dispatch({type: SET_ERRORS, payload: error});
+
+    onSubmit({values, error});
   };
 
   const reset = (values = initialValues) => {
-    setValues(values);
-    setTouchedValues({});
-    setErrors({});
+    dispatch({type: RESET, payload: values});
   };
 
   return {

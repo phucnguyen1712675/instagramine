@@ -212,11 +212,12 @@ export const PlayButton = styled(Button)`
 `;
 
 const gradientBackground = css`
-	background: linear-gradient(
-	99.27deg,
-	#ff1cf6 -35.3%,
-	rgba(253, 96, 28, 0.74) 66.33%,
-	#de2442 138.45%);
+  background: linear-gradient(
+    99.27deg,
+    #ff1cf6 -35.3%,
+    rgba(253, 96, 28, 0.74) 66.33%,
+    #de2442 138.45%
+  );
 `;
 
 export const CreatePostButton = styled(Button)`

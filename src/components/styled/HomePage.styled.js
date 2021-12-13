@@ -74,7 +74,7 @@ export const SettingMenuItem = styled(MenuItem)`
   padding: 14px 20px;
 
   &:last-child {
-    border-top: 1px solid #dbdbdb;
+    border-top: 1px solid ${({theme}) => theme.colors.borderGray};
   }
 `;
 

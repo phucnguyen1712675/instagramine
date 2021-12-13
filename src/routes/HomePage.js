@@ -18,7 +18,7 @@ import {
   SettingMenuItem,
   SettingMenuItemLink,
   SettingMenuItemText,
-} from '../components/styled/App.styled';
+} from '../components/styled/HomePage.styled';
 
 const HomePage = () => {
   return (

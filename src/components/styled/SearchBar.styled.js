@@ -19,8 +19,12 @@ export const SearchInput = styled(Input).attrs(() => ({
   position: absolute;
   left: 0;
   ${wh}
-  padding-left: 50px;
+  padding-top: 0;
   padding-right: calc(50px - var(--padding-cancel-button));
+  padding-bottom: 0;
+  padding-left: 50px;
+  font-size: 1.8rem;
+  border-radius: 8px;
 
   &::-webkit-search-cancel-button {
     position: relative;

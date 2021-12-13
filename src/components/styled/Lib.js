@@ -28,12 +28,12 @@ export const PostMediaWrapper = styled.div`
 export const Input = styled.input.attrs(() => ({
   type: 'text',
 }))`
-  padding: 0 50px;
-  font-size: 1.8rem;
+  padding: 9px 7px;
+  font-size: 1.4rem;
   font-weight: 400;
   background: #f8fbff;
   box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
-  border-radius: 8px;
+  border-radius: 5px;
 
   ${({theme}) => css`
     color: ${theme.colors.blueAlphaAction};
@@ -44,9 +44,9 @@ export const Input = styled.input.attrs(() => ({
   `};
 `;
 
-export const FakeCheckbox = styled.input.attrs(() => ({
+export const FakeCheckbox = styled.input.attrs({
   type: 'checkbox',
-}))`
+})`
   display: none;
 `;
 
