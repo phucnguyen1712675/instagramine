@@ -1,5 +1,7 @@
 import styled, {css} from 'styled-components';
+import {Link} from 'react-router-dom';
 import {circle} from './Mixins';
+import Button from '../Button';
 
 export const Dot = styled.span`
   --size: 4px;
@@ -25,9 +27,9 @@ export const PostMediaWrapper = styled.div`
   padding-right: var(--padding-horizontal);
 `;
 
-export const Input = styled.input.attrs(() => ({
+export const Input = styled.input.attrs({
   type: 'text',
-}))`
+})`
   padding: 9px 7px;
   font-size: 1.4rem;
   font-weight: 400;
@@ -79,12 +81,34 @@ export const DisabledButtonWrapper = styled.div`
   ${({$disabled}) => $disabled && 'cursor: not-allowed;'}
 `;
 
-export const VisuallyHidden = styled.span`
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
+export const AuthForm = styled.form`
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 100%;
+  margin: 24px 0;
+`;
+
+export const AuthInput = styled(Input)`
+  margin: 0 40px 12px;
+  outline: 1px solid rgba(175, 193, 217, 0.5);
+`;
+
+export const PasswordAuthInput = styled(AuthInput).attrs({
+  type: 'password',
+})``;
+
+export const SubmitButtonWrapper = styled(DisabledButtonWrapper)`
+  margin: 6px 40px;
+`;
+
+export const SubmitButton = styled(Button)`
+  font-size: 1.4rem;
+`;
+
+export const StyledLink = styled(Link)`
+  color: ${({theme}) => theme.colors.link};
+  font-weight: 600;
 `;

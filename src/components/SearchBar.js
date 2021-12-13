@@ -1,7 +1,7 @@
 import {useReducer, useEffect, useRef} from 'react';
 import Spinner from './Spinner';
 import SearchItemList from './SearchItemList';
-import {VisuallyHidden} from './styled/Lib';
+import HideLabel from './HideLabel';
 import {
   StyledSearchBar,
   SearchInput,
@@ -118,9 +118,7 @@ const SearchBar = () => {
 
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
-      <label htmlFor="search_input">
-        <VisuallyHidden>Search users</VisuallyHidden>
-      </label>
+      <HideLabel htmlFor="search_input">Search users</HideLabel>
       <SearchInput
         ref={inputRef}
         id="search_input"

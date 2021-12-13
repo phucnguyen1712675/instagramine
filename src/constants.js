@@ -60,4 +60,5 @@ export const MAX_CHARS_BIO_USER_MENU = 49;
 
 export const PATHS = {
   LOGIN_PAGE: 'login',
+  SIGNUP_PAGE: 'signup',
 };

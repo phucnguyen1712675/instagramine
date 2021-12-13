@@ -11,10 +11,10 @@ export const StyledSearchBar = styled.form`
   height: 48px;
 `;
 
-export const SearchInput = styled(Input).attrs(() => ({
+export const SearchInput = styled(Input).attrs({
   type: 'search',
   autoComplete: 'off',
-}))`
+})`
   --padding-cancel-button: 25px;
   position: absolute;
   left: 0;

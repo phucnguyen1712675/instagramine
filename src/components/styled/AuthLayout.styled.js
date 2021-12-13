@@ -1,17 +1,15 @@
 import styled, {css} from 'styled-components';
-import {Input, DisabledButtonWrapper} from './Lib';
-import Button from '../Button';
 import LogoTextIcon from '../icons/LogoTextIcon';
 
-export const StyledLoginPage = styled.div`
+export const StyledAuthLayout = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   row-gap: 10px;
-  height: 100vh;
+  min-height: 100vh;
 `;
 
-export const LoginPageInner = styled.div`
+export const AuthLayoutInner = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -21,7 +19,7 @@ export const LoginPageInner = styled.div`
   max-width: 350px;
 `;
 
-const ContainerStyle = styled.div`
+export const ContainerStyle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,15 +32,13 @@ const ContainerStyle = styled.div`
   border-radius: 5px;
 `;
 
-export const LoginFormWrapper = styled(ContainerStyle)``;
-
 export const Logo = styled(LogoTextIcon)`
   width: 175px;
   height: 51px;
   margin: 22px auto 12px;
 `;
 
-export const LoginForm = styled.form`
+export const AuthForm = styled.form`
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -52,23 +48,6 @@ export const LoginForm = styled.form`
   margin: 24px 0;
 `;
 
-const LoginInput = styled(Input)`
-  margin: 0 40px 12px;
-  outline: 1px solid rgba(175, 193, 217, 0.5);
+export const ChangeAuthPageText = styled.p`
+  margin: 15px;
 `;
-
-export const UsernameInput = styled(LoginInput)``;
-
-export const PasswordInput = styled(LoginInput).attrs({
-  type: 'password',
-})``;
-
-export const SubmitButtonWrapper = styled(DisabledButtonWrapper)`
-  margin: 6px 40px;
-`;
-
-export const SubmitButton = styled(Button)`
-  font-size: 1.4rem;
-`;
-
-export const SignUpWrapper = styled(ContainerStyle)``;
