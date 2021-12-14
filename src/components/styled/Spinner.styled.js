@@ -1,5 +1,4 @@
 import styled, {keyframes} from 'styled-components';
-import {wh} from './Mixins';
 
 const rotate = keyframes`
  from {
@@ -24,7 +23,6 @@ export const Bar = styled.div`
 
 export const StyledSpinner = styled.div`
   --color-spinner: ${({theme}) => theme.colors.secondary};
-	/* ${wh({w: '5.4rem'})} */
   position: relative;
   display: inline-block;
   background: transparent;

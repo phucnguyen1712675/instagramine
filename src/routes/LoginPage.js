@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {PATHS} from '../constants';
+import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
 import {useAuth} from '../hooks/useAuth';
 import {useForm} from '../hooks/useForm';
 import AuthLayout from '../components/AuthLayout';
@@ -34,28 +34,30 @@ const LoginPage = () => {
     onSubmit: (values) => {
       setIsLoading(true);
 
-      const {username} = values;
-
       setTimeout(() => {
-        auth.signIn({username}, () => {
-          navigate(from, {replace: true});
-        });
+        auth.signIn(
+          {
+            username: values.username,
+          },
+          () => {
+            navigate(from, {replace: true});
+          }
+        );
 
         setIsLoading(false);
       }, 1000);
     },
     validate: (values) => {
-      const {username, password} = values;
       const errors = {};
 
-      if (!username) {
+      if (!values.username) {
         errors.username = 'Please enter username';
       }
 
-      if (!password) {
+      if (!values.password) {
         errors.password = 'Please enter password';
-      } else if (password.length < 6) {
-        errors.password = 'Password must be at least 6 characters';
+      } else if (password.length < MAX_LENGTH_PASSWORD) {
+        errors.password = `Password must be at least ${MAX_LENGTH_PASSWORD} characters`;
       }
 
       return errors;
@@ -64,8 +66,7 @@ const LoginPage = () => {
 
   const {username, password} = values;
 
-  const disableSubmitButton =
-    isLoading || !username || !password || password.length < 6;
+  const disableSubmitButton = isLoading || !username || !password;
 
   return (
     <AuthLayout

@@ -1,12 +1,12 @@
 import {useReducer, useEffect, useRef} from 'react';
-import Spinner from './Spinner';
 import SearchItemList from './SearchItemList';
 import HideLabel from './HideLabel';
 import {
   StyledSearchBar,
-  SearchInput,
-  SearchInputSearchIcon,
+  SearchBarInput,
+  SearchBarInputSearchIcon,
   SearchHistory,
+  SearchHistorySpinner,
   SearchHistoryHeader,
   SearchHistoryHeaderTitle,
   ClearAllButton,
@@ -91,7 +91,7 @@ const SearchBar = () => {
   let searchHistoryContent;
 
   if (isLoading) {
-    searchHistoryContent = <Spinner />;
+    searchHistoryContent = <SearchHistorySpinner />;
   } else if (query) {
     if (filteredUsers.length > 0) {
       searchHistoryContent = (
@@ -119,7 +119,7 @@ const SearchBar = () => {
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
       <HideLabel htmlFor="search_input">Search users</HideLabel>
-      <SearchInput
+      <SearchBarInput
         ref={inputRef}
         id="search_input"
         name="query"
@@ -128,7 +128,7 @@ const SearchBar = () => {
         onChange={handleChange}
         onFocus={onFocus}
       />
-      <SearchInputSearchIcon />
+      <SearchBarInputSearchIcon />
       <SearchHistory
         $shouldCenterChild={
           isLoading ||

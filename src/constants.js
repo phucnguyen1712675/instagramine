@@ -6,6 +6,11 @@ import ReelIcon from './components/icons/ReelIcon';
 import StreamIcon from './components/icons/StreamIcon';
 import SavedListIcon from './components/icons/SavedListIcon';
 
+export const PATHS = {
+  LOGIN_PAGE: 'login',
+  SIGNUP_PAGE: 'signup',
+};
+
 export const NAV_ICONS = [
   {
     id: 0,
@@ -52,13 +57,6 @@ export const ONERROR_VIDEO_PLACEHOLDER =
 
 export const POST_CAPTION_SHOW_CHAR = 40;
 
-export const MAX_SOCIAL_LINK_NUMBER = 3;
-
 export const MAX_STORIES_NUMBER = 3;
 
-export const MAX_CHARS_BIO_USER_MENU = 49;
-
-export const PATHS = {
-  LOGIN_PAGE: 'login',
-  SIGNUP_PAGE: 'signup',
-};
+export const MAX_LENGTH_PASSWORD = 6;

@@ -27,8 +27,10 @@ export const PostMediaWrapper = styled.div`
   padding-right: var(--padding-horizontal);
 `;
 
-export const Input = styled.input.attrs({
+export const TextInput = styled.input.attrs({
   type: 'text',
+  autoComplete: 'off',
+  role: 'presentation',
 })`
   padding: 9px 7px;
   font-size: 1.4rem;
@@ -45,6 +47,10 @@ export const Input = styled.input.attrs({
     }
   `};
 `;
+
+export const SearchInput = styled(TextInput).attrs({
+  type: 'search',
+})``;
 
 export const FakeCheckbox = styled.input.attrs({
   type: 'checkbox',
@@ -101,13 +107,18 @@ export const AuthForm = styled.form`
   margin: 24px 0;
 `;
 
-export const AuthInput = styled(Input)`
-  margin: 0 40px 6px;
+export const AuthInput = styled(TextInput)`
+  margin: 0 40px 12px;
   outline: 1px solid rgba(175, 193, 217, 0.5);
 `;
 
 export const PasswordAuthInput = styled(AuthInput).attrs({
   type: 'password',
+  autocomplete: 'new-password',
+})``;
+
+export const EmailAuthInput = styled(AuthInput).attrs({
+  type: 'email',
 })``;
 
 export const ErrorText = styled.p`

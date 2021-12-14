@@ -5,6 +5,7 @@ import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import {TextContent} from './UserCard.styled';
 import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
 import UserCard from '../UserCard';
+import Spinner from '../Spinner';
 
 const flexCenter = css`
 	align-items: center;
@@ -34,6 +35,10 @@ export const StyledNotificationButton = styled(
     display: flex;
     flex-direction: column;
   }
+`;
+
+export const NotificationMenuSpinner = styled(Spinner)`
+	padding: 2.7rem;
 `;
 
 export const AllRequestsItem = styled(MenuItem)`

@@ -1,4 +1,4 @@
-import React from 'react';
+import {useContext} from 'react';
 import NotificationButton from './NotificationButton';
 import PlayIcon from './icons/PlayIcon';
 import {
@@ -32,15 +32,14 @@ import {
   PlayButton,
   CreatePostButton,
 } from './styled/UserMenu.styled';
-import {
-  MAX_SOCIAL_LINK_NUMBER,
-  MAX_STORIES_NUMBER,
-  MAX_CHARS_BIO_USER_MENU,
-} from '../constants';
+import {MAX_STORIES_NUMBER} from '../constants';
 import {onErrorMedia} from '../utils/media';
+import AuthContext from '../store/auth-context';
 import currentUser from '../data/current-user';
 
 const UserMenu = () => {
+  const {user} = useContext(AuthContext);
+
   const kFormatter = (num) =>
     Math.abs(num) > 999
       ? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + 'K'
@@ -50,7 +49,7 @@ const UserMenu = () => {
     socialLink.replace('https://', 'www.');
 
   const socialLinksContent = currentUser.socialLinks
-    .slice(0, MAX_SOCIAL_LINK_NUMBER)
+    .slice(0, 3)
     .map((link, index) => (
       <BioContentSocialLink key={index} href={link}>
         {socialLinkFormatter(link)}
@@ -98,7 +97,7 @@ const UserMenu = () => {
           hasStoryBeenSeen={currentUser.hasStoryBeenSeen}
         />
         <ThumbnailContentUserName>
-          {currentUser.username}
+          {user.username}
         </ThumbnailContentUserName>
         <ThumbnailContentJobDescription>
           {currentUser.job}
@@ -137,7 +136,7 @@ const UserMenu = () => {
         <BioContentContainer>
           <SectionTitle>{currentUser.name}</SectionTitle>
           <BioContent
-            showChar={MAX_CHARS_BIO_USER_MENU}
+            showChar={49}
             readMoreText="(Read more)"
             showLessText="(Show less)"
             readMoreLink={currentUser.profile}

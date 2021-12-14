@@ -2,9 +2,9 @@ import {useState} from 'react';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
 import BellIcon from './icons/BellIcon';
 import RightChevron from './icons/RightChevron';
-import Spinner from './Spinner';
 import {
   StyledNotificationButton,
+  NotificationMenuSpinner,
   AllRequestsItem,
   AllRequestsItemContent,
   NotificationMenuItemBottomText,
@@ -60,7 +60,7 @@ const NotificationButton = () => {
   let content;
 
   if (isLoading) {
-    content = <Spinner />;
+    content = <NotificationMenuSpinner />;
   } else if (!showRequests) {
     if (followRequestsLength > 0) {
       content = (

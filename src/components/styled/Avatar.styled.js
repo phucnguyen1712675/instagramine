@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {CircleImgWrapper} from './Lib';
 
 export const StyledAvatar = styled(CircleImgWrapper)`
@@ -9,8 +9,12 @@ export const StyledAvatar = styled(CircleImgWrapper)`
   ${({$hasStory, $hasStoryBeenSeen, theme}) =>
     $hasStory &&
     ($hasStoryBeenSeen
-      ? `background: ${theme.colors.borderSeenStory};`
-      : 'background: linear-gradient(45deg, gold, fuchsia);')};
+      ? css`
+          background: ${theme.colors.borderSeenStory};
+        `
+      : css`
+          background: linear-gradient(45deg, gold, fuchsia);
+        `)};
 `;
 
 export const AvatarImg = styled.img`

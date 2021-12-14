@@ -30,20 +30,19 @@ const defaultShape = css`
 `;
 
 const spinnerSizeSmall = css`
-	padding: 0.96rem;
+  padding: 0.96rem;
 `;
 
 const spinnerSizeMiddle = css`
-	padding: 0.96rem;
+  padding: 0.96rem;
 `;
 
 const spinnerSizeLarge = css`
-	padding: 1.08rem;
+  padding: 1.08rem;
 `;
 
-
 export const ButtonSpinner = styled(Spinner)`
-	${({$size}) => {
+  ${({$size}) => {
     switch ($size) {
       case 'small':
         return spinnerSizeSmall;
@@ -101,9 +100,11 @@ const defaultType = css`
 const loadingStyle = css`
   cursor: default;
   position: relative;
-  ${({$type}) => $type === 'primary' && css`
-		overflow: unset;
-	`}
+  ${({$type}) =>
+    $type === 'primary' &&
+    css`
+      overflow: unset;
+    `}
 
   &::before {
     content: '';
@@ -146,7 +147,7 @@ export const StyledButton = styled.button`
     }
   }}
 
-	${({$shape}) => {
+  ${({$shape}) => {
     switch ($shape) {
       case 'circle':
         return circleShape;
@@ -170,7 +171,11 @@ export const StyledButton = styled.button`
     }
   }}
 	
-  ${({$block}) => $block && 'width: 100%;'}
+  ${({$block}) =>
+    $block &&
+    css`
+      width: 100%;
+    `}
 
 	${({$loading}) => $loading && loadingStyle}
 
@@ -183,12 +188,14 @@ export const StyledButton = styled.button`
       case 'primary':
       case 'link':
       case 'text':
-        return `
+        return css`
           border-color: transparent;
           background-color: rgba(51, 141, 246, 0.8);
         `;
       default:
-        return 'color: rgba(27, 29, 40, 0.5);';
+        return css`
+          color: rgba(27, 29, 40, 0.5);
+        `;
     }
   }}
   }

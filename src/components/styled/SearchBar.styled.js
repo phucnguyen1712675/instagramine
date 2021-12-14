@@ -1,7 +1,8 @@
 import styled, {css} from 'styled-components';
 import {wh, hideScrollBarScrolling} from './Mixins';
-import {Input} from './Lib';
+import {SearchInput} from './Lib';
 import Button from '../Button';
+import Spinner from '../Spinner';
 import SearchIcon from '../icons/SearchIcon';
 
 export const StyledSearchBar = styled.form`
@@ -11,10 +12,7 @@ export const StyledSearchBar = styled.form`
   height: 48px;
 `;
 
-export const SearchInput = styled(Input).attrs({
-  type: 'search',
-  autoComplete: 'off',
-})`
+export const SearchBarInput = styled(SearchInput)`
   --padding-cancel-button: 25px;
   position: absolute;
   left: 0;
@@ -34,7 +32,7 @@ export const SearchInput = styled(Input).attrs({
   }
 `;
 
-export const SearchInputSearchIcon = styled(SearchIcon)`
+export const SearchBarInputSearchIcon = styled(SearchIcon)`
   position: absolute;
   top: 0;
   left: 18px;
@@ -73,6 +71,10 @@ export const SearchHistory = styled.div`
   ${SearchInput}:focus ~ & {
     display: flex;
   }
+`;
+
+export const SearchHistorySpinner = styled(Spinner)`
+	padding: 2.7rem;
 `;
 
 export const NoResultsText = styled.p`

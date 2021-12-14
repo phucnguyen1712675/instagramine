@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {PATHS} from '../constants';
+import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
+import {validateEmail} from '../utils/validate';
 import {useAuth} from '../hooks/useAuth';
 import {useForm} from '../hooks/useForm';
 import AuthLayout from '../components/AuthLayout';
@@ -11,6 +12,7 @@ import {
   AuthForm,
   AuthInput,
   PasswordAuthInput,
+  EmailAuthInput,
   ErrorText,
   SubmitButtonWrapper,
 } from '../components/styled/Lib';
@@ -28,6 +30,8 @@ const SignUpPage = () => {
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
+      email: '',
+      fullName: '',
       username: '',
       password: '',
       confirmPassword: '',
@@ -35,39 +39,45 @@ const SignUpPage = () => {
     onSubmit: (values) => {
       setIsLoading(true);
 
-      const {username} = values;
-
       setTimeout(() => {
-        auth.signUp({username}, () => {
-          navigate(from, {replace: true});
-        });
+        auth.signUp(
+          {
+            email: values.email,
+            fullName: values.fullName,
+            username: values.username,
+          },
+          () => {
+            navigate(from, {replace: true});
+          }
+        );
 
         setIsLoading(false);
       }, 1000);
     },
     validate: (values) => {
-      const {username, password, confirmPassword} = values;
       const errors = {};
 
-      if (!email) {
+      if (!values.email) {
         errors.email = 'Please enter email';
+      } else if (!validateEmail(email)) {
+        errors.email = 'Please enter valid email';
       }
 
-      if (!fullName) {
+      if (!values.fullName) {
         errors.fullName = 'Please enter fullName';
       }
 
-      if (!username) {
+      if (!values.username) {
         errors.username = 'Please enter username';
       }
 
-      if (!password) {
+      if (!values.password) {
         errors.password = 'Please enter password';
-      } else if (password.length < 6) {
-        errors.password = 'Password must be at least 6 characters';
+      } else if (password.length < MAX_LENGTH_PASSWORD) {
+        errors.password = `Password must be at least ${MAX_LENGTH_PASSWORD} characters`;
       }
 
-      if (confirmPassword !== password) {
+      if (values.confirmPassword !== values.password) {
         errors.confirmPassword = 'Confirm password not matched!';
       }
 
@@ -83,8 +93,7 @@ const SignUpPage = () => {
     !fullName ||
     !username ||
     !password ||
-    password.length < 6 ||
-    confirmPassword.length < 6;
+    !confirmPassword;
 
   return (
     <AuthLayout
@@ -95,7 +104,7 @@ const SignUpPage = () => {
       <Logo />
       <AuthForm onSubmit={handleSubmit}>
         <HideLabel htmlFor="signup_email">Email</HideLabel>
-        <AuthInput
+        <EmailAuthInput
           id="signup_email"
           name="email"
           placeholder="Email"
