@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {brighterHover, buttonColorHover, wh} from './Mixins';
+import {brighterHover, buttonColorHover} from './Mixins';
 import Spinner from '../Spinner';
 
 const smallSize = css`
@@ -12,7 +12,7 @@ const largeSize = css`
   padding: 6.4px 15px;
 `;
 
-const mediumSize = css`
+const middleSize = css`
   font-size: 1.4rem;
   padding: 4px 15px;
 `;
@@ -29,9 +29,30 @@ const defaultShape = css`
   border-radius: 5px;
 `;
 
+const spinnerSizeSmall = css`
+	padding: 0.96rem;
+`;
+
+const spinnerSizeMiddle = css`
+	padding: 0.96rem;
+`;
+
+const spinnerSizeLarge = css`
+	padding: 1.08rem;
+`;
+
+
 export const ButtonSpinner = styled(Spinner)`
-  padding: 0;
-  ${wh({w: '2.6rem'})}
+	${({$size}) => {
+    switch ($size) {
+      case 'small':
+        return spinnerSizeSmall;
+      case 'large':
+        return spinnerSizeLarge;
+      default:
+        return spinnerSizeMiddle;
+    }
+  }}
 `;
 
 const primaryType = css`
@@ -80,7 +101,9 @@ const defaultType = css`
 const loadingStyle = css`
   cursor: default;
   position: relative;
-  ${({$type}) => $type === 'primary' && 'border: unset;'}
+  ${({$type}) => $type === 'primary' && css`
+		overflow: unset;
+	`}
 
   &::before {
     content: '';
@@ -119,7 +142,7 @@ export const StyledButton = styled.button`
       case 'large':
         return largeSize;
       default:
-        return mediumSize;
+        return middleSize;
     }
   }}
 
@@ -146,6 +169,7 @@ export const StyledButton = styled.button`
         return defaultType;
     }
   }}
+	
   ${({$block}) => $block && 'width: 100%;'}
 
 	${({$loading}) => $loading && loadingStyle}

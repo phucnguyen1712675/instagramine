@@ -22,13 +22,10 @@ const reducer = (state, action) => {
     case SET_ERRORS:
       return {
         ...state,
-        errors: {
-          ...state.errors,
-          ...action.payload,
-        },
+        errors: action.payload,
       };
     case HANDLE_BLUR: {
-      const {name, error} = action.payload;
+      const {name, errors} = action.payload;
 
       return {
         ...state,
@@ -36,10 +33,7 @@ const reducer = (state, action) => {
           ...state.touchedValues,
           [name]: true,
         },
-        errors: {
-          ...state.errors,
-          ...error,
-        },
+        errors,
       };
     }
     case RESET:
@@ -74,18 +68,22 @@ const useForm = ({initialValues, onSubmit, validate}) => {
   const handleBlur = (event) => {
     const target = event.target;
     const name = target.name;
-    const error = validate(values);
+    const validateErrors = validate(values);
 
-    dispatch({type: HANDLE_BLUR, payload: {name, error}});
+    dispatch({type: HANDLE_BLUR, payload: {name, errors: validateErrors}});
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const error = validate(values);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validateErrors = validate(values);
 
-    dispatch({type: SET_ERRORS, payload: error});
+    if (Object.keys(validateErrors).length !== 0) {
+      dispatch({type: SET_ERRORS, payload: validateErrors});
+    } else {
+      errors && dispatch({type: SET_ERRORS, payload: {}});
 
-    onSubmit({values, error});
+      onSubmit(values);
+    }
   };
 
   const reset = (values = initialValues) => {

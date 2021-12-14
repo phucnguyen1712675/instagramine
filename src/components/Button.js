@@ -21,7 +21,7 @@ const Button = ({
   let content;
 
   if (loading) {
-    content = <ButtonSpinner />;
+    content = <ButtonSpinner $size={size} />;
   } else if (icon) {
     content = icon;
   } else {

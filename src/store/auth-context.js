@@ -7,6 +7,8 @@ const AuthContext = createContext({
   // eslint-disable-next-line no-unused-vars
   signIn: (user, callback) => {},
   // eslint-disable-next-line no-unused-vars
+  signUp: (user, callback) => {},
+  // eslint-disable-next-line no-unused-vars
   signOut: (callback) => {},
 });
 
@@ -15,6 +17,13 @@ export const AuthContextProvider = ({children}) => {
 
   const signIn = (newUser, callback) => {
     return fakeAuthProvider.signIn(() => {
+      setUser(newUser);
+      callback();
+    });
+  };
+
+  const signUp = (newUser, callback) => {
+    return fakeAuthProvider.signUp(() => {
       setUser(newUser);
       callback();
     });
@@ -30,6 +39,7 @@ export const AuthContextProvider = ({children}) => {
   const value = {
     user,
     signIn,
+    signUp,
     signOut,
   };
 

@@ -1,15 +1,18 @@
-import React from 'react';
+import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {PATHS} from '../constants';
-import AuthLayout from '../components/AuthLayout';
-import HideLabel from '../components/HideLabel';
 import {useAuth} from '../hooks/useAuth';
 import {useForm} from '../hooks/useForm';
+import AuthLayout from '../components/AuthLayout';
+import HideLabel from '../components/HideLabel';
+import Button from '../components/Button';
 import {
+  Logo,
+  AuthForm,
   AuthInput,
   PasswordAuthInput,
+  ErrorText,
   SubmitButtonWrapper,
-  SubmitButton,
 } from '../components/styled/Lib';
 
 const LoginPage = () => {
@@ -21,29 +24,38 @@ const LoginPage = () => {
 
   const from = location.state?.from?.pathname || '/';
 
-  const {values, handleChange, handleSubmit} = useForm({
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
       username: '',
       password: '',
     },
     onSubmit: (values) => {
+      setIsLoading(true);
+
       const {username} = values;
 
-      auth.signIn(username, () => {
-        navigate(from, {replace: true});
-      });
+      setTimeout(() => {
+        auth.signIn({username}, () => {
+          navigate(from, {replace: true});
+        });
+
+        setIsLoading(false);
+      }, 1000);
     },
     validate: (values) => {
+      const {username, password} = values;
       const errors = {};
 
-      if (!values.username) {
+      if (!username) {
         errors.username = 'Please enter username';
       }
 
-      if (!values.password) {
+      if (!password) {
         errors.password = 'Please enter password';
-      } else if (values.password.length < 6) {
-        errors.password = 'Password must be at least 6 characters long';
+      } else if (password.length < 6) {
+        errors.password = 'Password must be at least 6 characters';
       }
 
       return errors;
@@ -52,34 +64,48 @@ const LoginPage = () => {
 
   const {username, password} = values;
 
+  const disableSubmitButton =
+    isLoading || !username || !password || password.length < 6;
+
   return (
     <AuthLayout
-      onSubmit={handleSubmit}
-      questionText="Don\'t have an account? "
+      questionText="Don't have an account? "
       toUrl={`/${PATHS.SIGNUP_PAGE}`}
       toPageText="Sign up"
     >
-      <HideLabel htmlFor="login_username">Username</HideLabel>
-      <AuthInput
-        id="login_username"
-        name="username"
-        placeholder="Username"
-        value={username}
-        onChange={handleChange}
-      />
-      <HideLabel htmlFor="login_password">Password</HideLabel>
-      <PasswordAuthInput
-        id="login_password"
-        name="password"
-        placeholder="Password"
-        value={password}
-        onChange={handleChange}
-      />
-      <SubmitButtonWrapper>
-        <SubmitButton htmlType="submit" type="primary" size="large" block>
-          Login
-        </SubmitButton>
-      </SubmitButtonWrapper>
+      <Logo />
+      <AuthForm onSubmit={handleSubmit}>
+        <HideLabel htmlFor="login_username">Username</HideLabel>
+        <AuthInput
+          id="login_username"
+          name="username"
+          placeholder="Username"
+          value={username}
+          onChange={handleChange}
+        />
+        {errors.username && <ErrorText>{errors.username}</ErrorText>}
+        <HideLabel htmlFor="login_password">Password</HideLabel>
+        <PasswordAuthInput
+          id="login_password"
+          name="password"
+          placeholder="Password"
+          value={password}
+          onChange={handleChange}
+        />
+        {errors.password && <ErrorText>{errors.password}</ErrorText>}
+        <SubmitButtonWrapper $disabled={disableSubmitButton}>
+          <Button
+            htmlType="submit"
+            type="primary"
+            size="large"
+            block
+            loading={isLoading}
+            disabled={disableSubmitButton}
+          >
+            Login
+          </Button>
+        </SubmitButtonWrapper>
+      </AuthForm>
     </AuthLayout>
   );
 };

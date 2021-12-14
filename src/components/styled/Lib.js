@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components';
 import {Link} from 'react-router-dom';
 import {circle} from './Mixins';
-import Button from '../Button';
+import LogoTextIcon from '../icons/LogoTextIcon';
 
 export const Dot = styled.span`
   --size: 4px;
@@ -78,7 +78,17 @@ export const MenuItem = styled.li`
 export const DisabledButtonWrapper = styled.div`
   display: inline-block;
 
-  ${({$disabled}) => $disabled && 'cursor: not-allowed;'}
+  ${({$disabled}) =>
+    $disabled &&
+    css`
+      cursor: not-allowed;
+    `}
+`;
+
+export const Logo = styled(LogoTextIcon)`
+  width: 175px;
+  height: 51px;
+  margin: 22px auto 12px;
 `;
 
 export const AuthForm = styled.form`
@@ -92,7 +102,7 @@ export const AuthForm = styled.form`
 `;
 
 export const AuthInput = styled(Input)`
-  margin: 0 40px 12px;
+  margin: 0 40px 6px;
   outline: 1px solid rgba(175, 193, 217, 0.5);
 `;
 
@@ -100,13 +110,18 @@ export const PasswordAuthInput = styled(AuthInput).attrs({
   type: 'password',
 })``;
 
+export const ErrorText = styled.p`
+  margin: 0 40px 12px;
+  color: ${({theme}) => theme.colors.danger};
+`;
+
 export const SubmitButtonWrapper = styled(DisabledButtonWrapper)`
   margin: 6px 40px;
 `;
 
-export const SubmitButton = styled(Button)`
-  font-size: 1.4rem;
-`;
+// export const SubmitButton = styled(Button)`
+//   font-size: 1.4rem;
+// `;
 
 export const StyledLink = styled(Link)`
   color: ${({theme}) => theme.colors.link};

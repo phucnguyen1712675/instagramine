@@ -121,6 +121,7 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
       <RequestItemFollowButton
         type={!isFollowed ? 'primary' : 'default'}
         loading={isFollowButtonLoading}
+        disabled={isFollowButtonLoading}
         onClick={followHandler}
         $isFollowed={isFollowed}
       >

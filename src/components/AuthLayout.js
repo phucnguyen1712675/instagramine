@@ -5,19 +5,14 @@ import {
   StyledAuthLayout,
   AuthLayoutInner,
   ContainerStyle,
-  Logo,
-  AuthForm,
   ChangeAuthPageText,
 } from './styled/AuthLayout.styled';
 
-const AuthLayout = ({children, onSubmit, questionText, toUrl, toPageText}) => {
+const AuthLayout = ({children, questionText, toUrl, toPageText}) => {
   return (
     <StyledAuthLayout>
       <AuthLayoutInner>
-        <ContainerStyle>
-          <Logo />
-          <AuthForm onSubmit={onSubmit}>{children}</AuthForm>
-        </ContainerStyle>
+        <ContainerStyle>{children}</ContainerStyle>
         <ContainerStyle>
           <ChangeAuthPageText>
             {questionText}
@@ -31,7 +26,6 @@ const AuthLayout = ({children, onSubmit, questionText, toUrl, toPageText}) => {
 
 AuthLayout.propTypes = {
   children: PropTypes.node.isRequired,
-  onSubmit: PropTypes.func.isRequired,
   questionText: PropTypes.string.isRequired,
   toUrl: PropTypes.string.isRequired,
   toPageText: PropTypes.string.isRequired,

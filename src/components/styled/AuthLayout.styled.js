@@ -1,5 +1,4 @@
 import styled, {css} from 'styled-components';
-import LogoTextIcon from '../icons/LogoTextIcon';
 
 export const StyledAuthLayout = styled.div`
   display: flex;
@@ -30,22 +29,6 @@ export const ContainerStyle = styled.div`
     border: 1px solid ${theme.colors.borderGray};
   `}
   border-radius: 5px;
-`;
-
-export const Logo = styled(LogoTextIcon)`
-  width: 175px;
-  height: 51px;
-  margin: 22px auto 12px;
-`;
-
-export const AuthForm = styled.form`
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  flex-direction: column;
-  flex-shrink: 0;
-  width: 100%;
-  margin: 24px 0;
 `;
 
 export const ChangeAuthPageText = styled.p`
