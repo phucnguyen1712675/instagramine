@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {StyledLink} from './styled/Lib';
 import {
   StyledAuthLayout,
   AuthLayoutInner,
   ContainerStyle,
   ChangeAuthPageText,
+  ToUrlLink,
 } from './styled/AuthLayout.styled';
 
 const AuthLayout = ({children, questionText, toUrl, toPageText}) => {
@@ -16,7 +16,7 @@ const AuthLayout = ({children, questionText, toUrl, toPageText}) => {
         <ContainerStyle>
           <ChangeAuthPageText>
             {questionText}
-            <StyledLink to={toUrl}>{toPageText}</StyledLink>
+            <ToUrlLink to={toUrl}>{toPageText}</ToUrlLink>
           </ChangeAuthPageText>
         </ContainerStyle>
       </AuthLayoutInner>

@@ -26,7 +26,7 @@ const useFetch = () => {
   return {data, setData};
 };
 
-export default useFetch;
+export {useFetch};
 
 // import axios from "axios";
 

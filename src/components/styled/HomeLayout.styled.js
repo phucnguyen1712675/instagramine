@@ -1,5 +1,8 @@
 import styled, {css} from 'styled-components';
+import {Link} from 'react-router-dom';
 import {MenuItem} from './Lib';
+import {hideScrollBarScrolling, circle} from './Mixins';
+import Button from '../Button';
 import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
 import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import LogoIcon from '../icons/LogoIcon';
@@ -27,7 +30,7 @@ export const Header = styled.header`
   `};
 `;
 
-export const AppLogo = styled.a`
+export const AppLogo = styled(Link)`
   display: flex;
   align-items: center;
   column-gap: 8px;
@@ -78,11 +81,40 @@ export const SettingMenuItem = styled(MenuItem)`
   }
 `;
 
-export const SettingMenuItemLink = styled.a`
+export const SettingMenuItemLink = styled(Link)`
   display: flex;
   align-items: center;
 `;
 
 export const SettingMenuItemText = styled.span`
   margin-left: 12px;
+`;
+
+export const MainContent = styled.main`
+  grid-area: mainContent;
+  padding: 25px 20px;
+  overflow-y: auto;
+  ${hideScrollBarScrolling}
+`;
+
+const ActiveNavigationButton = css`
+  position: relative;
+
+  &:after {
+    --size-dot: 5px;
+    content: '';
+    ${circle({w: 'var(--size-dot)'})};
+    background-color: #f31c3f;
+    position: absolute;
+    top: calc(100% + 5px);
+  }
+`;
+
+export const NavigationButton = styled(Button)`
+  color: unset;
+  border-radius: unset;
+  overflow: unset;
+  padding: 0;
+  font-size: 3rem;
+  ${({$isActive}) => $isActive && ActiveNavigationButton}
 `;

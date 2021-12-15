@@ -1,5 +1,4 @@
 import styled, {css} from 'styled-components';
-import {Link} from 'react-router-dom';
 import {circle} from './Mixins';
 import LogoTextIcon from '../icons/LogoTextIcon';
 
@@ -33,8 +32,6 @@ export const TextInput = styled.input.attrs({
   role: 'presentation',
 })`
   padding: 9px 7px;
-  font-size: 1.4rem;
-  font-weight: 400;
   background: #f8fbff;
   box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
   border-radius: 5px;
@@ -128,13 +125,4 @@ export const ErrorText = styled.p`
 
 export const SubmitButtonWrapper = styled(DisabledButtonWrapper)`
   margin: 6px 40px;
-`;
-
-// export const SubmitButton = styled(Button)`
-//   font-size: 1.4rem;
-// `;
-
-export const StyledLink = styled(Link)`
-  color: ${({theme}) => theme.colors.link};
-  font-weight: 600;
 `;

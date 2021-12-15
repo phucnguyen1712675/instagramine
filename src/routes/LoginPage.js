@@ -71,7 +71,7 @@ const LoginPage = () => {
   return (
     <AuthLayout
       questionText="Don't have an account? "
-      toUrl={`/${PATHS.SIGNUP_PAGE}`}
+      toUrl={`/${PATHS.SIGNUP}`}
       toPageText="Sign up"
     >
       <Logo />
@@ -96,10 +96,10 @@ const LoginPage = () => {
         {errors.password && <ErrorText>{errors.password}</ErrorText>}
         <SubmitButtonWrapper $disabled={disableSubmitButton}>
           <Button
+            block
             htmlType="submit"
             type="primary"
             size="large"
-            block
             loading={isLoading}
             disabled={disableSubmitButton}
           >

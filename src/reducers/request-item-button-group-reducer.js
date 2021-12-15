@@ -3,7 +3,6 @@ import {
   SET_IS_DELETE_BUTTON_LOADING,
   SET_IS_FOLLOW_BUTTON_LOADING,
   REQUEST_HAS_BEEN_CONFIRMED,
-  REQUEST_HAS_BEEN_DELETED,
   USER_HAS_BEEN_FOLLOWED,
 } from '../actions/request-item-button-group-actions';
 
@@ -27,20 +26,14 @@ export default (state, action) => {
     case REQUEST_HAS_BEEN_CONFIRMED:
       return {
         ...state,
-        isConfirmed: action.payload.isConfirmed,
-        isConfirmButtonLoading: action.payload.isConfirmButtonLoading,
-      };
-    case REQUEST_HAS_BEEN_DELETED:
-      return {
-        ...state,
-        isDeleted: action.payload.isDeleted,
-        isDeleteButtonLoading: action.payload.isDeleteButtonLoading,
+        isConfirmed: !state.isConfirmed,
+        isConfirmButtonLoading: false,
       };
     case USER_HAS_BEEN_FOLLOWED:
       return {
         ...state,
-        isFollowed: action.payload.isFollowed,
-        isFollowButtonLoading: action.payload.isFollowButtonLoading,
+        isFollowed: !state.isFollowed,
+        isFollowButtonLoading: false,
       };
     default:
       return state;

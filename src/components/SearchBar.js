@@ -12,7 +12,6 @@ import {
   ClearAllButton,
   NoResultsText,
 } from './styled/SearchBar.styled';
-import {useBlur} from '../hooks/useBlur';
 import SearchBarReducer from '../reducers/search-bar-reducer';
 import {
   SET_HAS_OPENED,
@@ -34,7 +33,7 @@ const SearchBar = () => {
 
   const {hasOpened, isLoading, history, filteredUsers, query} = state;
 
-  const [inputRef, setInputBlur] = useBlur();
+  const inputRef = useRef(null);
 
   const queryRef = useRef(query);
 
@@ -76,7 +75,7 @@ const SearchBar = () => {
 
   const onSearch = () => {
     if (!query) {
-      setInputBlur();
+      inputRef.current.blur();
     }
   };
 

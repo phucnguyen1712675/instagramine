@@ -1,6 +1,7 @@
-import {createContext, useState} from 'react';
+import {createContext} from 'react';
 import PropTypes from 'prop-types';
 import {fakeAuthProvider} from '../auth';
+import {useLocalStorage} from '../hooks/useLocalStorage';
 
 const AuthContext = createContext({
   user: {},
@@ -13,7 +14,7 @@ const AuthContext = createContext({
 });
 
 export const AuthContextProvider = ({children}) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useLocalStorage('user', null);
 
   const signIn = (newUser, callback) => {
     return fakeAuthProvider.signIn(() => {

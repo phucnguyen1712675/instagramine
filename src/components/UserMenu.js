@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import React from 'react';
 import NotificationButton from './NotificationButton';
 import PlayIcon from './icons/PlayIcon';
 import {
@@ -34,11 +34,11 @@ import {
 } from './styled/UserMenu.styled';
 import {MAX_STORIES_NUMBER} from '../constants';
 import {onErrorMedia} from '../utils/media';
-import AuthContext from '../store/auth-context';
+import {useAuth} from '../hooks/useAuth';
 import currentUser from '../data/current-user';
 
 const UserMenu = () => {
-  const {user} = useContext(AuthContext);
+  const auth = useAuth();
 
   const kFormatter = (num) =>
     Math.abs(num) > 999
@@ -97,7 +97,7 @@ const UserMenu = () => {
           hasStoryBeenSeen={currentUser.hasStoryBeenSeen}
         />
         <ThumbnailContentUserName>
-          {user.username}
+          {auth.user.username}
         </ThumbnailContentUserName>
         <ThumbnailContentJobDescription>
           {currentUser.job}

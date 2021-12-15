@@ -6,16 +6,13 @@ import {useAuth} from '../hooks/useAuth';
 
 const RequireAuth = ({children}) => {
   const auth = useAuth();
+
   const location = useLocation();
 
-  const {LOGIN_PAGE} = PATHS;
+  const {LOGIN} = PATHS;
 
   if (!auth.user) {
-    return (
-      <Navigate to={`/${LOGIN_PAGE}`} state={{from: location}}>
-        {children}
-      </Navigate>
-    );
+    return <Navigate to={`/${LOGIN}`} state={{from: location}} />;
   }
 
   return children;

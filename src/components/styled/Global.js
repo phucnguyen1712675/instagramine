@@ -30,7 +30,7 @@ const GlobalStyles = createGlobalStyle`
 		padding: 0;
 	}
 
-	a {	z
+	a {
 	  display: inline-block;
 	  text-decoration: none;
 		cursor: pointer;

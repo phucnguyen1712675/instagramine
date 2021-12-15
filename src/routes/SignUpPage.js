@@ -16,6 +16,11 @@ import {
   ErrorText,
   SubmitButtonWrapper,
 } from '../components/styled/Lib';
+import {
+  GuideText,
+  TermAndPolicyText,
+  TextAndPolicyLink,
+} from '../components/styled/SignUpPage.styled';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -98,10 +103,11 @@ const SignUpPage = () => {
   return (
     <AuthLayout
       questionText="Have an account? "
-      toUrl={`/${PATHS.LOGIN_PAGE}`}
+      toUrl={`/${PATHS.LOGIN}`}
       toPageText="Login"
     >
       <Logo />
+      <GuideText>Sign up to see photos and videos from your friends.</GuideText>
       <AuthForm onSubmit={handleSubmit}>
         <HideLabel htmlFor="signup_email">Email</HideLabel>
         <EmailAuthInput
@@ -154,16 +160,43 @@ const SignUpPage = () => {
         )}
         <SubmitButtonWrapper $disabled={disableSubmitButton}>
           <Button
+            block
             htmlType="submit"
             type="primary"
             size="large"
-            block
             loading={isLoading}
             disabled={disableSubmitButton}
           >
             Sign up
           </Button>
         </SubmitButtonWrapper>
+        <TermAndPolicyText>
+          By signing up, you agree to our{' '}
+          <TextAndPolicyLink
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://help.instagram.com/581066165581870"
+          >
+            Terms
+          </TextAndPolicyLink>{' '}
+          and{' '}
+          <TextAndPolicyLink
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://help.instagram.com/519522125107875"
+          >
+            Data Policy
+          </TextAndPolicyLink>{' '}
+          and{' '}
+          <TextAndPolicyLink
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://help.instagram.com/1896641480634370?ref=ig"
+          >
+            Cookies Policy
+          </TextAndPolicyLink>
+          .
+        </TermAndPolicyText>
       </AuthForm>
     </AuthLayout>
   );

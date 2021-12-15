@@ -1,4 +1,5 @@
 import styled, {css} from 'styled-components';
+import {Link} from 'react-router-dom';
 
 export const StyledAuthLayout = styled.div`
   display: flex;
@@ -33,4 +34,9 @@ export const ContainerStyle = styled.div`
 
 export const ChangeAuthPageText = styled.p`
   margin: 15px;
+`;
+
+export const ToUrlLink = styled(Link)`
+  color: ${({theme}) => theme.colors.link};
+  font-weight: 600;
 `;

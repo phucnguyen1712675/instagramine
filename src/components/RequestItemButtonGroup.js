@@ -1,4 +1,4 @@
-import {useReducer, useRef} from 'react';
+import {useReducer} from 'react';
 import PropTypes from 'prop-types';
 import {DisabledButtonWrapper} from './styled/Lib';
 import {
@@ -13,14 +13,12 @@ import {
   SET_IS_DELETE_BUTTON_LOADING,
   SET_IS_FOLLOW_BUTTON_LOADING,
   REQUEST_HAS_BEEN_CONFIRMED,
-  REQUEST_HAS_BEEN_DELETED,
   USER_HAS_BEEN_FOLLOWED,
 } from '../actions/request-item-button-group-actions';
 
 const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
   const [state, dispatch] = useReducer(RequestItemReducer, {
     isConfirmed: false,
-    isDeleted: false,
     isFollowed: false,
     isConfirmButtonLoading: false,
     isDeleteButtonLoading: false,
@@ -29,24 +27,11 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
 
   const {
     isConfirmed,
-    isDeleted,
     isFollowed,
     isConfirmButtonLoading,
     isDeleteButtonLoading,
     isFollowButtonLoading,
   } = state;
-
-  const isConfirmedRef = useRef(isConfirmed);
-
-  const isDeletedRef = useRef(isDeleted);
-
-  const isFollowedRef = useRef(isFollowed);
-
-  isConfirmedRef.current = isConfirmed;
-
-  isDeletedRef.current = isDeleted;
-
-  isFollowedRef.current = isFollowed;
 
   const confirmHandler = () => {
     dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
@@ -54,10 +39,6 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     setTimeout(() => {
       dispatch({
         type: REQUEST_HAS_BEEN_CONFIRMED,
-        payload: {
-          isConfirmed: !isConfirmedRef.current,
-          isConfirmButtonLoading: false,
-        },
       });
 
       confirmRequest(userId);
@@ -68,13 +49,7 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
 
     setTimeout(() => {
-      dispatch({
-        type: REQUEST_HAS_BEEN_DELETED,
-        payload: {
-          isDeleted: !isDeletedRef.current,
-          isDeleteButtonLoading: false,
-        },
-      });
+      dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
 
       removeRequest(userId);
     }, 1000);
@@ -86,10 +61,6 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     setTimeout(() => {
       dispatch({
         type: USER_HAS_BEEN_FOLLOWED,
-        payload: {
-          isFollowed: !isFollowedRef.current,
-          isFollowButtonLoading: false,
-        },
       });
     }, 1000);
   };
