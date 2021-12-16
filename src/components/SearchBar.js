@@ -1,4 +1,4 @@
-import {useReducer, useEffect, useRef} from 'react';
+import {useReducer, useRef} from 'react';
 import SearchItemList from './SearchItemList';
 import HideLabel from './HideLabel';
 import {
@@ -21,6 +21,7 @@ import {
   FILTER_USERS,
 } from '../actions/search-bar-actions';
 import searchHistoryData from '../data/search-history.json';
+import {useEventListener} from '../hooks/useEventListener';
 
 const SearchBar = () => {
   const [state, dispatch] = useReducer(SearchBarReducer, {
@@ -35,17 +36,17 @@ const SearchBar = () => {
 
   const inputRef = useRef(null);
 
-  const queryRef = useRef(query);
+  const onSearch = () => {
+    if (!query) {
+      inputRef.current.blur();
+    }
+  };
 
-  queryRef.current = query;
-
-  useEffect(() => {
-    inputRef?.current?.addEventListener('search', onSearch);
-
-    return () => {
-      inputRef?.current?.removeEventListener('search', onSearch);
-    };
-  }, []);
+  useEventListener({
+    eventName: 'search',
+    handler: onSearch,
+    element: inputRef.current,
+  });
 
   const handleChange = (e) => {
     const query = e.target.value;
@@ -71,12 +72,6 @@ const SearchBar = () => {
     setTimeout(() => {
       dispatch({type: SET_IS_LOADING, payload: false});
     }, 1000);
-  };
-
-  const onSearch = () => {
-    if (!query) {
-      inputRef.current.blur();
-    }
   };
 
   const clearAllHandler = () => {

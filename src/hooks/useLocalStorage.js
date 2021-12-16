@@ -1,6 +1,7 @@
 import {useState} from 'react';
+import PropTypes from 'prop-types';
 
-const useLocalStorage = (key, initialValue) => {
+const useLocalStorage = ({key, initialValue}) => {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState(() => {
@@ -33,6 +34,11 @@ const useLocalStorage = (key, initialValue) => {
   };
 
   return [storedValue, setValue];
+};
+
+useLocalStorage.propTypes = {
+  key: PropTypes.string.isRequired,
+  initialValue: PropTypes.any,
 };
 
 export {useLocalStorage};

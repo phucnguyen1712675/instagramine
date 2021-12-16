@@ -50,9 +50,10 @@ const NotificationButton = () => {
   const confirmRequest = (userId) => {};
 
   const removeRequest = (userId) => {
-    setFollowRequests((prevRequests) =>
-      prevRequests.filter((user) => user.id !== userId)
+    const newFollowRequestsState = followRequests.filter(
+      (user) => user.id !== userId
     );
+    setFollowRequests(newFollowRequestsState);
   };
 
   const followRequestsLength = followRequests.length;

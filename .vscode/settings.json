@@ -1,8 +1,10 @@
 {
 	"cSpell.words": [
+		"Firestore",
 		"minmax",
 		"Nunito",
-		"onsearch"
+		"onsearch",
+		"unsave"
 	],
 	"workbench.colorCustomizations": {
 		"activityBar.activeBackground": "#1f6fd0",

@@ -1,11 +1,11 @@
 import React from 'react';
 import PostList from '../components/PostList';
-import postsData from '../data/posts.json';
+import {useSavedPosts} from '../hooks/useSavedPosts';
 
 const SavedContent = () => {
-  const savedPost = postsData.filter((post) => post.isSaved);
+  const {savedPosts} = useSavedPosts();
 
-  return <PostList posts={savedPost} />;
+  return <PostList posts={savedPosts} noPostsText="No Saved Posts." />;
 };
 
 export default SavedContent;

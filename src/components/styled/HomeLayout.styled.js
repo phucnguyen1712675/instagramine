@@ -1,20 +1,35 @@
 import styled, {css} from 'styled-components';
 import {Link} from 'react-router-dom';
 import {MenuItem} from './Lib';
-import {hideScrollBarScrolling, circle} from './Mixins';
+import {hideScrollBarScrolling, circle, buttonColorHover} from './Mixins';
 import Button from '../Button';
 import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
 import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import LogoIcon from '../icons/LogoIcon';
+import {DEVICES} from '../../constants';
 
 export const Layout = styled.div`
   --width-user-menu: 360px;
   display: grid;
-  grid-template-columns: 90px auto var(--width-user-menu);
+  grid-template-columns: 1fr;
   grid-template-rows: 90px calc(100vh - 90px);
   grid-template-areas:
-    'sidebar header userMenu'
-    'sidebar mainContent userMenu';
+    'header'
+    'mainContent';
+
+  @media ${DEVICES.laptop} {
+    grid-template-columns: 90px 1fr;
+    grid-template-areas:
+      'sidebar header'
+      'sidebar mainContent';
+  }
+
+  @media ${DEVICES.laptopL} {
+    grid-template-columns: 90px 1fr var(--width-user-menu);
+    grid-template-areas:
+      'sidebar header userMenu'
+      'sidebar mainContent userMenu';
+  }
 `;
 
 export const Header = styled.header`
@@ -28,6 +43,28 @@ export const Header = styled.header`
     background-color: ${theme.colors.bgComponentLightTheme};
     border-bottom: 1px solid ${theme.colors.borderBlue};
   `};
+`;
+
+export const HeaderLeftItem = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 32px;
+`;
+
+export const MenuButton = styled.label`
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 5px;
+  ${({theme}) => css`
+    color: ${theme.colors.secondary};
+    border: 1px solid ${theme.colors.secondary};
+  `};
+  ${buttonColorHover};
+  display: flex;
+
+  @media ${DEVICES.laptop} {
+    display: none;
+  }
 `;
 
 export const AppLogo = styled(Link)`
@@ -44,7 +81,7 @@ export const AppLogoIcon = styled(LogoIcon)`
 
 export const Sidebar = styled.aside`
   grid-area: sidebar;
-  display: flex;
+	display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;

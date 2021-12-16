@@ -14,7 +14,10 @@ const AuthContext = createContext({
 });
 
 export const AuthContextProvider = ({children}) => {
-  const [user, setUser] = useLocalStorage('user', null);
+  const [user, setUser] = useLocalStorage({
+    key: 'user',
+    initialValue: null,
+  });
 
   const signIn = (newUser, callback) => {
     return fakeAuthProvider.signIn(() => {

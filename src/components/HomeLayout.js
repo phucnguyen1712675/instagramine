@@ -1,7 +1,9 @@
-import React from 'react';
+import {useState, useRef} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
 import {PATHS} from '../constants';
 import {useAuth} from '../hooks/useAuth';
+import {useOnScreen} from '../hooks/useOnScreen';
+import {SavedPostsContextProvider} from '../store/saved-posts-context';
 import UserMenu from '../components/UserMenu';
 import SearchBar from '../components/SearchBar';
 import Tooltip from '../components/Tooltip';
@@ -16,9 +18,12 @@ import ReelIcon from '../components/icons/ReelIcon';
 import StreamIcon from '../components/icons/StreamIcon';
 import SavedListIcon from '../components/icons/SavedListIcon';
 import MenuSettingIcon from '../components/icons/MenuSettingIcon';
+import MenuIcon from '../components/icons/MenuIcon';
 import {
   Layout,
   Header,
+  HeaderLeftItem,
+  MenuButton,
   AppLogo,
   AppLogoIcon,
   Sidebar,
@@ -30,8 +35,16 @@ import {
   MainContent,
   NavigationButton,
 } from '../components/styled/HomeLayout.styled';
+import {FakeCheckbox} from '../components/styled/Lib';
 
 const HomeLayout = () => {
+  // eslint-disable-next-line no-unused-vars
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const menuBtnRef = useRef(null);
+
+  const isMenuBtnOnScreen = useOnScreen({ref: menuBtnRef});
+
   const {pathname} = useLocation();
 
   const navigate = useNavigate();
@@ -95,48 +108,62 @@ const HomeLayout = () => {
     </Tooltip>
   ));
 
+  const onClickMenuButton = (e) => {
+    setIsMenuOpen(e.target.checked);
+  };
+
   const {PROFILE, SETTINGS, LOGOUT} = PATHS;
 
   return (
     <Layout>
       <Header>
-        <AppLogo to="/">
-          <AppLogoIcon />
-          <LogoTextIcon />
-        </AppLogo>
+        <HeaderLeftItem>
+          <FakeCheckbox id="header_menu_button" onChange={onClickMenuButton} />
+          <MenuButton ref={menuBtnRef} htmlFor="header_menu_button">
+            <MenuIcon />
+          </MenuButton>
+          <AppLogo to="/">
+            <AppLogoIcon />
+            <LogoTextIcon />
+          </AppLogo>
+        </HeaderLeftItem>
         <SearchBar />
       </Header>
-      <Sidebar>
-        <Nav>
-          {navigationContent}
-          <SettingButton
-            checkboxId="checkbox_setting_menu"
-            tooltipTitle="Settings"
-            tooltipPosition="right"
-            icon={<SettingIcon />}
-          >
-            <SettingMenuItem>
-              <SettingMenuItemLink to={`/${PROFILE}`}>
-                <UserIcon />
-                <SettingMenuItemText>Profile</SettingMenuItemText>
-              </SettingMenuItemLink>
-            </SettingMenuItem>
-            <SettingMenuItem>
-              <SettingMenuItemLink to={`/${SETTINGS}`}>
-                <MenuSettingIcon />
-                <SettingMenuItemText>Settings</SettingMenuItemText>
-              </SettingMenuItemLink>
-            </SettingMenuItem>
-            <SettingMenuItem>
-              <SettingMenuItemLink to={`/${LOGOUT}`} onClick={signOutHandler}>
-                Log Out
-              </SettingMenuItemLink>
-            </SettingMenuItem>
-          </SettingButton>
-        </Nav>
-      </Sidebar>
+      {(!isMenuBtnOnScreen || isMenuOpen) && (
+        <Sidebar>
+          <Nav>
+            {navigationContent}
+            <SettingButton
+              checkboxId="checkbox_setting_menu"
+              tooltipTitle="Settings"
+              tooltipPosition="right"
+              icon={<SettingIcon />}
+            >
+              <SettingMenuItem>
+                <SettingMenuItemLink to={`/${PROFILE}`}>
+                  <UserIcon />
+                  <SettingMenuItemText>Profile</SettingMenuItemText>
+                </SettingMenuItemLink>
+              </SettingMenuItem>
+              <SettingMenuItem>
+                <SettingMenuItemLink to={`/${SETTINGS}`}>
+                  <MenuSettingIcon />
+                  <SettingMenuItemText>Settings</SettingMenuItemText>
+                </SettingMenuItemLink>
+              </SettingMenuItem>
+              <SettingMenuItem>
+                <SettingMenuItemLink to={`/${LOGOUT}`} onClick={signOutHandler}>
+                  Log Out
+                </SettingMenuItemLink>
+              </SettingMenuItem>
+            </SettingButton>
+          </Nav>
+        </Sidebar>
+      )}
       <MainContent>
-        <Outlet />
+        <SavedPostsContextProvider>
+          <Outlet />
+        </SavedPostsContextProvider>
       </MainContent>
       <UserMenu />
     </Layout>

@@ -36,13 +36,16 @@ import PostMedia from './PostMedia';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
 import PostReducer from '../reducers/post-reducer';
 import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
+import {useSavedPosts} from '../hooks/useSavedPosts';
 import PostPropTypes from '../prop-types/post.propTypes';
 
 const Post = ({post}) => {
+  const {savePost, unsavePost, isSavedPost} = useSavedPosts();
+
   const [state, dispatch] = useReducer(PostReducer, {
     likeAmount: post.likeAmount,
     isLiked: post.isLiked,
-    isSaved: post.isSaved,
+    isSaved: isSavedPost(post.id),
   });
 
   const {likeAmount, isLiked, isSaved} = state;
@@ -99,6 +102,12 @@ const Post = ({post}) => {
   };
 
   const savePostHandler = () => {
+    if (isSaved) {
+      unsavePost(post.id);
+    } else {
+      savePost(post);
+    }
+
     dispatch({type: TOGGLE_IS_SAVED});
   };
 

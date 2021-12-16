@@ -5,6 +5,7 @@ import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
 import Tooltip from '../Tooltip';
 import Button from '../Button';
+import {DEVICES} from '../../constants';
 
 export const StyledUserMenu = styled.div`
   --width-border: 1px;
@@ -12,7 +13,6 @@ export const StyledUserMenu = styled.div`
   --padding-vertical: 36px;
   grid-area: userMenu;
   position: relative;
-  display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding-top: var(--padding-vertical);
@@ -23,6 +23,11 @@ export const StyledUserMenu = styled.div`
     background-color: ${theme.colors.bgComponentLightTheme};
     border-left: var(--width-border) solid ${theme.colors.borderDarkBlue};
   `}
+  display: none;
+
+  @media ${DEVICES.laptopL} {
+    display: flex;
+  }
 `;
 
 export const UserMenuTopContent = styled.div`
