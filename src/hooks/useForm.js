@@ -75,6 +75,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const validateErrors = validate(values);
 
     if (Object.keys(validateErrors).length !== 0) {

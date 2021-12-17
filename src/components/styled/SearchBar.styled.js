@@ -1,9 +1,13 @@
 import styled, {css} from 'styled-components';
 import {wh, hideScrollBarScrolling} from './Mixins';
-import {SearchInput} from './Lib';
+import {SearchInput, Dot, MenuItem} from './Lib';
+import {TextContent} from './UserCard.styled';
 import Button from '../Button';
 import Spinner from '../Spinner';
+import UserCard from '../UserCard';
+import Avatar from '../Avatar';
 import SearchIcon from '../icons/SearchIcon';
+import MultiplyIcon from '../icons/MultiplyIcon';
 
 export const StyledSearchBar = styled.form`
   --width-search-bar: 300px;
@@ -74,13 +78,7 @@ export const SearchHistory = styled.div`
 `;
 
 export const SearchHistorySpinner = styled(Spinner)`
-	padding: 2.7rem;
-`;
-
-export const NoResultsText = styled.p`
-  color: ${({theme}) => theme.colors.secondary};
-  font-weight: 400;
-  text-align: center;
+  padding: 2.7rem;
 `;
 
 export const SearchHistoryHeader = styled.header`
@@ -98,4 +96,51 @@ export const SearchHistoryHeaderTitle = styled.h3`
 
 export const ClearAllButton = styled(Button)`
   padding: 0;
+`;
+
+export const SearchItemList = styled.ul`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const SearchHistoryItem = styled(MenuItem)``;
+
+export const SearchHistoryItemLink = styled.a`
+  display: block;
+`;
+
+export const SearchHistoryItemContent = styled(UserCard)`
+  padding: 8px 16px;
+  cursor: pointer;
+
+  ${TextContent} {
+    --margin-left-info-content: 12px;
+  }
+`;
+
+export const SearchHistoryItemAvatar = styled(Avatar)`
+  --size: 5.2rem;
+`;
+
+export const SearchHistoryUserAdditionalInfo = styled.p`
+  font-size: 1.2rem;
+`;
+
+export const RemoveItemButton = styled(Button)`
+  padding: 8px;
+`;
+
+export const RemoveHistoryItemButtonIcon = styled(MultiplyIcon)`
+  color: ${({theme}) => theme.colors.secondary};
+`;
+
+export const SearchHistoryUserAdditionalInfoDot = styled(Dot)`
+  margin: 0 5px;
+  transform: translateY(-50%);
+`;
+
+export const NoResultsText = styled.p`
+  color: ${({theme}) => theme.colors.secondary};
+  font-weight: 400;
+  text-align: center;
 `;

@@ -65,41 +65,47 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     }, 1000);
   };
 
-  const content = !isConfirmed ? (
-    <>
-      <DisabledButtonWrapper $disabled={isDeleteButtonLoading}>
-        <RequestItemConfirmButton
-          type="primary"
-          loading={isConfirmButtonLoading}
-          disabled={isDeleteButtonLoading}
-          onClick={confirmHandler}
+  let content = null;
+
+  if (isConfirmed) {
+    content = (
+      <DisabledButtonWrapper $disabled={isFollowButtonLoading}>
+        <RequestItemFollowButton
+          type={!isFollowed ? 'primary' : 'default'}
+          loading={isFollowButtonLoading}
+          disabled={isFollowButtonLoading}
+          onClick={followHandler}
+          $isFollowed={isFollowed}
         >
-          Confirm
-        </RequestItemConfirmButton>
+          {isFollowed ? 'Following' : 'Follow'}
+        </RequestItemFollowButton>
       </DisabledButtonWrapper>
-      <DisabledButtonWrapper $disabled={isConfirmButtonLoading}>
-        <RequestItemDeleteButton
-          loading={isDeleteButtonLoading}
-          disabled={isConfirmButtonLoading}
-          onClick={deleteHandler}
-        >
-          Delete
-        </RequestItemDeleteButton>
-      </DisabledButtonWrapper>
-    </>
-  ) : (
-    <DisabledButtonWrapper $disabled={isFollowButtonLoading}>
-      <RequestItemFollowButton
-        type={!isFollowed ? 'primary' : 'default'}
-        loading={isFollowButtonLoading}
-        disabled={isFollowButtonLoading}
-        onClick={followHandler}
-        $isFollowed={isFollowed}
-      >
-        {isFollowed ? 'Following' : 'Follow'}
-      </RequestItemFollowButton>
-    </DisabledButtonWrapper>
-  );
+    );
+  } else {
+    content = (
+      <>
+        <DisabledButtonWrapper $disabled={isDeleteButtonLoading}>
+          <RequestItemConfirmButton
+            type="primary"
+            loading={isConfirmButtonLoading}
+            disabled={isDeleteButtonLoading}
+            onClick={confirmHandler}
+          >
+            Confirm
+          </RequestItemConfirmButton>
+        </DisabledButtonWrapper>
+        <DisabledButtonWrapper $disabled={isConfirmButtonLoading}>
+          <RequestItemDeleteButton
+            loading={isDeleteButtonLoading}
+            disabled={isConfirmButtonLoading}
+            onClick={deleteHandler}
+          >
+            Delete
+          </RequestItemDeleteButton>
+        </DisabledButtonWrapper>
+      </>
+    );
+  }
 
   return <StyledRequestItemButtonGroup>{content}</StyledRequestItemButtonGroup>;
 };

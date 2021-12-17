@@ -27,7 +27,7 @@ const NotificationButton = () => {
 
   const [showRequests, setShowRequests] = useState(false);
 
-  let timeoutId;
+  let timeoutId = null;
 
   const setTimeoutLoading = () => {
     setIsLoading(true);
@@ -50,15 +50,13 @@ const NotificationButton = () => {
   const confirmRequest = (userId) => {};
 
   const removeRequest = (userId) => {
-    const newFollowRequestsState = followRequests.filter(
-      (user) => user.id !== userId
+    setFollowRequests((prevState) =>
+      prevState.filter((user) => user.id !== userId)
     );
-    setFollowRequests(newFollowRequestsState);
   };
 
   const followRequestsLength = followRequests.length;
-
-  let content;
+  let content = null;
 
   if (isLoading) {
     content = <NotificationMenuSpinner />;

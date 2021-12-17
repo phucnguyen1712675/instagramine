@@ -17,7 +17,7 @@ const Avatar = ({
   );
 
   const onClickStoryHandler = () => {
-    !hasStoryBeenSeenState && setHasStoryBeenSeenState(true);
+    setHasStoryBeenSeenState(true);
   };
 
   if (asLink) {

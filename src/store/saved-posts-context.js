@@ -22,8 +22,7 @@ export const SavedPostsContextProvider = ({children}) => {
   };
 
   const unsavePost = (id) => {
-    const newSavedPosts = savedPosts.filter((post) => post.id !== id);
-    setSavedPosts(newSavedPosts);
+    setSavedPosts((prevState) => prevState.filter((post) => post.id !== id));
   };
 
   const isSavedPost = (id) => {

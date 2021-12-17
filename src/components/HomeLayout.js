@@ -38,7 +38,6 @@ import {
 import {FakeCheckbox} from '../components/styled/Lib';
 
 const HomeLayout = () => {
-  // eslint-disable-next-line no-unused-vars
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuBtnRef = useRef(null);

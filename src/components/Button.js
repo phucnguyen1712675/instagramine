@@ -18,7 +18,7 @@ const Button = ({
   size,
   disabledHover,
 }) => {
-  let content;
+  let content = null;
 
   if (loading) {
     content = <ButtonSpinner $size={size} />;

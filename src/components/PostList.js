@@ -6,8 +6,7 @@ import PostPropTypes from '../prop-types/post.propTypes';
 
 const PostList = ({posts, noPostsText}) => {
   const postLength = posts.length;
-
-  let content;
+  let content = null;
 
   if (postLength > 0) {
     content = posts.map((post) => <Post key={post.id} post={post} />);

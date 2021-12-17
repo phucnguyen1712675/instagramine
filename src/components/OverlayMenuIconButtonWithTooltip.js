@@ -31,7 +31,7 @@ const OverlayMenuIconButtonWithTooltip = ({
         onClose && onClose();
       };
     }
-  }, [checked]);
+  }, [checked, onOpen, onClose]);
 
   const onChangeHandler = (e) => setChecked(e.target.checked);
 

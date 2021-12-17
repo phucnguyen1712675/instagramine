@@ -5,7 +5,11 @@ module.exports = {
     jest: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'plugin:react/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+  ],
   settings: {
     react: {
       version: 'detect',
