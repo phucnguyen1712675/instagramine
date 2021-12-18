@@ -55,6 +55,11 @@ export const FakeCheckbox = styled.input.attrs({
   display: none;
 `;
 
+export const FakeButtonLabel = styled.label`
+  cursor: pointer;
+  font-size: 2.4rem;
+`;
+
 export const OverlayLabel = styled.label`
   position: fixed;
   top: 0;
@@ -62,7 +67,7 @@ export const OverlayLabel = styled.label`
   bottom: 0;
   left: 0;
   background-color: transparent;
-  z-index: 2;
+  z-index: 1;
   display: none;
 
   ${FakeCheckbox}:checked ~ & {

@@ -1,44 +1,52 @@
 import styled, {css} from 'styled-components';
 import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem} from './Lib';
 import {hideScrollBarScrolling} from './Mixins';
-import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
 import {TextContent} from './UserCard.styled';
-import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
+import Tooltip from '../Tooltip';
 import UserCard from '../UserCard';
 import Spinner from '../Spinner';
 
-const flexCenter = css`
-	align-items: center;
-	justify-content: center;
-`;
-
-export const StyledNotificationButton = styled(
-  OverlayMenuIconButtonWithTooltip
-)`
+export const StyledNotificationButton = styled(Tooltip)`
   --distance: 24px;
   position: absolute;
   top: var(--padding-vertical);
   right: var(--padding-vertical);
+`;
 
-  ${Menu} {
-    top: 0;
-    right: calc(100% + 4px);
-    width: 500px;
-    height: 362px;
-    ${({$isLoading}) => $isLoading && flexCenter}
-    ${({$isEmpty}) => $isEmpty && flexCenter}
-		overflow-y: auto;
-    ${hideScrollBarScrolling}
-  }
+const flexCenter = css`
+  align-items: center;
+  justify-content: center;
+`;
 
-  ${FakeCheckbox}:checked ~ ${Menu} {
+export const NotificationPopup = styled.div`
+  width: 500px;
+  height: 362px;
+  border-radius: 6px;
+  background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  right: calc(100% + 4px);
+  overflow-y: auto;
+  ${hideScrollBarScrolling}
+  ${({$isLoading}) => $isLoading && flexCenter}
+  ${({$isEmpty}) => $isEmpty && flexCenter}
+  display: none;
+  flex-direction: column;
+
+  ${FakeCheckbox}:checked ~ & {
     display: flex;
-    flex-direction: column;
   }
 `;
 
+export const NotificationMenu = styled.ul`
+  display: flex;
+  flex-direction: column;
+`;
+
 export const NotificationMenuSpinner = styled(Spinner)`
-	padding: 2.7rem;
+  padding: 2.7rem;
 `;
 
 export const AllRequestsItem = styled(MenuItem)`

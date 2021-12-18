@@ -20,6 +20,6 @@ export default (state, action) => {
         isLiked: false,
       };
     default:
-      return state;
+      throw new Error('invalid action');
   }
 };

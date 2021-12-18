@@ -1,9 +1,12 @@
-import {useState} from 'react';
+import {useReducer, useRef, useEffect} from 'react';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
 import BellIcon from './icons/BellIcon';
 import RightChevron from './icons/RightChevron';
+import {FakeCheckbox, OverlayLabel, FakeButtonLabel} from './styled/Lib';
 import {
   StyledNotificationButton,
+  NotificationPopup,
+  NotificationMenu,
   NotificationMenuSpinner,
   AllRequestsItem,
   AllRequestsItemContent,
@@ -18,53 +21,81 @@ import {
   RequestItemContent,
 } from './styled/NotificationButton.styled';
 import {onErrorMedia} from '../utils/media';
+import {useOnScreen} from '../hooks/useOnScreen';
 import followRequestsData from '../data/follow-requests.json';
+import NotificationButtonReducer from '../reducers/notification-button-reducer';
+import {
+  SET_IS_LOADING,
+  SET_CHECKED,
+  SET_SHOW_REQUESTS,
+  SET_FOLLOW_REQUESTS,
+  ON_HIDDEN,
+} from '../actions/notification-button-actions';
 
 const NotificationButton = () => {
-  const [followRequests, setFollowRequests] = useState(followRequestsData);
+  const [state, dispatch] = useReducer(NotificationButtonReducer, {
+    followRequests: followRequestsData,
+    isLoading: true,
+    showRequests: false,
+    checked: false,
+  });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const tooltipRef = useRef(null);
 
-  const [showRequests, setShowRequests] = useState(false);
+  const notificationPopupRef = useRef(null);
 
-  let timeoutId = null;
+  const isNotificationPopupScreen = useOnScreen({ref: notificationPopupRef});
 
-  const setTimeoutLoading = () => {
-    setIsLoading(true);
+  const {followRequests, isLoading, showRequests, checked} = state;
 
-    timeoutId = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  };
+  useEffect(() => {
+    if (isNotificationPopupScreen) {
+      let timeoutId = setTimeout(() => {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }, 1000);
 
-  const onCloseNotificationMenu = () => {
-    clearTimeout(timeoutId);
-    setShowRequests(false);
+      return () => {
+        clearTimeout(timeoutId);
+        dispatch({type: ON_HIDDEN});
+      };
+    }
+  }, [isNotificationPopupScreen]);
+
+  useEffect(() => {
+    if (checked) {
+      tooltipRef.current.setShowState(false);
+    }
+  }, [checked]);
+
+  const onChangeHandler = (e) => {
+    const isChecked = e.target.checked;
+    dispatch({type: SET_CHECKED, payload: isChecked});
   };
 
   const onClickAllRequestsHandler = () => {
-    setShowRequests(true);
+    dispatch({type: SET_SHOW_REQUESTS, payload: true});
   };
 
   // eslint-disable-next-line no-unused-vars
   const confirmRequest = (userId) => {};
 
   const removeRequest = (userId) => {
-    setFollowRequests((prevState) =>
-      prevState.filter((user) => user.id !== userId)
+    const newFollowRequests = followRequests.filter(
+      (user) => user.id !== userId
     );
+    dispatch({type: SET_FOLLOW_REQUESTS, payload: newFollowRequests});
   };
 
   const followRequestsLength = followRequests.length;
+
   let content = null;
 
-  if (isLoading) {
-    content = <NotificationMenuSpinner />;
-  } else if (!showRequests) {
+  if (!showRequests) {
     if (followRequestsLength > 0) {
       content = (
         <AllRequestsItem onClick={onClickAllRequestsHandler}>
           <AllRequestsItemContent
+            topTextAsHeading
             avatarComponent={
               followRequestsLength > 1 ? (
                 <NotificationMenuItemAvatarGroup>
@@ -97,7 +128,6 @@ const NotificationButton = () => {
                 <RightChevron />
               </NotificationMenuItemOption>
             }
-            topTextAsHeading
           />
         </AllRequestsItem>
       );
@@ -136,16 +166,30 @@ const NotificationButton = () => {
 
   return (
     <StyledNotificationButton
-      checkboxId="checkbox_notification_menu"
-      tooltipTitle="Notifications"
-      tooltipPosition="left"
-      icon={<BellIcon />}
-      onOpen={setTimeoutLoading}
-      onClose={onCloseNotificationMenu}
-      $isLoading={isLoading}
-      $isEmpty={followRequestsLength === 0}
+      ref={tooltipRef}
+      trigger={checked ? 'none' : 'hover'}
+      content="Notifications"
+      position="left"
     >
-      {content}
+      <FakeCheckbox
+        id="checkbox_notification_menu"
+        onChange={onChangeHandler}
+      />
+      <FakeButtonLabel htmlFor="checkbox_notification_menu">
+        <BellIcon />
+      </FakeButtonLabel>
+      <OverlayLabel htmlFor="checkbox_notification_menu" />
+      <NotificationPopup
+        ref={notificationPopupRef}
+        $isLoading={isLoading}
+        $isEmpty={followRequestsLength === 0}
+      >
+        {isLoading ? (
+          <NotificationMenuSpinner />
+        ) : (
+          <NotificationMenu>{content}</NotificationMenu>
+        )}
+      </NotificationPopup>
     </StyledNotificationButton>
   );
 };

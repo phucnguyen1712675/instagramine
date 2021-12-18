@@ -1,26 +1,17 @@
 import {useReducer, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {useMemoCompare} from './useMemoCompare';
-
-// Reducer for hook state and actions
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'idle':
-      return {status: 'idle', data: undefined, error: undefined};
-    case 'loading':
-      return {status: 'loading', data: undefined, error: undefined};
-    case 'success':
-      return {status: 'success', data: action.payload, error: undefined};
-    case 'error':
-      return {status: 'error', data: undefined, error: action.payload};
-    default:
-      throw new Error('invalid action');
-  }
-};
+import useFirestoreQueryReducer from '../reducers/use-firestore-query-reducer';
+import {
+  IDLE,
+  LOADING,
+  SUCCESS,
+  ERROR,
+} from '../actions/use-firestore-query-actions';
 
 // Get doc data and merge doc.id
 function getDocData(doc) {
-  return doc.exists === true ? {id: doc.id, ...doc.data()} : null;
+  return doc.exists ? {id: doc.id, ...doc.data()} : null;
 }
 // Get array of doc data from collection
 function getCollectionData(collection) {
@@ -39,7 +30,7 @@ const useFirestoreQuery = ({query}) => {
   };
 
   // Setup our state and actions
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(useFirestoreQueryReducer, initialState);
 
   // Get cached Firestore query object with useMemoCompare (https://usehooks.com/useMemoCompare)
   // Needed because firestore.collection("profiles").doc(uid) will always being a new object reference
@@ -57,11 +48,11 @@ const useFirestoreQuery = ({query}) => {
     // Return early if query is falsy and reset to "idle" status in case
     // we're coming from "success" or "error" status due to query change.
     if (!queryCached) {
-      dispatch({type: 'idle'});
+      dispatch({type: IDLE});
       return;
     }
 
-    dispatch({type: 'loading'});
+    dispatch({type: LOADING});
 
     // Subscribe to query with onSnapshot
     // Will unsubscribe on cleanup since this returns an unsubscribe function
@@ -71,10 +62,10 @@ const useFirestoreQuery = ({query}) => {
         const data = response.docs
           ? getCollectionData(response)
           : getDocData(response);
-        dispatch({type: 'success', payload: data});
+        dispatch({type: SUCCESS, payload: data});
       },
       (error) => {
-        dispatch({type: 'error', payload: error});
+        dispatch({type: ERROR, payload: error});
       }
     );
   }, [queryCached]); // Only run effect if queryCached changes

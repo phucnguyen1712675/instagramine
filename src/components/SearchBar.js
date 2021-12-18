@@ -1,10 +1,12 @@
 import {useReducer, useRef} from 'react';
 import HideLabel from './HideLabel';
+import {FakeCheckbox, OverlayLabel} from './styled/Lib';
 import {
   StyledSearchBar,
   SearchBarInput,
   SearchBarInputSearchIcon,
   SearchHistory,
+  SearchHistoryInner,
   SearchHistorySpinner,
   SearchHistoryHeader,
   SearchHistoryHeaderTitle,
@@ -25,14 +27,16 @@ import {useForm} from '../hooks/useForm';
 import {useLocalStorage} from '../hooks/useLocalStorage';
 import SearchBarReducer from '../reducers/search-bar-reducer';
 import {
-  SET_HAS_OPENED,
+  SET_IS_OPEN,
   SET_IS_LOADING,
+  OPEN_FIRST_TIME,
   FILTER_USERS,
 } from '../actions/search-bar-actions';
 
 const SearchBar = () => {
   const [state, dispatch] = useReducer(SearchBarReducer, {
     hasOpened: false,
+    isOpen: false,
     isLoading: true,
     filteredUsers: [],
   });
@@ -50,9 +54,11 @@ const SearchBar = () => {
 
   const {query} = values;
 
-  const {hasOpened, isLoading, filteredUsers} = state;
+  const {hasOpened, isOpen, isLoading, filteredUsers} = state;
 
   const inputRef = useRef(null);
+
+  const searchHistoryFakeCheckboxRef = useRef(null);
 
   const onSearch = () => {
     if (!query) {
@@ -65,6 +71,15 @@ const SearchBar = () => {
     handler: onSearch,
     element: inputRef,
   });
+
+  const showHeader = !query && !isLoading;
+
+  const filteredUsersLength = filteredUsers.length;
+
+  const historyLength = history.length;
+
+  const shouldCenterChild =
+    isLoading || (query && filteredUsersLength <= 0) || historyLength <= 0;
 
   const onQueryChange = (e) => {
     const query = e.target.value;
@@ -80,21 +95,34 @@ const SearchBar = () => {
     handleChange(e);
   };
 
-  const onFocus = () => {
-    if (hasOpened) {
-      return;
-    }
-
-    dispatch({type: SET_HAS_OPENED, payload: true});
-
-    setTimeout(() => {
-      dispatch({type: SET_IS_LOADING, payload: false});
-    }, 1000);
+  const clearAllHandler = () => {
+    setSearchHistory([]);
   };
 
-  const searchItemArr = query ? filteredUsers : searchHistory;
+  const handleOnFakeCheckboxChange = (e) => {
+    const {checked} = e.target;
+    dispatch({type: SET_IS_OPEN, payload: checked});
+  };
 
-  const searchItemArrLength = searchItemArr.length;
+  const handleOnInputFocus = () => {
+    searchHistoryFakeCheckboxRef.current.checked = true;
+
+    if (hasOpened) {
+      dispatch({type: SET_IS_OPEN, payload: true});
+    } else {
+      dispatch({type: OPEN_FIRST_TIME});
+
+      setTimeout(() => {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }, 1000);
+    }
+  };
+
+  const handleOnInputBlur = () => {
+    // if (isOpen) {
+    //   inputRef.current.focus();
+    // }
+  };
 
   const clickSearchItemHandler = (e, user) => {
     e.preventDefault();
@@ -142,6 +170,10 @@ const SearchBar = () => {
 
     setSearchHistory((prevState) => prevState.filter((user) => user.id !== id));
   };
+
+  const searchItemArr = query ? filteredUsers : searchHistory;
+
+  const searchItemArrLength = searchItemArr.length;
 
   let searchItemListContent = null;
 
@@ -199,19 +231,6 @@ const SearchBar = () => {
     searchItemListContent = <NoResultsText>{noResultsText}</NoResultsText>;
   }
 
-  const showHeader = !query && !isLoading;
-
-  const filteredUsersLength = filteredUsers.length;
-
-  const historyLength = history.length;
-
-  const shouldCenterChild =
-    isLoading || (query && filteredUsersLength <= 0) || historyLength <= 0;
-
-  const clearAllHandler = () => {
-    setSearchHistory([]);
-  };
-
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
       <HideLabel htmlFor="search_input">Search users</HideLabel>
@@ -222,24 +241,36 @@ const SearchBar = () => {
         placeholder="Search"
         value={query}
         onChange={onQueryChange}
-        onFocus={onFocus}
+        onFocus={handleOnInputFocus}
+        onBlur={handleOnInputBlur}
       />
       <SearchBarInputSearchIcon />
-      <SearchHistory $shouldCenterChild={shouldCenterChild}>
-        {showHeader && (
-          <SearchHistoryHeader>
-            <SearchHistoryHeaderTitle>Recent</SearchHistoryHeaderTitle>
-            <ClearAllButton type="link" onMouseDown={clearAllHandler}>
-              Clear All
-            </ClearAllButton>
-          </SearchHistoryHeader>
-        )}
-        {isLoading ? (
-          <SearchHistorySpinner />
-        ) : (
-          <SearchItemList>{searchItemListContent}</SearchItemList>
-        )}
-      </SearchHistory>
+      <FakeCheckbox
+        ref={searchHistoryFakeCheckboxRef}
+        id="checkbox_search_history"
+        value={isOpen}
+        onChange={handleOnFakeCheckboxChange}
+      />
+      <OverlayLabel htmlFor="checkbox_search_history" />
+      {isOpen && (
+        <SearchHistory $shouldCenterChild={shouldCenterChild}>
+          {isLoading ? (
+            <SearchHistorySpinner />
+          ) : (
+            <SearchHistoryInner>
+              {showHeader && (
+                <SearchHistoryHeader>
+                  <SearchHistoryHeaderTitle>Recent</SearchHistoryHeaderTitle>
+                  <ClearAllButton type="link" onMouseDown={clearAllHandler}>
+                    Clear All
+                  </ClearAllButton>
+                </SearchHistoryHeader>
+              )}
+              <SearchItemList>{searchItemListContent}</SearchItemList>
+            </SearchHistoryInner>
+          )}
+        </SearchHistory>
+      )}
     </StyledSearchBar>
   );
 };

@@ -51,7 +51,7 @@
         "type": "image"
       }
     ],
-    "isLiked": true,
+    "isLiked": false,
     "isSaved": true,
     "likedUser": "Lucas",
     "likedOtherUser": [
@@ -108,7 +108,7 @@
         "type": "image"
       }
     ],
-    "isLiked": true,
+    "isLiked": false,
     "isSaved": false,
     "likedUser": "Jessica",
     "likedOtherUser": [

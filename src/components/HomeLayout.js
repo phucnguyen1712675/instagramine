@@ -1,4 +1,4 @@
-import {useState, useRef} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
 import {PATHS} from '../constants';
 import {useAuth} from '../hooks/useAuth';
@@ -20,27 +20,37 @@ import SavedListIcon from '../components/icons/SavedListIcon';
 import MenuSettingIcon from '../components/icons/MenuSettingIcon';
 import MenuIcon from '../components/icons/MenuIcon';
 import {
+  FakeCheckbox,
+  FakeButtonLabel,
+  OverlayLabel,
+} from '../components/styled/Lib';
+import {
   Layout,
   Header,
   HeaderLeftItem,
   MenuButton,
   AppLogo,
   AppLogoIcon,
+  SidebarOverlay,
   Sidebar,
   Nav,
   SettingButton,
+  SettingMenu,
   SettingMenuItem,
   SettingMenuItemLink,
   SettingMenuItemText,
   MainContent,
   NavigationButton,
 } from '../components/styled/HomeLayout.styled';
-import {FakeCheckbox} from '../components/styled/Lib';
 
 const HomeLayout = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   const menuBtnRef = useRef(null);
+
+  const tooltipRef = useRef(null);
+
+  const menuBtnCheckbox = useRef(null);
 
   const isMenuBtnOnScreen = useOnScreen({ref: menuBtnRef});
 
@@ -50,12 +60,28 @@ const HomeLayout = () => {
 
   const auth = useAuth();
 
+  useEffect(() => {
+    if (checked) {
+      tooltipRef.current.setShowState(false);
+    }
+  }, [checked]);
+
+  const onChangeHandler = (e) => setChecked(e.target.checked);
+
   const signOutHandler = (e) => {
     e.preventDefault();
 
     auth.signOut(() => {
       navigate(PATHS.LOGIN);
     });
+  };
+
+  const onClickNavigationButton = (path) => {
+    navigate(path);
+
+    if (isMenuBtnOnScreen) {
+      menuBtnCheckbox.current.checked = false;
+    }
   };
 
   const navigationContent = [
@@ -94,22 +120,18 @@ const HomeLayout = () => {
       content: 'Saved',
       path: PATHS.SAVED,
     },
-  ].map((navItem, index) => (
-    <Tooltip key={index} content={navItem.content} position="right">
+  ].map((item, index) => (
+    <Tooltip key={index} content={item.content} position="right">
       <NavigationButton
         type="text"
-        onClick={() => navigate(navItem.path)}
+        onClick={() => onClickNavigationButton(item.path)}
         disabledHover
-        $isActive={`/${navItem.path}` === pathname}
+        $isActive={`/${item.path}` === pathname}
       >
-        {navItem.icon}
+        {item.icon}
       </NavigationButton>
     </Tooltip>
   ));
-
-  const onClickMenuButton = (e) => {
-    setIsMenuOpen(e.target.checked);
-  };
 
   const {PROFILE, SETTINGS, LOGOUT} = PATHS;
 
@@ -117,7 +139,6 @@ const HomeLayout = () => {
     <Layout>
       <Header>
         <HeaderLeftItem>
-          <FakeCheckbox id="header_menu_button" onChange={onClickMenuButton} />
           <MenuButton ref={menuBtnRef} htmlFor="header_menu_button">
             <MenuIcon />
           </MenuButton>
@@ -128,16 +149,28 @@ const HomeLayout = () => {
         </HeaderLeftItem>
         <SearchBar />
       </Header>
-      {(!isMenuBtnOnScreen || isMenuOpen) && (
-        <Sidebar>
-          <Nav>
-            {navigationContent}
-            <SettingButton
-              checkboxId="checkbox_setting_menu"
-              tooltipTitle="Settings"
-              tooltipPosition="right"
-              icon={<SettingIcon />}
-            >
+      <FakeCheckbox ref={menuBtnCheckbox} id="header_menu_button" />
+      <SidebarOverlay htmlFor="header_menu_button" />
+      <Sidebar $showToggleSidebar={isMenuBtnOnScreen}>
+        <Nav>
+          {navigationContent}
+          <SettingButton
+            ref={tooltipRef}
+            content="Settings"
+            position="right"
+            trigger={checked ? 'none' : 'hover'}
+          >
+            <FakeCheckbox
+              id="checkbox_setting_menu"
+              defaultChecked={false}
+              value={checked}
+              onChange={onChangeHandler}
+            />
+            <FakeButtonLabel htmlFor="checkbox_setting_menu">
+              <SettingIcon />
+            </FakeButtonLabel>
+            <OverlayLabel htmlFor="checkbox_setting_menu" />
+            <SettingMenu>
               <SettingMenuItem>
                 <SettingMenuItemLink to={`/${PROFILE}`}>
                   <UserIcon />
@@ -155,10 +188,10 @@ const HomeLayout = () => {
                   Log Out
                 </SettingMenuItemLink>
               </SettingMenuItem>
-            </SettingButton>
-          </Nav>
-        </Sidebar>
-      )}
+            </SettingMenu>
+          </SettingButton>
+        </Nav>
+      </Sidebar>
       <MainContent>
         <SavedPostsContextProvider>
           <Outlet />

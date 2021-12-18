@@ -1,14 +1,14 @@
 import styled, {css} from 'styled-components';
 import {Link} from 'react-router-dom';
-import {MenuItem} from './Lib';
+import {MenuItem, FakeCheckbox, OverlayLabel} from './Lib';
 import {hideScrollBarScrolling, circle, buttonColorHover} from './Mixins';
 import Button from '../Button';
-import OverlayMenuIconButtonWithTooltip from '../OverlayMenuIconButtonWithTooltip';
-import {Menu} from './OverlayMenuIconButtonWithTooltip.styled';
+import Tooltip from '../Tooltip';
 import LogoIcon from '../icons/LogoIcon';
 import {DEVICES} from '../../constants';
 
 export const Layout = styled.div`
+  --width-sidebar: 90px;
   --width-user-menu: 360px;
   display: grid;
   grid-template-columns: 1fr;
@@ -18,14 +18,14 @@ export const Layout = styled.div`
     'mainContent';
 
   @media ${DEVICES.laptop} {
-    grid-template-columns: 90px 1fr;
+    grid-template-columns: var(--width-sidebar) 1fr;
     grid-template-areas:
       'sidebar header'
       'sidebar mainContent';
   }
 
   @media ${DEVICES.laptopL} {
-    grid-template-columns: 90px 1fr var(--width-user-menu);
+    grid-template-columns: var(--width-sidebar) 1fr var(--width-user-menu);
     grid-template-areas:
       'sidebar header userMenu'
       'sidebar mainContent userMenu';
@@ -79,17 +79,41 @@ export const AppLogoIcon = styled(LogoIcon)`
   font-size: 2.8rem;
 `;
 
+export const SidebarOverlay = styled(OverlayLabel)`
+  background-color: rgba(0, 0, 0, 0.4);
+	z-index: 3;
+`;
+
 export const Sidebar = styled.aside`
-  grid-area: sidebar;
-	display: flex;
+  position: fixed;
+  width: var(--width-sidebar);
+  height: 100vh;
+  display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  position: relative;
+  z-index: 3;
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
     border: 1px solid ${theme.colors.borderDarkBlue};
   `};
+  transform: translateX(-100%);
+
+  ${({$showToggleSidebar}) =>
+    $showToggleSidebar &&
+    css`
+      transition: transform 0.2s ease-out;
+    `}
+
+  ${FakeCheckbox}:checked ~ & {
+    transform: translateX(0);
+  }
+
+  @media ${DEVICES.laptop} {
+    transform: unset;
+    grid-area: sidebar;
+    position: relative;
+  }
 `;
 
 export const Nav = styled.nav`
@@ -100,13 +124,24 @@ export const Nav = styled.nav`
   row-gap: 4rem;
 `;
 
-export const SettingButton = styled(OverlayMenuIconButtonWithTooltip)`
+export const SettingButton = styled(Tooltip)`
   position: absolute;
   bottom: 34px;
+`;
 
-  ${Menu} {
-    bottom: 50%;
-    left: calc(100% + 4px);
+export const SettingMenu = styled.ul`
+  position: absolute;
+  bottom: 50%;
+  left: calc(100% + 4px);
+  border-radius: 6px;
+  background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
+  z-index: 3;
+  overflow: hidden;
+  display: none;
+
+  ${FakeCheckbox}:checked ~ & {
+    display: block;
   }
 `;
 

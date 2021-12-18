@@ -50,14 +50,19 @@ const Post = ({post}) => {
 
   const {likeAmount, isLiked, isSaved} = state;
 
-  const mediaContent =
-    post.media.length === 1 ? (
+  let mediaContent = null;
+
+  if (post.media.length === 1) {
+    const firstMediaItem = post.media[0];
+
+    mediaContent = (
       <PostMediaWrapper>
-        <PostMedia type={post.media[0].type} url={post.media[0].url} />
+        <PostMedia type={firstMediaItem.type} url={firstMediaItem.url} />
       </PostMediaWrapper>
-    ) : (
-      <Carousel media={post.media} />
     );
+  } else {
+    mediaContent = <Carousel media={post.media} />;
+  }
 
   const postCaptionContent =
     post.caption.length > POST_CAPTION_SHOW_CHAR ? (

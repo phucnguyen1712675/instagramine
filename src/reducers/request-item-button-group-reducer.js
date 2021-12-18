@@ -36,6 +36,6 @@ export default (state, action) => {
         isFollowButtonLoading: false,
       };
     default:
-      return state;
+      throw new Error('invalid action');
   }
 };

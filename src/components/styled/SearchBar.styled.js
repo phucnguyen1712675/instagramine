@@ -8,6 +8,7 @@ import UserCard from '../UserCard';
 import Avatar from '../Avatar';
 import SearchIcon from '../icons/SearchIcon';
 import MultiplyIcon from '../icons/MultiplyIcon';
+import {DEVICES} from '../../constants';
 
 export const StyledSearchBar = styled.form`
   --width-search-bar: 300px;
@@ -27,6 +28,7 @@ export const SearchBarInput = styled(SearchInput)`
   padding-left: 50px;
   font-size: 1.8rem;
   border-radius: 8px;
+  z-index: 2;
 
   &::-webkit-search-cancel-button {
     position: relative;
@@ -57,24 +59,42 @@ const flexCenter = css`
 
 export const SearchHistory = styled.div`
   --width-search-history-diff: 75px;
+  --space: 14px;
   position: absolute;
-  top: calc(100% + 14px);
-  left: calc(-1 * var(--width-search-history-diff) / 2);
+  top: calc(100% + var(--space));
+  right: 0;
   width: calc(var(--width-search-bar) + var(--width-search-history-diff));
   height: 362px;
   border-radius: 6px;
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   z-index: 1;
-  overflow-y: auto;
-  display: none;
-  flex-direction: column;
-  ${hideScrollBarScrolling}
-  ${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
+	display: flex;
+	flex-direction: column;
+	${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
 
-  ${SearchInput}:focus ~ & {
-    display: flex;
+  &::before {
+    content: '';
+    height: var(--space);
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    z-index: 1;
   }
+
+  @media ${DEVICES.laptopL} {
+    right: 50%;
+    transform: translateX(50%);
+  }
+`;
+
+export const SearchHistoryInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-radius: inherit;
+  ${hideScrollBarScrolling}
 `;
 
 export const SearchHistorySpinner = styled(Spinner)`

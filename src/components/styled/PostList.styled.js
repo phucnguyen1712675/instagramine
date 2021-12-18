@@ -23,11 +23,11 @@ export const StyledPostList = styled.div`
           ${GridLayout}
           grid-template-columns: repeat(var(--col-config), minmax(300px, 1fr));
 
-          @media ${DEVICES.laptop} {
+          @media ${DEVICES.tablet} {
             --col-config: 2;
           }
 
-          @media ${DEVICES.laptopL} {
+          @media ${DEVICES.laptop} {
             --col-config: 3;
           }
         `;
@@ -38,7 +38,7 @@ export const StyledPostList = styled.div`
           ${GridLayout}
           grid-template-columns: repeat(var(--col-config), minmax(300px, 1fr));
 
-          @media ${DEVICES.laptopL} {
+          @media ${DEVICES.laptop} {
             --col-config: 3;
           }
         `;
