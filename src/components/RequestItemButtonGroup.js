@@ -33,7 +33,7 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     isFollowButtonLoading,
   } = state;
 
-  const confirmHandler = () => {
+  const confirmRequestHandler = () => {
     dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
 
     setTimeout(() => {
@@ -45,7 +45,7 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     }, 1000);
   };
 
-  const deleteHandler = () => {
+  const removeRequestHandler = () => {
     dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
 
     setTimeout(() => {
@@ -55,7 +55,7 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     }, 1000);
   };
 
-  const followHandler = () => {
+  const followUserHandler = () => {
     dispatch({type: SET_IS_FOLLOW_BUTTON_LOADING, payload: true});
 
     setTimeout(() => {
@@ -65,49 +65,45 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     }, 1000);
   };
 
-  let content = null;
-
-  if (isConfirmed) {
-    content = (
-      <DisabledButtonWrapper $disabled={isFollowButtonLoading}>
-        <RequestItemFollowButton
-          type={!isFollowed ? 'primary' : 'default'}
-          loading={isFollowButtonLoading}
-          disabled={isFollowButtonLoading}
-          onClick={followHandler}
-          $isFollowed={isFollowed}
-        >
-          {isFollowed ? 'Following' : 'Follow'}
-        </RequestItemFollowButton>
-      </DisabledButtonWrapper>
-    );
-  } else {
-    content = (
-      <>
-        <DisabledButtonWrapper $disabled={isDeleteButtonLoading}>
-          <RequestItemConfirmButton
-            type="primary"
-            loading={isConfirmButtonLoading}
-            disabled={isDeleteButtonLoading}
-            onClick={confirmHandler}
+  return (
+    <StyledRequestItemButtonGroup>
+      {!isConfirmed ? (
+        <>
+          <DisabledButtonWrapper $disabled={isDeleteButtonLoading}>
+            <RequestItemConfirmButton
+              type="primary"
+              loading={isConfirmButtonLoading}
+              disabled={isDeleteButtonLoading}
+              onClick={confirmRequestHandler}
+            >
+              Confirm
+            </RequestItemConfirmButton>
+          </DisabledButtonWrapper>
+          <DisabledButtonWrapper $disabled={isConfirmButtonLoading}>
+            <RequestItemDeleteButton
+              loading={isDeleteButtonLoading}
+              disabled={isConfirmButtonLoading}
+              onClick={removeRequestHandler}
+            >
+              Delete
+            </RequestItemDeleteButton>
+          </DisabledButtonWrapper>
+        </>
+      ) : (
+        <DisabledButtonWrapper $disabled={isFollowButtonLoading}>
+          <RequestItemFollowButton
+            type={!isFollowed ? 'primary' : 'default'}
+            loading={isFollowButtonLoading}
+            disabled={isFollowButtonLoading}
+            onClick={followUserHandler}
+            $isFollowed={isFollowed}
           >
-            Confirm
-          </RequestItemConfirmButton>
+            {isFollowed ? 'Following' : 'Follow'}
+          </RequestItemFollowButton>
         </DisabledButtonWrapper>
-        <DisabledButtonWrapper $disabled={isConfirmButtonLoading}>
-          <RequestItemDeleteButton
-            loading={isDeleteButtonLoading}
-            disabled={isConfirmButtonLoading}
-            onClick={deleteHandler}
-          >
-            Delete
-          </RequestItemDeleteButton>
-        </DisabledButtonWrapper>
-      </>
-    );
-  }
-
-  return <StyledRequestItemButtonGroup>{content}</StyledRequestItemButtonGroup>;
+      )}
+    </StyledRequestItemButtonGroup>
+  );
 };
 
 RequestItemButtonGroup.propTypes = {

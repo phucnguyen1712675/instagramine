@@ -7,7 +7,6 @@ import {SavedPostsContextProvider} from '../store/saved-posts-context';
 import UserMenu from '../components/UserMenu';
 import SearchBar from '../components/SearchBar';
 import Tooltip from '../components/Tooltip';
-import LogoTextIcon from '../components/icons/LogoTextIcon';
 import SettingIcon from '../components/icons/SettingIcon';
 import UserIcon from '../components/icons/UserIcon';
 import HomeIcon from '../components/icons/HomeIcon';
@@ -19,18 +18,21 @@ import StreamIcon from '../components/icons/StreamIcon';
 import SavedListIcon from '../components/icons/SavedListIcon';
 import MenuSettingIcon from '../components/icons/MenuSettingIcon';
 import MenuIcon from '../components/icons/MenuIcon';
+import SearchIcon from '../components/icons/SearchIcon';
 import {
   FakeCheckbox,
   FakeButtonLabel,
   OverlayLabel,
 } from '../components/styled/Lib';
 import {
-  Layout,
+  StyledHomeLayout,
   Header,
   HeaderLeftItem,
   MenuButton,
   AppLogo,
   AppLogoIcon,
+  AppLogoTextIcon,
+  SearchButton,
   SidebarOverlay,
   Sidebar,
   Nav,
@@ -39,8 +41,8 @@ import {
   SettingMenuItem,
   SettingMenuItemLink,
   SettingMenuItemText,
-  MainContent,
-  NavigationButton,
+  HomeLayoutMainContent,
+  SidebarButton,
 } from '../components/styled/HomeLayout.styled';
 
 const HomeLayout = () => {
@@ -66,7 +68,7 @@ const HomeLayout = () => {
     }
   }, [checked]);
 
-  const onChangeHandler = (e) => setChecked(e.target.checked);
+  const checkHandler = (e) => setChecked(e.target.checked);
 
   const signOutHandler = (e) => {
     e.preventDefault();
@@ -76,7 +78,7 @@ const HomeLayout = () => {
     });
   };
 
-  const onClickNavigationButton = (path) => {
+  const navigateHandler = (path) => {
     navigate(path);
 
     if (isMenuBtnOnScreen) {
@@ -122,21 +124,19 @@ const HomeLayout = () => {
     },
   ].map((item, index) => (
     <Tooltip key={index} content={item.content} position="right">
-      <NavigationButton
+      <SidebarButton
         type="text"
-        onClick={() => onClickNavigationButton(item.path)}
+        onClick={() => navigateHandler(item.path)}
         disabledHover
         $isActive={`/${item.path}` === pathname}
       >
         {item.icon}
-      </NavigationButton>
+      </SidebarButton>
     </Tooltip>
   ));
 
-  const {PROFILE, SETTINGS, LOGOUT} = PATHS;
-
   return (
-    <Layout>
+    <StyledHomeLayout>
       <Header>
         <HeaderLeftItem>
           <MenuButton ref={menuBtnRef} htmlFor="header_menu_button">
@@ -144,9 +144,12 @@ const HomeLayout = () => {
           </MenuButton>
           <AppLogo to="/">
             <AppLogoIcon />
-            <LogoTextIcon />
+            <AppLogoTextIcon />
           </AppLogo>
         </HeaderLeftItem>
+        <SearchButton to={`/${PATHS.SEARCH}`}>
+          <SearchIcon />
+        </SearchButton>
         <SearchBar />
       </Header>
       <FakeCheckbox ref={menuBtnCheckbox} id="header_menu_button" />
@@ -164,7 +167,7 @@ const HomeLayout = () => {
               id="checkbox_setting_menu"
               defaultChecked={false}
               value={checked}
-              onChange={onChangeHandler}
+              onChange={checkHandler}
             />
             <FakeButtonLabel htmlFor="checkbox_setting_menu">
               <SettingIcon />
@@ -172,19 +175,22 @@ const HomeLayout = () => {
             <OverlayLabel htmlFor="checkbox_setting_menu" />
             <SettingMenu>
               <SettingMenuItem>
-                <SettingMenuItemLink to={`/${PROFILE}`}>
+                <SettingMenuItemLink to={`/${PATHS.PROFILE}`}>
                   <UserIcon />
                   <SettingMenuItemText>Profile</SettingMenuItemText>
                 </SettingMenuItemLink>
               </SettingMenuItem>
               <SettingMenuItem>
-                <SettingMenuItemLink to={`/${SETTINGS}`}>
+                <SettingMenuItemLink to={`/${PATHS.SETTINGS}`}>
                   <MenuSettingIcon />
                   <SettingMenuItemText>Settings</SettingMenuItemText>
                 </SettingMenuItemLink>
               </SettingMenuItem>
               <SettingMenuItem>
-                <SettingMenuItemLink to={`/${LOGOUT}`} onClick={signOutHandler}>
+                <SettingMenuItemLink
+                  to={`/${PATHS.LOGOUT}`}
+                  onClick={signOutHandler}
+                >
                   Log Out
                 </SettingMenuItemLink>
               </SettingMenuItem>
@@ -192,13 +198,13 @@ const HomeLayout = () => {
           </SettingButton>
         </Nav>
       </Sidebar>
-      <MainContent>
+      <HomeLayoutMainContent>
         <SavedPostsContextProvider>
           <Outlet />
         </SavedPostsContextProvider>
-      </MainContent>
+      </HomeLayoutMainContent>
       <UserMenu />
-    </Layout>
+    </StyledHomeLayout>
   );
 };
 

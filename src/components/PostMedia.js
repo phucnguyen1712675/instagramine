@@ -9,32 +9,26 @@ import {
 const PostMedia = ({className, type, url}) => {
   const [hasError, setError] = useState(false);
 
-  const onErrorHandler = (e) => {
+  const errorHandler = (e) => {
     e.target.onerror = null;
     setError(true);
   };
 
+  const placeholder =
+    type === 'image' ? ONERROR_IMAGE_PLACEHOLDER : ONERROR_VIDEO_PLACEHOLDER;
+
   if (hasError) {
-    return (
-      <PostImage
-        className={className}
-        src={
-          type === 'image'
-            ? ONERROR_IMAGE_PLACEHOLDER
-            : ONERROR_VIDEO_PLACEHOLDER
-        }
-      />
-    );
+    return <PostImage className={className} src={placeholder} />;
   }
 
   if (type === 'image') {
     return (
-      <PostImage className={className} src={url} onError={onErrorHandler} />
+      <PostImage className={className} src={url} onError={errorHandler} />
     );
   }
 
   return (
-    <PostVideo className={className} onError={onErrorHandler} controls>
+    <PostVideo className={className} onError={errorHandler} controls>
       <source src={url} type="video/mp4" />
       Your browser does not support the video tag.
     </PostVideo>

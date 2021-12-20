@@ -1,23 +1,26 @@
 import styled, {css} from 'styled-components';
 import {Link} from 'react-router-dom';
 import {MenuItem, FakeCheckbox, OverlayLabel} from './Lib';
-import {hideScrollBarScrolling, circle, buttonColorHover} from './Mixins';
+import {circle, buttonColorHover, hideScrollBarScrolling} from './Mixins';
 import Button from '../Button';
 import Tooltip from '../Tooltip';
 import LogoIcon from '../icons/LogoIcon';
+import LogoTextIcon from '../icons/LogoTextIcon';
 import {DEVICES} from '../../constants';
 
-export const Layout = styled.div`
+export const StyledHomeLayout = styled.div`
+  --height-header: 90px;
   --width-sidebar: 90px;
   --width-user-menu: 360px;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 90px calc(100vh - 90px);
+  grid-template-rows: var(--height-header) 1fr;
   grid-template-areas:
     'header'
     'mainContent';
 
   @media ${DEVICES.laptop} {
+    grid-template-rows: var(--height-header) calc(100vh - var(--height-header));
     grid-template-columns: var(--width-sidebar) 1fr;
     grid-template-areas:
       'sidebar header'
@@ -48,7 +51,11 @@ export const Header = styled.header`
 export const HeaderLeftItem = styled.div`
   display: flex;
   align-items: center;
-  column-gap: 32px;
+  column-gap: 16px;
+
+  @media ${DEVICES.tablet} {
+    column-gap: 32px;
+  }
 `;
 
 export const MenuButton = styled.label`
@@ -73,15 +80,46 @@ export const AppLogo = styled(Link)`
   column-gap: 8px;
   cursor: pointer;
   outline: none;
+  padding: 2px;
+
+  @media ${DEVICES.tablet} {
+    padding: unset;
+  }
 `;
 
 export const AppLogoIcon = styled(LogoIcon)`
   font-size: 2.8rem;
 `;
 
+export const AppLogoTextIcon = styled(LogoTextIcon)`
+  display: none;
+
+  @media ${DEVICES.tablet} {
+    display: inline-block;
+  }
+`;
+
+export const SearchButton = styled(Link)`
+  display: inline-block;
+  font-size: 1.6rem;
+  padding: 12px;
+  border-radius: 5px;
+  ${({theme}) => css`
+    background-color: ${theme.colors.blueAlphaBackground};
+
+    &:hover {
+      outline: 1px solid ${theme.colors.blueAlpha};
+    }
+  `};
+
+  @media ${DEVICES.tablet} {
+    display: none;
+  }
+`;
+
 export const SidebarOverlay = styled(OverlayLabel)`
   background-color: rgba(0, 0, 0, 0.4);
-	z-index: 3;
+  z-index: 2;
 `;
 
 export const Sidebar = styled.aside`
@@ -92,7 +130,7 @@ export const Sidebar = styled.aside`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  z-index: 3;
+  z-index: 2;
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
     border: 1px solid ${theme.colors.borderDarkBlue};
@@ -136,7 +174,7 @@ export const SettingMenu = styled.ul`
   border-radius: 6px;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
-  z-index: 3;
+  z-index: 2;
   overflow: hidden;
   display: none;
 
@@ -162,11 +200,19 @@ export const SettingMenuItemText = styled.span`
   margin-left: 12px;
 `;
 
-export const MainContent = styled.main`
+export const HomeLayoutMainContent = styled.main`
   grid-area: mainContent;
-  padding: 25px 20px;
   overflow-y: auto;
   ${hideScrollBarScrolling}
+  padding: 30px 15px 15px;
+
+  @media ${DEVICES.tablet} {
+    padding-top: 15px;
+  }
+
+  @media ${DEVICES.laptop} {
+    padding: 25px 20px;
+  }
 `;
 
 const ActiveNavigationButton = css`
@@ -182,7 +228,7 @@ const ActiveNavigationButton = css`
   }
 `;
 
-export const NavigationButton = styled(Button)`
+export const SidebarButton = styled(Button)`
   color: unset;
   border-radius: unset;
   overflow: unset;

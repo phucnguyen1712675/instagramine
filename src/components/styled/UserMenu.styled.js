@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components';
 import {Dot, CircleImgWrapper} from './Lib';
-import {wh, hoverUnderline, buttonColorHover} from './Mixins';
+import {hoverUnderline, buttonColorHover} from './Mixins';
 import Avatar from '../Avatar';
 import ReadMore from '../ReadMore';
 import Tooltip from '../Tooltip';
@@ -13,8 +13,6 @@ export const StyledUserMenu = styled.div`
   --padding-vertical: 36px;
   grid-area: userMenu;
   position: relative;
-  flex-direction: column;
-  justify-content: flex-end;
   padding-top: var(--padding-vertical);
   padding-right: var(--padding-horizontal);
   padding-bottom: var(--padding-vertical);
@@ -24,6 +22,7 @@ export const StyledUserMenu = styled.div`
     border-left: var(--width-border) solid ${theme.colors.borderDarkBlue};
   `}
   display: none;
+  flex-direction: column;
 
   @media ${DEVICES.laptopL} {
     display: flex;
@@ -209,7 +208,9 @@ export const StoriesContentCircleImg = styled.img`
 `;
 
 export const PlayButton = styled(Button)`
-  ${wh({w: '6rem'})}
+	--size: 6rem;
+	width: var(--size);
+	height: var(--size);
   padding: 0;
   font-size: 2.4rem;
   border: 2px solid ${({theme}) => theme.colors.primary};

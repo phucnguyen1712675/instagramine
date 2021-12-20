@@ -1,5 +1,11 @@
 import styled, {css} from 'styled-components';
-import {Dot, CircleImgWrapper, FakeCheckbox, MenuItem} from './Lib';
+import {
+  Dot,
+  CircleImgWrapper,
+  FakeCheckbox,
+  MenuItem,
+  OverlayLabel,
+} from './Lib';
 import {hideScrollBarScrolling} from './Mixins';
 import {TextContent} from './UserCard.styled';
 import Tooltip from '../Tooltip';
@@ -13,6 +19,10 @@ export const StyledNotificationButton = styled(Tooltip)`
   right: var(--padding-vertical);
 `;
 
+export const NotificationOverlayLabel = styled(OverlayLabel)`
+  z-index: 2;
+`;
+
 const flexCenter = css`
   align-items: center;
   justify-content: center;
@@ -24,14 +34,13 @@ export const NotificationPopup = styled.div`
   border-radius: 6px;
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
-  z-index: 1;
+  z-index: 2;
   position: absolute;
   top: 0;
   right: calc(100% + 4px);
   overflow-y: auto;
   ${hideScrollBarScrolling}
-  ${({$isLoading}) => $isLoading && flexCenter}
-  ${({$isEmpty}) => $isEmpty && flexCenter}
+  ${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
   display: none;
   flex-direction: column;
 

@@ -10,6 +10,7 @@ export const PATHS = {
   LOGOUT: 'logout',
   PROFILE: 'profile',
   SETTINGS: 'settings',
+  SEARCH: 'search',
 };
 
 const SIZES = {

@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {wh, hideScrollBarScrolling} from './Mixins';
+import {hideScrollBarScrolling} from './Mixins';
 import {SearchInput, Dot, MenuItem} from './Lib';
 import {TextContent} from './UserCard.styled';
 import Button from '../Button';
@@ -15,13 +15,20 @@ export const StyledSearchBar = styled.form`
   position: relative;
   width: var(--width-search-bar);
   height: 48px;
+  display: none;
+
+  @media ${DEVICES.tablet} {
+    display: block;
+  }
 `;
 
 export const SearchBarInput = styled(SearchInput)`
   --padding-cancel-button: 25px;
+  --size: 100%;
+  width: var(--size);
+  height: var(--size);
   position: absolute;
   left: 0;
-  ${wh}
   padding-top: 0;
   padding-right: calc(50px - var(--padding-cancel-button));
   padding-bottom: 0;
@@ -44,7 +51,7 @@ export const SearchBarInputSearchIcon = styled(SearchIcon)`
   left: 18px;
   height: 100%;
   z-index: 1;
-  color: ${({theme}) => theme.colors.blueAlphaAction};
+  color: ${({theme}) => theme.colors.blueAlpha};
   font-size: 1.8rem;
 
   ${SearchInput}:focus ~ & {
@@ -69,9 +76,9 @@ export const SearchHistory = styled.div`
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
   background-color: ${({theme}) => theme.colors.bgComponentLightTheme};
   z-index: 1;
-	display: flex;
-	flex-direction: column;
-	${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
+  display: flex;
+  flex-direction: column;
+  ${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
 
   &::before {
     content: '';

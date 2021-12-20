@@ -26,13 +26,13 @@ const ReadMore = ({
     ? `${children.slice(0, showChar - lengthToSubtract - 3)}... `
     : children;
 
+  const readOrHideChildren = isReadMore ? readMoreText : showLessText;
+
   const readOrHideContent = readMoreLink ? (
-    <ReadOrHide href={readMoreLink}>
-      {isReadMore ? readMoreText : showLessText}
-    </ReadOrHide>
+    <ReadOrHide href={readMoreLink}>{readOrHideChildren}</ReadOrHide>
   ) : (
     <ReadOrHide as="span" onClick={toggleReadMore} style={{cursor: 'pointer'}}>
-      {isReadMore ? readMoreText : showLessText}
+      {readOrHideChildren}
     </ReadOrHide>
   );
 

@@ -46,7 +46,7 @@ const SearchBar = () => {
     initialValue: [],
   });
 
-  const {values, handleChange, handleSubmit} = useForm({
+  const {values, handleChange, handleSubmit, reset} = useForm({
     initialValues: {
       query: '',
     },
@@ -74,14 +74,13 @@ const SearchBar = () => {
 
   const showHeader = !query && !isLoading;
 
-  const filteredUsersLength = filteredUsers.length;
+  const searchItemArr = query ? filteredUsers : searchHistory;
 
-  const historyLength = history.length;
+  const hasItems = searchItemArr.length > 0;
 
-  const shouldCenterChild =
-    isLoading || (query && filteredUsersLength <= 0) || historyLength <= 0;
+  const shouldCenterChild = isLoading || !hasItems;
 
-  const onQueryChange = (e) => {
+  const changeQueryHandler = (e) => {
     const query = e.target.value;
 
     if (query) {
@@ -99,12 +98,11 @@ const SearchBar = () => {
     setSearchHistory([]);
   };
 
-  const handleOnFakeCheckboxChange = (e) => {
-    const {checked} = e.target;
-    dispatch({type: SET_IS_OPEN, payload: checked});
+  const isOpenHandler = (e) => {
+    dispatch({type: SET_IS_OPEN, payload: e.target.checked});
   };
 
-  const handleOnInputFocus = () => {
+  const focusInputHandler = () => {
     searchHistoryFakeCheckboxRef.current.checked = true;
 
     if (hasOpened) {
@@ -118,15 +116,8 @@ const SearchBar = () => {
     }
   };
 
-  const handleOnInputBlur = () => {
-    // if (isOpen) {
-    //   inputRef.current.focus();
-    // }
-  };
-
-  const clickSearchItemHandler = (e, user) => {
+  const clickItemHandler = (e, user) => {
     e.preventDefault();
-
     const foundIndex = searchHistory.findIndex((u) => u.id === user.id);
 
     if (foundIndex !== -1) {
@@ -146,7 +137,6 @@ const SearchBar = () => {
 
           return array;
         };
-
         setSearchHistory((prevState) => move(prevState, foundIndex, 0));
       }
     } else if (query) {
@@ -160,76 +150,17 @@ const SearchBar = () => {
         hasStory: user.hasStory,
         hasStoryBeenSeen: user.hasStoryBeenSeen,
       };
-
-      setSearchHistory((prevState) => [...prevState, newSearchItem]);
+      // Add new item to the beginning of the array
+      setSearchHistory((prevState) => [newSearchItem, ...prevState]);
     }
+    // Clear the query
+    reset();
   };
 
   const removeItemHandler = (e, id) => {
     e.preventDefault();
-
     setSearchHistory((prevState) => prevState.filter((user) => user.id !== id));
   };
-
-  const searchItemArr = query ? filteredUsers : searchHistory;
-
-  const searchItemArrLength = searchItemArr.length;
-
-  let searchItemListContent = null;
-
-  if (searchItemArrLength) {
-    searchItemListContent = (
-      <>
-        {searchItemArr.map((user) => (
-          <SearchHistoryItem key={user.id}>
-            <SearchHistoryItemLink
-              href={user.profile}
-              onClick={(e) => clickSearchItemHandler(e, user)}
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              <SearchHistoryItemContent
-                avatarComponent={
-                  <SearchHistoryItemAvatar
-                    url={user.avatar}
-                    hasStory={user.hasStory}
-                    hasStoryBeenSeen={user.hasStoryBeenSeen}
-                    disableOnClickHandler
-                  />
-                }
-                topText={user.username}
-                bottomTextComponent={
-                  <SearchHistoryUserAdditionalInfo>
-                    <span>{user.name}</span>
-                    {user.isFollowed && (
-                      <>
-                        <SearchHistoryUserAdditionalInfoDot />
-                        <span>Following</span>
-                      </>
-                    )}
-                  </SearchHistoryUserAdditionalInfo>
-                }
-                optionComponent={
-                  !query ? (
-                    <RemoveItemButton
-                      type="text"
-                      onClick={(e) => removeItemHandler(e, user.id)}
-                      disabledHover
-                    >
-                      <RemoveHistoryItemButtonIcon />
-                    </RemoveItemButton>
-                  ) : null
-                }
-                topTextAsHeading
-              />
-            </SearchHistoryItemLink>
-          </SearchHistoryItem>
-        ))}
-      </>
-    );
-  } else {
-    const noResultsText = query ? 'No results found.' : 'No recent searches.';
-    searchItemListContent = <NoResultsText>{noResultsText}</NoResultsText>;
-  }
 
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
@@ -240,22 +171,25 @@ const SearchBar = () => {
         name="query"
         placeholder="Search"
         value={query}
-        onChange={onQueryChange}
-        onFocus={handleOnInputFocus}
-        onBlur={handleOnInputBlur}
+        onChange={changeQueryHandler}
+        onFocus={focusInputHandler}
       />
       <SearchBarInputSearchIcon />
       <FakeCheckbox
         ref={searchHistoryFakeCheckboxRef}
         id="checkbox_search_history"
         value={isOpen}
-        onChange={handleOnFakeCheckboxChange}
+        onChange={isOpenHandler}
       />
       <OverlayLabel htmlFor="checkbox_search_history" />
       {isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
           {isLoading ? (
             <SearchHistorySpinner />
+          ) : !hasItems ? (
+            <NoResultsText>
+              {query ? 'No results found.' : 'No recent searches.'}
+            </NoResultsText>
           ) : (
             <SearchHistoryInner>
               {showHeader && (
@@ -266,7 +200,52 @@ const SearchBar = () => {
                   </ClearAllButton>
                 </SearchHistoryHeader>
               )}
-              <SearchItemList>{searchItemListContent}</SearchItemList>
+              <SearchItemList>
+                {searchItemArr.map((user) => (
+                  <SearchHistoryItem key={user.id}>
+                    <SearchHistoryItemLink
+                      href={user.profile}
+                      onClick={(e) => clickItemHandler(e, user)}
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      <SearchHistoryItemContent
+                        topTextAsHeading
+                        avatarComponent={
+                          <SearchHistoryItemAvatar
+                            url={user.avatar}
+                            hasStory={user.hasStory}
+                            hasStoryBeenSeen={user.hasStoryBeenSeen}
+                            disableOnClickHandler
+                          />
+                        }
+                        topText={user.username}
+                        bottomTextComponent={
+                          <SearchHistoryUserAdditionalInfo>
+                            <span>{user.name}</span>
+                            {user.isFollowed && (
+                              <>
+                                <SearchHistoryUserAdditionalInfoDot />
+                                <span>Following</span>
+                              </>
+                            )}
+                          </SearchHistoryUserAdditionalInfo>
+                        }
+                        optionComponent={
+                          !query ? (
+                            <RemoveItemButton
+                              type="text"
+                              onClick={(e) => removeItemHandler(e, user.id)}
+                              disabledHover
+                            >
+                              <RemoveHistoryItemButtonIcon />
+                            </RemoveItemButton>
+                          ) : null
+                        }
+                      />
+                    </SearchHistoryItemLink>
+                  </SearchHistoryItem>
+                ))}
+              </SearchItemList>
             </SearchHistoryInner>
           )}
         </SearchHistory>

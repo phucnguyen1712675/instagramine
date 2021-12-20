@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import {PostMediaWrapper} from './Lib';
-import {wh, circle} from './Mixins';
+import {circle} from './Mixins';
 import Button from '../Button';
 
 const CarouselButtonWrapper = styled.div`
@@ -12,7 +12,9 @@ const CarouselButtonWrapper = styled.div`
 `;
 
 export const CarouselButton = styled(Button)`
-  ${wh({w: '2.4rem'})}
+	--size: 2.4rem;
+	width: var(--size);
+	height: var(--size);
   border-color: transparent;
   font-size: 1rem;
   padding: 0;

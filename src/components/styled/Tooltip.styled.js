@@ -2,7 +2,6 @@ import styled, {css} from 'styled-components';
 
 export const StyledTooltip = styled.div`
   position: relative;
-  cursor: pointer;
 `;
 
 const TopPosition = css`

@@ -32,15 +32,15 @@ export const TextInput = styled.input.attrs({
   role: 'presentation',
 })`
   padding: 9px 7px;
-  background: #f8fbff;
   box-shadow: inset 0px 4px 40px rgba(175, 193, 217, 0.12);
   border-radius: 5px;
 
   ${({theme}) => css`
-    color: ${theme.colors.blueAlphaAction};
+    color: ${theme.colors.blueAlpha};
+    background-color: ${theme.colors.blueAlphaBackground};
 
     &:focus {
-      outline: 1px solid ${theme.colors.blueAlphaAction};
+      outline: 1px solid ${theme.colors.blueAlpha};
     }
   `};
 `;
@@ -77,6 +77,7 @@ export const OverlayLabel = styled.label`
 
 export const MenuItem = styled.li`
   font-size: 1.4rem;
+  cursor: pointer;
 
   &:hover {
     background-color: #fafafa;
@@ -130,4 +131,11 @@ export const ErrorText = styled.p`
 
 export const SubmitButtonWrapper = styled(DisabledButtonWrapper)`
   margin: 6px 40px;
+`;
+
+export const PageContent = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 `;

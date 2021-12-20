@@ -1,12 +1,15 @@
 import {useState, useEffect} from 'react';
 import PostList from '../components/PostList';
 import {useSavedPosts} from '../hooks/useSavedPosts';
+import {PageContent} from '../components/styled/Lib';
 import {SavedContentSpinner} from '../components/styled/SavedContent.styled';
 
 const SavedContent = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const {savedPosts} = useSavedPosts();
+
+  const hasPosts = savedPosts.length > 0;
 
   useEffect(() => {
     let timeoutId = setTimeout(() => {
@@ -19,10 +22,20 @@ const SavedContent = () => {
   }, []);
 
   if (isLoading) {
-    return <SavedContentSpinner />;
+    return (
+      <PageContent>
+        <SavedContentSpinner />
+      </PageContent>
+    );
   }
 
-  return <PostList posts={savedPosts} noPostsText="No Saved Posts." />;
+  if (!hasPosts) {
+    <PageContent>
+      <p>No Saved Posts.</p>
+    </PageContent>;
+  }
+
+  return <PostList posts={savedPosts} />;
 };
 
 export default SavedContent;

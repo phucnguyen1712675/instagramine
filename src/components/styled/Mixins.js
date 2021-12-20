@@ -1,12 +1,8 @@
 import {css} from 'styled-components';
 
-export const wh = ({w = '100%', h = w}) => css`
+export const circle = ({w = '100%', h = w}) => css`
   width: ${w};
   height: ${h};
-`;
-
-export const circle = ({w = '100%', h = w}) => css`
-  ${wh({w, h})};
   border-radius: 100%;
   overflow: hidden;
 `;

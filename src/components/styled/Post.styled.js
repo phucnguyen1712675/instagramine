@@ -35,7 +35,7 @@ const darkerButtonHover = css`
 export const MoreOptionButton = styled.label`
   font-size: 1.8rem;
   cursor: pointer;
-  color: ${({theme}) => theme.colors.blueAlphaAction};
+  color: ${({theme}) => theme.colors.blueAlpha};
   transition: color 0.2s ease-out;
 
   &:hover {

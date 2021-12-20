@@ -2,9 +2,10 @@ import {useReducer, useRef, useEffect} from 'react';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
 import BellIcon from './icons/BellIcon';
 import RightChevron from './icons/RightChevron';
-import {FakeCheckbox, OverlayLabel, FakeButtonLabel} from './styled/Lib';
+import {FakeCheckbox, FakeButtonLabel} from './styled/Lib';
 import {
   StyledNotificationButton,
+  NotificationOverlayLabel,
   NotificationPopup,
   NotificationMenu,
   NotificationMenuSpinner,
@@ -48,6 +49,12 @@ const NotificationButton = () => {
 
   const {followRequests, isLoading, showRequests, checked} = state;
 
+  const followRequestsLength = followRequests.length;
+
+  const hasNotifications = followRequestsLength > 0;
+
+  const shouldCenterChild = isLoading || !hasNotifications;
+
   useEffect(() => {
     if (isNotificationPopupScreen) {
       let timeoutId = setTimeout(() => {
@@ -67,12 +74,11 @@ const NotificationButton = () => {
     }
   }, [checked]);
 
-  const onChangeHandler = (e) => {
-    const isChecked = e.target.checked;
-    dispatch({type: SET_CHECKED, payload: isChecked});
+  const checkHandler = (e) => {
+    dispatch({type: SET_CHECKED, payload: e.target.checked});
   };
 
-  const onClickAllRequestsHandler = () => {
+  const seeRequestsHandler = () => {
     dispatch({type: SET_SHOW_REQUESTS, payload: true});
   };
 
@@ -86,84 +92,6 @@ const NotificationButton = () => {
     dispatch({type: SET_FOLLOW_REQUESTS, payload: newFollowRequests});
   };
 
-  const followRequestsLength = followRequests.length;
-
-  let content = null;
-
-  if (!showRequests) {
-    if (followRequestsLength > 0) {
-      content = (
-        <AllRequestsItem onClick={onClickAllRequestsHandler}>
-          <AllRequestsItemContent
-            topTextAsHeading
-            avatarComponent={
-              followRequestsLength > 1 ? (
-                <NotificationMenuItemAvatarGroup>
-                  {followRequests.slice(0, 2).map((user, index) => (
-                    <NotificationMenuItemAvatarGroupWrapper key={index}>
-                      <img src={user.avatar} alt="" onError={onErrorMedia} />
-                    </NotificationMenuItemAvatarGroupWrapper>
-                  ))}
-                </NotificationMenuItemAvatarGroup>
-              ) : (
-                <NotificationMenuItemAvatarWrapper>
-                  <img
-                    src={followRequests[0].avatar}
-                    alt=""
-                    onError={onErrorMedia}
-                  />
-                </NotificationMenuItemAvatarWrapper>
-              )
-            }
-            topText="Follow Requests"
-            bottomTextComponent={
-              <NotificationMenuItemBottomText>
-                {followRequests[0].username} and {followRequestsLength - 1}{' '}
-                others
-              </NotificationMenuItemBottomText>
-            }
-            optionComponent={
-              <NotificationMenuItemOption>
-                <NotificationMenuItemDot />
-                <RightChevron />
-              </NotificationMenuItemOption>
-            }
-          />
-        </AllRequestsItem>
-      );
-    } else {
-      content = <NoNotificationsText>No notifications</NoNotificationsText>;
-    }
-  } else {
-    content = followRequests.map((user) => (
-      <RequestItem key={user.id}>
-        <RequestItemContent
-          avatarComponent={
-            <NotificationMenuItemAvatarWrapper>
-              <img src={user.avatar} alt="" onError={onErrorMedia} />
-            </NotificationMenuItemAvatarWrapper>
-          }
-          topText={user.username}
-          topTextAsHeading
-          bottomTextComponent={
-            user.name ? (
-              <NotificationMenuItemBottomText>
-                {user.name}
-              </NotificationMenuItemBottomText>
-            ) : null
-          }
-          optionComponent={
-            <RequestItemButtonGroup
-              userId={user.id}
-              confirmRequest={confirmRequest}
-              removeRequest={removeRequest}
-            />
-          }
-        />
-      </RequestItem>
-    ));
-  }
-
   return (
     <StyledNotificationButton
       ref={tooltipRef}
@@ -171,23 +99,93 @@ const NotificationButton = () => {
       content="Notifications"
       position="left"
     >
-      <FakeCheckbox
-        id="checkbox_notification_menu"
-        onChange={onChangeHandler}
-      />
+      <FakeCheckbox id="checkbox_notification_menu" onChange={checkHandler} />
       <FakeButtonLabel htmlFor="checkbox_notification_menu">
         <BellIcon />
       </FakeButtonLabel>
-      <OverlayLabel htmlFor="checkbox_notification_menu" />
+      <NotificationOverlayLabel htmlFor="checkbox_notification_menu" />
       <NotificationPopup
         ref={notificationPopupRef}
-        $isLoading={isLoading}
-        $isEmpty={followRequestsLength === 0}
+        $shouldCenterChild={shouldCenterChild}
       >
         {isLoading ? (
           <NotificationMenuSpinner />
+        ) : !hasNotifications ? (
+          <NoNotificationsText>No notifications</NoNotificationsText>
         ) : (
-          <NotificationMenu>{content}</NotificationMenu>
+          <NotificationMenu>
+            {!showRequests && hasNotifications ? (
+              <AllRequestsItem onClick={seeRequestsHandler}>
+                <AllRequestsItemContent
+                  topTextAsHeading
+                  avatarComponent={
+                    followRequestsLength > 1 ? (
+                      <NotificationMenuItemAvatarGroup>
+                        {followRequests.slice(0, 2).map((user, index) => (
+                          <NotificationMenuItemAvatarGroupWrapper key={index}>
+                            <img
+                              src={user.avatar}
+                              alt=""
+                              onError={onErrorMedia}
+                            />
+                          </NotificationMenuItemAvatarGroupWrapper>
+                        ))}
+                      </NotificationMenuItemAvatarGroup>
+                    ) : (
+                      <NotificationMenuItemAvatarWrapper>
+                        <img
+                          src={followRequests[0].avatar}
+                          alt=""
+                          onError={onErrorMedia}
+                        />
+                      </NotificationMenuItemAvatarWrapper>
+                    )
+                  }
+                  topText="Follow Requests"
+                  bottomTextComponent={
+                    <NotificationMenuItemBottomText>
+                      {followRequests[0].username} and{' '}
+                      {followRequestsLength - 1} others
+                    </NotificationMenuItemBottomText>
+                  }
+                  optionComponent={
+                    <NotificationMenuItemOption>
+                      <NotificationMenuItemDot />
+                      <RightChevron />
+                    </NotificationMenuItemOption>
+                  }
+                />
+              </AllRequestsItem>
+            ) : (
+              followRequests.map((user) => (
+                <RequestItem key={user.id}>
+                  <RequestItemContent
+                    avatarComponent={
+                      <NotificationMenuItemAvatarWrapper>
+                        <img src={user.avatar} alt="" onError={onErrorMedia} />
+                      </NotificationMenuItemAvatarWrapper>
+                    }
+                    topText={user.username}
+                    topTextAsHeading
+                    bottomTextComponent={
+                      user.name ? (
+                        <NotificationMenuItemBottomText>
+                          {user.name}
+                        </NotificationMenuItemBottomText>
+                      ) : null
+                    }
+                    optionComponent={
+                      <RequestItemButtonGroup
+                        userId={user.id}
+                        confirmRequest={confirmRequest}
+                        removeRequest={removeRequest}
+                      />
+                    }
+                  />
+                </RequestItem>
+              ))
+            )}
+          </NotificationMenu>
         )}
       </NotificationPopup>
     </StyledNotificationButton>

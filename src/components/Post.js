@@ -50,32 +50,6 @@ const Post = ({post}) => {
 
   const {likeAmount, isLiked, isSaved} = state;
 
-  let mediaContent = null;
-
-  if (post.media.length === 1) {
-    const firstMediaItem = post.media[0];
-
-    mediaContent = (
-      <PostMediaWrapper>
-        <PostMedia type={firstMediaItem.type} url={firstMediaItem.url} />
-      </PostMediaWrapper>
-    );
-  } else {
-    mediaContent = <Carousel media={post.media} />;
-  }
-
-  const postCaptionContent =
-    post.caption.length > POST_CAPTION_SHOW_CHAR ? (
-      <PostCaption
-        as={ReadMore}
-        readMoreLink="https://www.instagram.com/p/B9yD_e0J2e1tZKaaw-jIJoYAvfeIYhQe7kSxZc0/"
-      >
-        {post.caption}
-      </PostCaption>
-    ) : (
-      <PostCaption>{post.caption}</PostCaption>
-    );
-
   const getDiffDays = (date1, date2 = Date.now()) => {
     const diffTime = Math.abs(date2 - date1);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -92,18 +66,13 @@ const Post = ({post}) => {
     }
 
     const timeAgo = moment(convertedDate).fromNow();
-
     return timeAgo;
   };
 
   const formattedPostDate = formatPostDate(post.date);
 
   const likeButtonHandler = () => {
-    if (isLiked) {
-      dispatch({type: UNLIKE_POST});
-    } else {
-      dispatch({type: LIKE_POST});
-    }
+    dispatch({type: !isLiked ? LIKE_POST : UNLIKE_POST});
   };
 
   const savePostHandler = () => {
@@ -115,6 +84,8 @@ const Post = ({post}) => {
 
     dispatch({type: TOGGLE_IS_SAVED});
   };
+
+  const hasOneItem = post.media.length === 1;
 
   return (
     <StyledPost>
@@ -142,7 +113,15 @@ const Post = ({post}) => {
         }
       />
       <PostContent>
-        <PostTopContent>{mediaContent}</PostTopContent>
+        <PostTopContent>
+          {hasOneItem ? (
+            <PostMediaWrapper>
+              <PostMedia type={post.media[0].type} url={post.media[0].url} />
+            </PostMediaWrapper>
+          ) : (
+            <Carousel media={post.media} />
+          )}
+        </PostTopContent>
         <PostBottomContent>
           <PostActions mediaLength={post.media.length}>
             <LikedButton
@@ -186,7 +165,16 @@ const Post = ({post}) => {
           <PostCaptionContainer>
             <PostCaptionWrapper>
               <PostCaptionWrapperIcon />
-              {postCaptionContent}
+              {post.caption.length > POST_CAPTION_SHOW_CHAR ? (
+                <PostCaption
+                  as={ReadMore}
+                  readMoreLink="https://www.instagram.com/p/B9yD_e0J2e1tZKaaw-jIJoYAvfeIYhQe7kSxZc0/"
+                >
+                  {post.caption}
+                </PostCaption>
+              ) : (
+                <PostCaption>{post.caption}</PostCaption>
+              )}
             </PostCaptionWrapper>
             <PostDate>{formattedPostDate}</PostDate>
           </PostCaptionContainer>
