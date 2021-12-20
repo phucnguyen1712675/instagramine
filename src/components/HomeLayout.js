@@ -1,29 +1,27 @@
 import {useState, useRef, useEffect} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
-import {PATHS} from '../constants';
+import {PATHS, SIZES} from '../constants';
 import {useAuth} from '../hooks/useAuth';
+import {useWindowSize} from '../hooks/useWindowSize';
 import {useOnScreen} from '../hooks/useOnScreen';
 import {SavedPostsContextProvider} from '../store/saved-posts-context';
-import UserMenu from '../components/UserMenu';
-import SearchBar from '../components/SearchBar';
-import Tooltip from '../components/Tooltip';
-import SettingIcon from '../components/icons/SettingIcon';
-import UserIcon from '../components/icons/UserIcon';
-import HomeIcon from '../components/icons/HomeIcon';
-import InboxIcon from '../components/icons/InboxIcon';
-import ExploreIcon from '../components/icons/ExploreIcon';
-import ActivityIcon from '../components/icons/ActivityIcon';
-import ReelIcon from '../components/icons/ReelIcon';
-import StreamIcon from '../components/icons/StreamIcon';
-import SavedListIcon from '../components/icons/SavedListIcon';
-import MenuSettingIcon from '../components/icons/MenuSettingIcon';
-import MenuIcon from '../components/icons/MenuIcon';
-import SearchIcon from '../components/icons/SearchIcon';
-import {
-  FakeCheckbox,
-  FakeButtonLabel,
-  OverlayLabel,
-} from '../components/styled/Lib';
+import UserMenu from './UserMenu';
+import SearchBar from './SearchBar';
+import Tooltip from './Tooltip';
+import SettingIcon from './icons/SettingIcon';
+import UserIcon from './icons/UserIcon';
+import HomeIcon from './icons/HomeIcon';
+import InboxIcon from './icons/InboxIcon';
+import ExploreIcon from './icons/ExploreIcon';
+import ActivityIcon from './icons/ActivityIcon';
+import ReelIcon from './icons/ReelIcon';
+import StreamIcon from './icons/StreamIcon';
+import SavedListIcon from './icons/SavedListIcon';
+import MenuSettingIcon from './icons/MenuSettingIcon';
+import MenuIcon from './icons/MenuIcon';
+import SearchIcon from './icons/SearchIcon';
+import LeftArrow from './icons/LeftArrow';
+import {FakeCheckbox, FakeButtonLabel, OverlayLabel} from './styled/Lib';
 import {
   StyledHomeLayout,
   Header,
@@ -33,6 +31,7 @@ import {
   AppLogoIcon,
   AppLogoTextIcon,
   SearchButton,
+  BackButton,
   SidebarOverlay,
   Sidebar,
   Nav,
@@ -41,12 +40,14 @@ import {
   SettingMenuItem,
   SettingMenuItemLink,
   SettingMenuItemText,
-  HomeLayoutMainContent,
+  MainContent,
   SidebarButton,
-} from '../components/styled/HomeLayout.styled';
+} from './styled/HomeLayout.styled';
 
 const HomeLayout = () => {
   const [checked, setChecked] = useState(false);
+
+  const [isSearching, setIsSearching] = useState(false);
 
   const menuBtnRef = useRef(null);
 
@@ -62,13 +63,27 @@ const HomeLayout = () => {
 
   const auth = useAuth();
 
+  const {width: windowWidth} = useWindowSize();
+
   useEffect(() => {
     if (checked) {
       tooltipRef.current.setShowState(false);
     }
   }, [checked]);
 
-  const checkHandler = (e) => setChecked(e.target.checked);
+  const {tablet} = SIZES;
+  const tabletSize = +tablet.replace('px', '');
+  const isOnMobile = windowWidth < tabletSize;
+
+  useEffect(() => {
+    if (!isOnMobile && isSearching) {
+      setIsSearching(false);
+    }
+  }, [isOnMobile, isSearching]);
+
+  const checkHandler = (e) => {
+    setChecked(e.target.checked);
+  };
 
   const signOutHandler = (e) => {
     e.preventDefault();
@@ -76,6 +91,14 @@ const HomeLayout = () => {
     auth.signOut(() => {
       navigate(PATHS.LOGIN);
     });
+  };
+
+  const toggleToSearchHeader = () => {
+    setIsSearching(true);
+  };
+
+  const toggleToMainHeader = () => {
+    setIsSearching(false);
   };
 
   const navigateHandler = (path) => {
@@ -137,20 +160,31 @@ const HomeLayout = () => {
 
   return (
     <StyledHomeLayout>
-      <Header>
-        <HeaderLeftItem>
-          <MenuButton ref={menuBtnRef} htmlFor="header_menu_button">
-            <MenuIcon />
-          </MenuButton>
-          <AppLogo to="/">
-            <AppLogoIcon />
-            <AppLogoTextIcon />
-          </AppLogo>
-        </HeaderLeftItem>
-        <SearchButton to={`/${PATHS.SEARCH}`}>
-          <SearchIcon />
-        </SearchButton>
-        <SearchBar />
+      <Header $isSearchHeader={isOnMobile && isSearching}>
+        {!isSearching ? (
+          <>
+            <HeaderLeftItem>
+              <MenuButton ref={menuBtnRef} htmlFor="header_menu_button">
+                <MenuIcon />
+              </MenuButton>
+              <AppLogo to="/">
+                <AppLogoIcon />
+                <AppLogoTextIcon />
+              </AppLogo>
+            </HeaderLeftItem>
+            <SearchButton onClick={toggleToSearchHeader}>
+              <SearchIcon />
+            </SearchButton>
+            {!isOnMobile && <SearchBar />}
+          </>
+        ) : (
+          <>
+            <BackButton type="text" onClick={toggleToMainHeader} disabledHover>
+              <LeftArrow />
+            </BackButton>
+            <SearchBar />
+          </>
+        )}
       </Header>
       <FakeCheckbox ref={menuBtnCheckbox} id="header_menu_button" />
       <SidebarOverlay htmlFor="header_menu_button" />
@@ -198,11 +232,11 @@ const HomeLayout = () => {
           </SettingButton>
         </Nav>
       </Sidebar>
-      <HomeLayoutMainContent>
+      <MainContent>
         <SavedPostsContextProvider>
           <Outlet />
         </SavedPostsContextProvider>
-      </HomeLayoutMainContent>
+      </MainContent>
       <UserMenu />
     </StyledHomeLayout>
   );

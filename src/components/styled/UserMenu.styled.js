@@ -11,7 +11,6 @@ export const StyledUserMenu = styled.div`
   --width-border: 1px;
   --padding-horizontal: 30px;
   --padding-vertical: 36px;
-  grid-area: userMenu;
   position: relative;
   padding-top: var(--padding-vertical);
   padding-right: var(--padding-horizontal);
@@ -23,8 +22,9 @@ export const StyledUserMenu = styled.div`
   `}
   display: none;
   flex-direction: column;
-
+	
   @media ${DEVICES.laptopL} {
+		grid-area: userMenu;
     display: flex;
   }
 `;

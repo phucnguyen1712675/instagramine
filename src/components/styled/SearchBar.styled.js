@@ -15,11 +15,6 @@ export const StyledSearchBar = styled.form`
   position: relative;
   width: var(--width-search-bar);
   height: 48px;
-  display: none;
-
-  @media ${DEVICES.tablet} {
-    display: block;
-  }
 `;
 
 export const SearchBarInput = styled(SearchInput)`

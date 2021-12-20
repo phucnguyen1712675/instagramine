@@ -12,14 +12,9 @@ export const StyledHomeLayout = styled.div`
   --height-header: 90px;
   --width-sidebar: 90px;
   --width-user-menu: 360px;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: var(--height-header) 1fr;
-  grid-template-areas:
-    'header'
-    'mainContent';
 
   @media ${DEVICES.laptop} {
+    display: grid;
     grid-template-rows: var(--height-header) calc(100vh - var(--height-header));
     grid-template-columns: var(--width-sidebar) 1fr;
     grid-template-areas:
@@ -36,16 +31,30 @@ export const StyledHomeLayout = styled.div`
 `;
 
 export const Header = styled.header`
-  grid-area: header;
+  height: var(--height-header);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
   box-shadow: 0px 10px 40px rgba(231, 237, 243, 0.4);
+	z-index: 1;
   ${({theme}) => css`
     background-color: ${theme.colors.bgComponentLightTheme};
     border-bottom: 1px solid ${theme.colors.borderBlue};
   `};
+
+  @media ${DEVICES.laptop} {
+    height: unset;
+    position: unset;
+    top: unset;
+    left: unset;
+    right: unset;
+    grid-area: header;
+  }
 `;
 
 export const HeaderLeftItem = styled.div`
@@ -99,11 +108,12 @@ export const AppLogoTextIcon = styled(LogoTextIcon)`
   }
 `;
 
-export const SearchButton = styled(Link)`
+export const SearchButton = styled(Button)`
   display: inline-block;
   font-size: 1.6rem;
   padding: 12px;
   border-radius: 5px;
+	border: unset;
   ${({theme}) => css`
     background-color: ${theme.colors.blueAlphaBackground};
 
@@ -115,6 +125,16 @@ export const SearchButton = styled(Link)`
   @media ${DEVICES.tablet} {
     display: none;
   }
+`;
+
+export const BackButton = styled(Button)`
+	padding: 0.8rem;
+	font-size: 2.4rem;
+	transition: background-color 0.2s ease-out;
+
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.1);
+	}
 `;
 
 export const SidebarOverlay = styled(OverlayLabel)`
@@ -159,7 +179,11 @@ export const Nav = styled.nav`
   align-items: center;
   flex-direction: column;
   justify-content: stretch;
-  row-gap: 4rem;
+  row-gap: 5.6vh;
+
+  @media ${DEVICES.laptop} {
+    row-gap: 4rem;
+  }
 `;
 
 export const SettingButton = styled(Tooltip)`
@@ -200,14 +224,13 @@ export const SettingMenuItemText = styled.span`
   margin-left: 12px;
 `;
 
-export const HomeLayoutMainContent = styled.main`
-  grid-area: mainContent;
-  overflow-y: auto;
+export const MainContent = styled.main`
   ${hideScrollBarScrolling}
-  padding: 30px 15px 15px;
+  overflow-y: auto;
+  padding: calc(var(--height-header) + 15px) 15px 15px;
 
   @media ${DEVICES.tablet} {
-    padding-top: 15px;
+    grid-area: mainContent;
   }
 
   @media ${DEVICES.laptop} {
