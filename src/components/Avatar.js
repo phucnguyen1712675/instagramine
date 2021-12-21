@@ -4,13 +4,13 @@ import {StyledAvatar, AvatarImg} from './styled/Avatar.styled';
 import {onErrorMedia} from '../utils/media';
 
 const Avatar = ({
+  asLink = false,
+  hasStory = false,
+  disableOnClickHandler = false,
   className,
   url,
-  hasStory,
   hasStoryBeenSeen,
-  asLink,
   profile,
-  disableOnClickHandler,
 }) => {
   const [hasStoryBeenSeenState, setHasStoryBeenSeenState] = useState(
     hasStory && hasStoryBeenSeen
@@ -74,12 +74,6 @@ Avatar.propTypes = {
     }
   },
   disableOnClickHandler: PropTypes.bool,
-};
-
-Avatar.defaultProps = {
-  asLink: false,
-  hasStory: false,
-  disableOnClickHandler: false,
 };
 
 export default Avatar;

@@ -12,9 +12,15 @@ import {DEVICES} from '../../constants';
 
 export const StyledSearchBar = styled.form`
   --width-search-bar: 300px;
+	flex-grow: 1;
   position: relative;
   width: var(--width-search-bar);
   height: 48px;
+
+  @media ${DEVICES.tablet} {
+		flex-grow: unset;
+    width: var(--width-search-bar);
+  }
 `;
 
 export const SearchBarInput = styled(SearchInput)`
@@ -45,7 +51,7 @@ export const SearchBarInputSearchIcon = styled(SearchIcon)`
   top: 0;
   left: 18px;
   height: 100%;
-  z-index: 1;
+  z-index: 2;
   color: ${({theme}) => theme.colors.blueAlpha};
   font-size: 1.8rem;
 
@@ -63,9 +69,9 @@ export const SearchHistory = styled.div`
   --width-search-history-diff: 75px;
   --space: 14px;
   position: absolute;
-  top: calc(100% + var(--space));
+  top: calc(100% + 1px);
   right: 0;
-  width: calc(var(--width-search-bar) + var(--width-search-history-diff));
+  left: 0;
   height: 362px;
   border-radius: 6px;
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.0975);
@@ -83,6 +89,12 @@ export const SearchHistory = styled.div`
     bottom: 100%;
     left: 0;
     z-index: 1;
+  }
+
+  @media ${DEVICES.tablet} {
+    left: unset;
+    top: calc(100% + var(--space));
+    width: calc(var(--width-search-bar) + var(--width-search-history-diff));
   }
 
   @media ${DEVICES.laptopL} {

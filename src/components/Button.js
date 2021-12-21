@@ -3,20 +3,20 @@ import PropTypes from 'prop-types';
 import {StyledButton, ButtonSpinner} from './styled/Button.styled';
 
 const Button = ({
+  type = 'default',
+  htmlType = 'button',
+  shape = 'default',
+  size = 'middle',
+  danger = false,
+  block = false,
+  loading = false,
+  disabled = false,
+  disabledHover = false,
   className,
-  loading,
   children,
   icon,
-  shape,
-  type,
-  htmlType,
   onClick,
   onMouseDown,
-  block,
-  disabled,
-  danger,
-  size,
-  disabledHover,
 }) => {
   let content = null;
 
@@ -63,18 +63,6 @@ Button.propTypes = {
   disabledHover: PropTypes.bool,
   icon: PropTypes.node,
   children: PropTypes.node,
-};
-
-Button.defaultProps = {
-  htmlType: 'button',
-  type: 'default',
-  loading: false,
-  block: false,
-  disabled: false,
-  danger: false,
-  shape: 'default',
-  size: 'middle',
-  disabledHover: false,
 };
 
 export default Button;

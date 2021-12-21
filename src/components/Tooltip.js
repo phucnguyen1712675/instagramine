@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import {StyledTooltip, TooltipContent} from './styled/Tooltip.styled';
 
 const Tooltip = forwardRef(
-  ({className, children, content, position, trigger}, ref) => {
+  (
+    {position = 'top', trigger = 'hover', className, children, content},
+    ref
+  ) => {
     const [show, setShow] = useState(false);
 
     useImperativeHandle(ref, () => ({
@@ -44,10 +47,5 @@ Tooltip.propTypes = {
 };
 
 Tooltip.displayName = 'Tooltip';
-
-Tooltip.defaultProps = {
-  position: 'top',
-  trigger: 'hover',
-};
 
 export default Tooltip;

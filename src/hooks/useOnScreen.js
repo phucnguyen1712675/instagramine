@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 
-const useOnScreen = ({ref, rootMargin}) => {
+const useOnScreen = ({ref, rootMargin = '0px'}) => {
   // State and setter for storing whether element is visible
   const [isIntersecting, setIntersecting] = useState(false);
 
@@ -36,10 +36,6 @@ const useOnScreen = ({ref, rootMargin}) => {
 useOnScreen.propTypes = {
   ref: PropTypes.object.isRequired,
   rootMargin: PropTypes.string,
-};
-
-useOnScreen.defaultProps = {
-  rootMargin: '0px',
 };
 
 export {useOnScreen};

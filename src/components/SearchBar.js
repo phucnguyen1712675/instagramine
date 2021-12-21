@@ -1,4 +1,4 @@
-import {useReducer, useRef} from 'react';
+import {useReducer, useRef, useCallback, useEffect} from 'react';
 import HideLabel from './HideLabel';
 import {FakeCheckbox, OverlayLabel} from './styled/Lib';
 import {
@@ -50,6 +50,18 @@ const SearchBar = () => {
     initialValues: {
       query: '',
     },
+    validate: (values) => {
+      const errors = {};
+
+      if (values.query) {
+        errors.query = 'Please enter a search query';
+      }
+
+      return errors;
+    },
+    onSubmit: (values) => {
+      console.log(values);
+    },
   });
 
   const {query} = values;
@@ -60,16 +72,38 @@ const SearchBar = () => {
 
   const searchHistoryFakeCheckboxRef = useRef(null);
 
-  const onSearch = () => {
+  useEffect(() => {
+    if (query) {
+      dispatch({type: FILTER_USERS, payload: query});
+
+      setTimeout(() => {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }, 1000);
+    }
+  }, [query]);
+
+  const onSearch = useCallback(() => {
     if (!query) {
       inputRef.current.blur();
+      dispatch({type: SET_IS_OPEN, isOpen: false});
     }
-  };
+  }, [query]);
 
   useEventListener({
     eventName: 'search',
     handler: onSearch,
-    element: inputRef,
+    element: inputRef.current,
+  });
+
+  const resizeHandler = useCallback(() => {
+    if (isOpen) {
+      dispatch({type: SET_IS_OPEN, isOpen: false});
+    }
+  }, [isOpen]);
+
+  useEventListener({
+    eventName: 'resize',
+    handler: resizeHandler,
   });
 
   const showHeader = !query && !isLoading;
@@ -79,20 +113,6 @@ const SearchBar = () => {
   const hasItems = searchItemArr.length > 0;
 
   const shouldCenterChild = isLoading || !hasItems;
-
-  const changeQueryHandler = (e) => {
-    const query = e.target.value;
-
-    if (query) {
-      dispatch({type: FILTER_USERS, payload: query});
-
-      setTimeout(() => {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }, 1000);
-    }
-
-    handleChange(e);
-  };
 
   const clearAllHandler = () => {
     setSearchHistory([]);
@@ -171,7 +191,7 @@ const SearchBar = () => {
         name="query"
         placeholder="Search"
         value={query}
-        onChange={changeQueryHandler}
+        onChange={handleChange}
         onFocus={focusInputHandler}
       />
       <SearchBarInputSearchIcon />

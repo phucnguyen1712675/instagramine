@@ -1,6 +1,7 @@
 import styled, {css} from 'styled-components';
 import {circle} from './Mixins';
 import LogoTextIcon from '../icons/LogoTextIcon';
+import {DEVICES} from '../../constants';
 
 export const Dot = styled.span`
   --size: 4px;
@@ -137,5 +138,13 @@ export const PageContent = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  min-height: calc(
+    100vh - var(--padding-top-main-content-mobile) -
+      var(--padding-bottom-main-content)
+  );
+
+  @media ${DEVICES.laptop} {
+    min-height: unset;
+    height: 100%;
+  }
 `;

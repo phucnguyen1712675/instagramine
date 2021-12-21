@@ -10,12 +10,12 @@ import {
 } from './styled/UserCard.styled';
 
 const UserCard = ({
+  topTextAsHeading = false,
   className,
   topText,
   profile,
   bottomTextComponent,
   optionComponent,
-  topTextAsHeading,
   avatarComponent,
 }) => {
   const topTextContent = topTextAsHeading ? (
@@ -46,10 +46,6 @@ UserCard.propTypes = {
   optionComponent: PropTypes.element,
   topTextAsHeading: PropTypes.bool,
   avatarComponent: PropTypes.element.isRequired,
-};
-
-UserCard.defaultProps = {
-  topTextAsHeading: false,
 };
 
 export default UserCard;

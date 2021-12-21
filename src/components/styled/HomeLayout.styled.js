@@ -1,11 +1,9 @@
 import styled, {css} from 'styled-components';
 import {Link} from 'react-router-dom';
 import {MenuItem, FakeCheckbox, OverlayLabel} from './Lib';
-import {circle, buttonColorHover, hideScrollBarScrolling} from './Mixins';
+import {circle, hideScrollBarScrolling} from './Mixins';
 import Button from '../Button';
 import Tooltip from '../Tooltip';
-import LogoIcon from '../icons/LogoIcon';
-import LogoTextIcon from '../icons/LogoTextIcon';
 import {DEVICES} from '../../constants';
 
 export const StyledHomeLayout = styled.div`
@@ -28,113 +26,6 @@ export const StyledHomeLayout = styled.div`
       'sidebar header userMenu'
       'sidebar mainContent userMenu';
   }
-`;
-
-export const Header = styled.header`
-  height: var(--height-header);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0px 10px 40px rgba(231, 237, 243, 0.4);
-	z-index: 1;
-  ${({theme}) => css`
-    background-color: ${theme.colors.bgComponentLightTheme};
-    border-bottom: 1px solid ${theme.colors.borderBlue};
-  `};
-
-  @media ${DEVICES.laptop} {
-    height: unset;
-    position: unset;
-    top: unset;
-    left: unset;
-    right: unset;
-    grid-area: header;
-  }
-`;
-
-export const HeaderLeftItem = styled.div`
-  display: flex;
-  align-items: center;
-  column-gap: 16px;
-
-  @media ${DEVICES.tablet} {
-    column-gap: 32px;
-  }
-`;
-
-export const MenuButton = styled.label`
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 5px;
-  ${({theme}) => css`
-    color: ${theme.colors.secondary};
-    border: 1px solid ${theme.colors.secondary};
-  `};
-  ${buttonColorHover};
-  display: flex;
-
-  @media ${DEVICES.laptop} {
-    display: none;
-  }
-`;
-
-export const AppLogo = styled(Link)`
-  display: flex;
-  align-items: center;
-  column-gap: 8px;
-  cursor: pointer;
-  outline: none;
-  padding: 2px;
-
-  @media ${DEVICES.tablet} {
-    padding: unset;
-  }
-`;
-
-export const AppLogoIcon = styled(LogoIcon)`
-  font-size: 2.8rem;
-`;
-
-export const AppLogoTextIcon = styled(LogoTextIcon)`
-  display: none;
-
-  @media ${DEVICES.tablet} {
-    display: inline-block;
-  }
-`;
-
-export const SearchButton = styled(Button)`
-  display: inline-block;
-  font-size: 1.6rem;
-  padding: 12px;
-  border-radius: 5px;
-	border: unset;
-  ${({theme}) => css`
-    background-color: ${theme.colors.blueAlphaBackground};
-
-    &:hover {
-      outline: 1px solid ${theme.colors.blueAlpha};
-    }
-  `};
-
-  @media ${DEVICES.tablet} {
-    display: none;
-  }
-`;
-
-export const BackButton = styled(Button)`
-	padding: 0.8rem;
-	font-size: 2.4rem;
-	transition: background-color 0.2s ease-out;
-
-	&:hover {
-		background-color: rgba(0, 0, 0, 0.1);
-	}
 `;
 
 export const SidebarOverlay = styled(OverlayLabel)`
@@ -225,9 +116,12 @@ export const SettingMenuItemText = styled.span`
 `;
 
 export const MainContent = styled.main`
+  --padding-top-main-content-mobile: calc(var(--height-header) + 15px);
+  --padding-bottom-main-content: 15px;
   ${hideScrollBarScrolling}
   overflow-y: auto;
-  padding: calc(var(--height-header) + 15px) 15px 15px;
+  padding: var(--padding-top-main-content-mobile) 15px
+    var(--padding-bottom-main-content);
 
   @media ${DEVICES.tablet} {
     grid-area: mainContent;

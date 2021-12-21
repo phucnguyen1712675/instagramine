@@ -4,11 +4,11 @@ import {StyledReadMore, ReadOrHide} from './styled/ReadMore.styled';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
 
 const ReadMore = ({
+  showChar = POST_CAPTION_SHOW_CHAR,
+  readMoreText = 'More',
+  showLessText = 'Less',
   className,
   children,
-  showChar,
-  readMoreText,
-  showLessText,
   readMoreLink,
 }) => {
   const [isReadMore, setIsReadMore] = useState(true);
@@ -51,12 +51,6 @@ ReadMore.propTypes = {
   readMoreText: PropTypes.string,
   showLessText: PropTypes.string,
   readMoreLink: PropTypes.string,
-};
-
-ReadMore.defaultProps = {
-  showChar: POST_CAPTION_SHOW_CHAR,
-  readMoreText: 'More',
-  showLessText: 'Less',
 };
 
 export default ReadMore;

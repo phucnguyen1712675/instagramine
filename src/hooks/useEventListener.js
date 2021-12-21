@@ -1,7 +1,7 @@
 import {useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 
-const useEventListener = ({eventName, handler, element}) => {
+const useEventListener = ({eventName, handler, element = window}) => {
   // Create a ref that stores handler
   const savedHandler = useRef();
 
@@ -38,11 +38,7 @@ const useEventListener = ({eventName, handler, element}) => {
 useEventListener.propTypes = {
   eventName: PropTypes.string.isRequired,
   handler: PropTypes.func.isRequired,
-  element: PropTypes.object,
-};
-
-useEventListener.defaultProps = {
-  element: window,
+  element: PropTypes.object.isRequired,
 };
 
 export {useEventListener};
