@@ -83,12 +83,12 @@ const HomeLayout = () => {
     setToggleSettingMenuBtnChecked(e.target.checked);
   };
 
-  const signOutHandler = (e) => {
+  const logOutHandler = async (e) => {
     e.preventDefault();
 
-    auth.signOut(() => {
-      navigate(PATHS.LOGIN);
-    });
+    await auth.logOut();
+
+    navigate(PATHS.LOGIN);
   };
 
   const navigateHandler = (path) => {
@@ -192,7 +192,7 @@ const HomeLayout = () => {
               <SettingMenuItem>
                 <SettingMenuItemLink
                   to={`/${PATHS.LOGOUT}`}
-                  onClick={signOutHandler}
+                  onClick={logOutHandler}
                 >
                   Log Out
                 </SettingMenuItemLink>

@@ -1,6 +1,6 @@
-import {useState, createContext} from 'react';
+import {createContext} from 'react';
 import PropTypes from 'prop-types';
-import postsData from '../data/posts.json';
+import {useLocalStorage} from '../hooks/useLocalStorage';
 
 const SavedPostsContext = createContext({
   savedPosts: [],
@@ -9,16 +9,17 @@ const SavedPostsContext = createContext({
   // eslint-disable-next-line no-unused-vars
   unsavePost: (id) => {},
   // eslint-disable-next-line no-unused-vars
-  isSavedPost: (id) => {},
+  isSavedPost: (id) => false,
 });
 
-const savedPostsData = postsData.filter((post) => post.isSaved);
-
 export const SavedPostsContextProvider = ({children}) => {
-  const [savedPosts, setSavedPosts] = useState(savedPostsData);
+  const [savedPosts, setSavedPosts] = useLocalStorage({
+    key: 'savedPosts',
+    initialValue: [],
+  });
 
   const savePost = (post) => {
-    setSavedPosts([...savedPosts, post]);
+    setSavedPosts([post, ...savedPosts]);
   };
 
   const unsavePost = (id) => {
@@ -26,8 +27,7 @@ export const SavedPostsContextProvider = ({children}) => {
   };
 
   const isSavedPost = (id) => {
-    const savedPostIds = savedPosts.map((post) => post.id);
-    return savedPostIds.includes(id);
+    return savedPosts.findIndex((post) => post.id === id) !== -1;
   };
 
   const value = {

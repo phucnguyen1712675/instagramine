@@ -41,30 +41,28 @@ const SignUpPage = () => {
       password: '',
       confirmPassword: '',
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setIsLoading(true);
 
-      setTimeout(() => {
-        auth.signUp(
-          {
-            email: values.email,
-            fullName: values.fullName,
-            username: values.username,
-          },
-          () => {
-            navigate(from, {replace: true});
-          }
-        );
+      const isSuccess = await auth.register({
+        email: values.email,
+        fullName: values.fullName,
+        username: values.username,
+        password: values.password,
+      });
 
-        setIsLoading(false);
-      }, 1000);
+      setIsLoading(false);
+
+      if (isSuccess) {
+        navigate(from, {replace: true});
+      }
     },
     validate: (values) => {
       const errors = {};
 
       if (!values.email) {
         errors.email = 'Please enter email';
-      } else if (!validateEmail(email)) {
+      } else if (!validateEmail(values.email)) {
         errors.email = 'Please enter valid email';
       }
 
@@ -78,7 +76,7 @@ const SignUpPage = () => {
 
       if (!values.password) {
         errors.password = 'Please enter password';
-      } else if (password.length < MAX_LENGTH_PASSWORD) {
+      } else if (values.password.length < MAX_LENGTH_PASSWORD) {
         errors.password = `Password must be at least ${MAX_LENGTH_PASSWORD} characters`;
       }
 
@@ -90,15 +88,13 @@ const SignUpPage = () => {
     },
   });
 
-  const {email, fullName, username, password, confirmPassword} = values;
-
   const disableSubmitButton =
     isLoading ||
-    !email ||
-    !fullName ||
-    !username ||
-    !password ||
-    !confirmPassword;
+    !values.email ||
+    !values.fullName ||
+    !values.username ||
+    !values.password ||
+    !values.confirmPassword;
 
   return (
     <AuthLayout
@@ -114,7 +110,7 @@ const SignUpPage = () => {
           id="signup_email"
           name="email"
           placeholder="Email"
-          value={email}
+          value={values.email}
           onChange={handleChange}
         />
         {errors.email && <ErrorText>{errors.email}</ErrorText>}
@@ -123,7 +119,7 @@ const SignUpPage = () => {
           id="signup_full_name"
           name="fullName"
           placeholder="Full Name"
-          value={fullName}
+          value={values.fullName}
           onChange={handleChange}
         />
         {errors.fullName && <ErrorText>{errors.fullName}</ErrorText>}
@@ -132,7 +128,7 @@ const SignUpPage = () => {
           id="signup_username"
           name="username"
           placeholder="Username"
-          value={username}
+          value={values.username}
           onChange={handleChange}
         />
         {errors.username && <ErrorText>{errors.username}</ErrorText>}
@@ -141,7 +137,7 @@ const SignUpPage = () => {
           id="signup_password"
           name="password"
           placeholder="Password"
-          value={password}
+          value={values.password}
           onChange={handleChange}
         />
         {errors.password && <ErrorText>{errors.password}</ErrorText>}
@@ -152,7 +148,7 @@ const SignUpPage = () => {
           id="signup_confirm_password"
           name="confirmPassword"
           placeholder="Confirm Password"
-          value={confirmPassword}
+          value={values.confirmPassword}
           onChange={handleChange}
         />
         {errors.confirmPassword && (

@@ -1,6 +1,8 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
+import {AuthErrorCodes} from 'firebase/auth';
 import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
+import {validateEmail} from '../utils/validate';
 import {useAuth} from '../hooks/useAuth';
 import {useForm} from '../hooks/useForm';
 import AuthLayout from '../components/AuthLayout';
@@ -26,37 +28,49 @@ const LoginPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const findError = (error) => {
+    switch (error.code) {
+      case AuthErrorCodes.USER_DELETED:
+        return 'Invalid email or password';
+      default:
+        return 'Something went wrong';
+    }
+  };
+
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
-      username: '',
+      email: '',
       password: '',
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setIsLoading(true);
 
-      setTimeout(() => {
-        auth.signIn(
-          {
-            username: values.username,
-          },
-          () => {
-            navigate(from, {replace: true});
-          }
-        );
+      const result = await auth.logIn({
+        email: values.email,
+        password: values.password,
+      });
 
-        setIsLoading(false);
-      }, 1000);
+      setIsLoading(false);
+
+      if (!result.hasError) {
+        navigate(from, {replace: true});
+      } else {
+        let message = findError(result.error);
+        alert(message);
+      }
     },
     validate: (values) => {
       const errors = {};
 
-      if (!values.username) {
-        errors.username = 'Please enter username';
+      if (!values.email) {
+        errors.email = 'Please enter email';
+      } else if (!validateEmail(values.email)) {
+        errors.email = 'Please enter valid email';
       }
 
       if (!values.password) {
         errors.password = 'Please enter password';
-      } else if (password.length < MAX_LENGTH_PASSWORD) {
+      } else if (values.password.length < MAX_LENGTH_PASSWORD) {
         errors.password = `Password must be at least ${MAX_LENGTH_PASSWORD} characters`;
       }
 
@@ -64,9 +78,7 @@ const LoginPage = () => {
     },
   });
 
-  const {username, password} = values;
-
-  const disableSubmitButton = isLoading || !username || !password;
+  const disableSubmitButton = isLoading || !values.email || !values.password;
 
   return (
     <AuthLayout
@@ -76,21 +88,21 @@ const LoginPage = () => {
     >
       <Logo />
       <AuthForm onSubmit={handleSubmit}>
-        <HideLabel htmlFor="login_username">Username</HideLabel>
+        <HideLabel htmlFor="login_email">Email</HideLabel>
         <AuthInput
-          id="login_username"
-          name="username"
-          placeholder="Username"
-          value={username}
+          id="login_email"
+          name="email"
+          placeholder="Email"
+          value={values.email}
           onChange={handleChange}
         />
-        {errors.username && <ErrorText>{errors.username}</ErrorText>}
+        {errors.email && <ErrorText>{errors.email}</ErrorText>}
         <HideLabel htmlFor="login_password">Password</HideLabel>
         <PasswordAuthInput
           id="login_password"
           name="password"
           placeholder="Password"
-          value={password}
+          value={values.password}
           onChange={handleChange}
         />
         {errors.password && <ErrorText>{errors.password}</ErrorText>}

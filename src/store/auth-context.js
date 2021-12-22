@@ -1,50 +1,85 @@
 import {createContext} from 'react';
 import PropTypes from 'prop-types';
-import {fakeAuthProvider} from '../auth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from 'firebase/auth';
+import {auth} from '../firebase-config';
 import {useLocalStorage} from '../hooks/useLocalStorage';
 
 const AuthContext = createContext({
   user: {},
   // eslint-disable-next-line no-unused-vars
-  signIn: (user, callback) => {},
+  logIn: async (user) => {},
   // eslint-disable-next-line no-unused-vars
-  signUp: (user, callback) => {},
+  register: async (user) => {},
   // eslint-disable-next-line no-unused-vars
-  signOut: (callback) => {},
+  logOut: async () => {},
 });
 
 export const AuthContextProvider = ({children}) => {
   const [user, setUser] = useLocalStorage({
     key: 'user',
-    initialValue: null,
+    initialValue: {},
   });
 
-  const signIn = (newUser, callback) => {
-    return fakeAuthProvider.signIn(() => {
-      setUser(newUser);
-      callback();
-    });
+  onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
+
+  const logIn = async (user) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        user.email,
+        user.password
+      );
+      return {
+        userCredential,
+        hasError: false,
+      };
+    } catch (error) {
+      return {
+        error,
+        hasError: true,
+      };
+    }
   };
 
-  const signUp = (newUser, callback) => {
-    return fakeAuthProvider.signUp(() => {
-      setUser(newUser);
-      callback();
-    });
+  const register = async (newUser) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        newUser.email,
+        newUser.password
+      );
+      return {
+        userCredential,
+        hasError: false,
+      };
+    } catch (error) {
+      return {
+        error,
+        hasError: true,
+      };
+    }
   };
 
-  const signOut = (callback) => {
-    return fakeAuthProvider.signOut(() => {
-      setUser(null);
-      callback();
-    });
+  const logOut = async () => {
+    try {
+      return signOut(auth);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const value = {
     user,
-    signIn,
-    signUp,
-    signOut,
+    logIn,
+    register,
+    logOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -41,7 +41,6 @@ export const ONERROR_VIDEO_PLACEHOLDER =
 
 export const POST_CAPTION_SHOW_CHAR = 40;
 
-
 export const MAX_STORIES_NUMBER = 3;
 
 export const MAX_LENGTH_PASSWORD = 6;
