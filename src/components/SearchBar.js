@@ -17,6 +17,8 @@ import {
   SearchHistoryItemContent,
   SearchHistoryItemAvatar,
   SearchHistoryUserAdditionalInfo,
+  SearchHistoryUsernameText,
+  SearchHistoryFollowingText,
   RemoveItemButton,
   RemoveHistoryItemButtonIcon,
   SearchHistoryUserAdditionalInfoDot,
@@ -58,10 +60,7 @@ const SearchBar = () => {
       }
 
       return errors;
-    },
-    onSubmit: (values) => {
-      console.log(values);
-    },
+    }
   });
 
   const {query} = values;
@@ -241,11 +240,15 @@ const SearchBar = () => {
                         topText={user.username}
                         bottomTextComponent={
                           <SearchHistoryUserAdditionalInfo>
-                            <span>{user.name}</span>
+                            <SearchHistoryUsernameText>
+                              {user.name}
+                            </SearchHistoryUsernameText>
                             {user.isFollowed && (
                               <>
                                 <SearchHistoryUserAdditionalInfoDot />
-                                <span>Following</span>
+                                <SearchHistoryFollowingText>
+                                  Following
+                                </SearchHistoryFollowingText>
                               </>
                             )}
                           </SearchHistoryUserAdditionalInfo>

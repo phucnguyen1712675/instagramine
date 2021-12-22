@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components';
 import {hideScrollBarScrolling} from './Mixins';
 import {SearchInput, Dot, MenuItem} from './Lib';
-import {TextContent} from './UserCard.styled';
+import {TextContentWrapper, TextContent, OptionWrapper} from './UserCard.styled';
 import Button from '../Button';
 import Spinner from '../Spinner';
 import UserCard from '../UserCard';
@@ -12,13 +12,13 @@ import {DEVICES} from '../../constants';
 
 export const StyledSearchBar = styled.form`
   --width-search-bar: 300px;
-	flex-grow: 1;
+  flex-grow: 1;
   position: relative;
   width: var(--width-search-bar);
   height: 48px;
 
   @media ${DEVICES.tablet} {
-		flex-grow: unset;
+    flex-grow: unset;
     width: var(--width-search-bar);
   }
 `;
@@ -146,18 +146,78 @@ export const SearchHistoryItemLink = styled.a`
 export const SearchHistoryItemContent = styled(UserCard)`
   padding: 8px 16px;
   cursor: pointer;
+  flex-direction: column;
+	position: relative;
+
+  @media ${DEVICES.mobileM} {
+    flex-direction: row;
+  }
+
+  @media ${DEVICES.mobileL} {
+    padding: 15px;
+  }
+
+  ${TextContentWrapper} {
+    flex-grow: 0;
+
+    @media ${DEVICES.mobileM} {
+      flex-grow: 1;
+    }
+  }
 
   ${TextContent} {
-    --margin-left-info-content: 12px;
+    --margin-left-info-content: 0px;
+    width: 100%;
+
+    @media ${DEVICES.mobileM} {
+      --margin-left-info-content: 12px;
+    }
   }
+
+	${OptionWrapper} {
+		position: absolute;
+		top: 50%;
+		right: 0.8rem;
+		transform: translateY(-50%); 
+	}
 `;
 
 export const SearchHistoryItemAvatar = styled(Avatar)`
-  --size: 5.2rem;
+  --size: 4.2rem;
+
+  @media ${DEVICES.mobileM} {
+    --size: 5.2rem;
+  }
 `;
 
 export const SearchHistoryUserAdditionalInfo = styled.p`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 1.2rem;
+
+  @media ${DEVICES.mobileM} {
+    flex-direction: row;
+    column-gap: 5px;
+  }
+`;
+
+export const SearchHistoryUserAdditionalInfoDot = styled(Dot)`
+  display: none;
+
+  @media ${DEVICES.mobileL} {
+    display: inline-block;
+  }
+`;
+
+export const SearchHistoryUsernameText = styled.span``;
+
+export const SearchHistoryFollowingText = styled.span`
+  display: none;
+
+  @media ${DEVICES.mobileL} {
+    display: inline-block;
+  }
 `;
 
 export const RemoveItemButton = styled(Button)`
@@ -166,11 +226,6 @@ export const RemoveItemButton = styled(Button)`
 
 export const RemoveHistoryItemButtonIcon = styled(MultiplyIcon)`
   color: ${({theme}) => theme.colors.secondary};
-`;
-
-export const SearchHistoryUserAdditionalInfoDot = styled(Dot)`
-  margin: 0 5px;
-  transform: translateY(-50%);
 `;
 
 export const NoResultsText = styled.p`

@@ -19,11 +19,11 @@ export const StyledPost = styled.div`
 `;
 
 export const PostHeader = styled(UserCard)`
+  padding-right: 10px;
+  flex-shrink: 0;
   ${TopText} {
     ${hoverUnderline}
   }
-  padding-right: 10px;
-  flex-shrink: 0;
 `;
 
 const darkerButtonHover = css`
@@ -50,9 +50,7 @@ export const PostContent = styled.div`
   flex: 1;
 `;
 
-export const PostTopContent = styled.div`
-  /* flex: 1; */
-`;
+export const PostTopContent = styled.div``;
 
 export const PostBottomContent = styled.div`
   margin-top: auto;

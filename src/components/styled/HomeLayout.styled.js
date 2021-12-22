@@ -119,6 +119,7 @@ export const MainContent = styled.main`
   --padding-top-main-content-mobile: calc(var(--height-header) + 15px);
   --padding-bottom-main-content: 15px;
   ${hideScrollBarScrolling}
+  height: 100vh;
   overflow-y: auto;
   padding: var(--padding-top-main-content-mobile) 15px
     var(--padding-bottom-main-content);
@@ -128,6 +129,7 @@ export const MainContent = styled.main`
   }
 
   @media ${DEVICES.laptop} {
+    height: unset;
     padding: 25px 20px;
   }
 `;
