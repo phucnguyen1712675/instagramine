@@ -1,0 +1,151 @@
+[
+  {
+    "id": 0,
+    "username": "johndoe",
+    "name": "John Doe",
+    "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80",
+    "profile": "https://instagram.com/bacnhoxiu/",
+    "hasStory": true,
+    "hasStoryBeenSeen": true,
+    "isFollowed": true
+  },
+  {
+    "id": 1,
+    "username": "lana",
+    "name": "Lana",
+    "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=387&q=80",
+    "profile": "https://instagram.com/hanica_19/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 2,
+    "username": "xjohnxx",
+    "name": "John McDonald",
+    "avatar": "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=387&q=80",
+    "profile": "https://instagram.com/m.ntvy/",
+    "hasStory": true,
+    "hasStoryBeenSeen": false,
+    "isFollowed": true
+  },
+  {
+    "id": 3,
+    "username": "mcdonald",
+    "name": "Duck McDonald",
+    "avatar": "https://images.unsplash.com/photo-1527980965255-d3b416303d12?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80",
+    "profile": "https://instagram.com/rivi.19.xx/",
+    "hasStory": true,
+    "hasStoryBeenSeen": false,
+    "isFollowed": false
+  },
+  {
+    "id": 4,
+    "username": "cameron_will",
+    "name": "Cameron will",
+    "avatar": "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1167&q=80",
+    "profile": "https://instagram.com/victorialoi/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 5,
+    "username": "codyfisher",
+    "name": "Cody Fisher",
+    "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=580&q=80",
+    "profile": "https://instagram.com/tomuyn.tomie/",
+    "hasStory": true,
+    "hasStoryBeenSeen": false,
+    "isFollowed": true
+  },
+  {
+    "id": 6,
+    "username": "pat.rick96",
+    "name": "Pat Rick 96",
+    "avatar": "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+    "profile": "https://instagram.com/yubinyummi/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 7,
+    "username": "murphy.june",
+    "name": "Murphy June",
+    "avatar": "https://images.unsplash.com/photo-1558898479-33c0057a5d12?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 8,
+    "username": "hawkins360",
+    "name": "Hawkins 360",
+    "avatar": "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=389&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": true,
+    "hasStoryBeenSeen": false,
+    "isFollowed": false
+  },
+  {
+    "id": 9,
+    "username": "nebulosa_enespiral",
+    "name": "VERSATIL",
+    "avatar": "https://images.unsplash.com/photo-1568822617270-2c1579f8dfe2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 10,
+    "username": "brittania_fx",
+    "name": "Brittania FX",
+    "avatar": "https://images.unsplash.com/photo-1623330188314-8f4645626731?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=417&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 11,
+    "username": "yamicelii",
+    "name": "Yamicelii",
+    "avatar": "https://images.unsplash.com/photo-1630910561339-4e22c7150093?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 12,
+    "username": "bxbikosuy",
+    "name": "Bxbikosuy",
+    "avatar": "https://images.unsplash.com/photo-1630841539293-bd20634c5d72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=464&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 13,
+    "username": "lyra_yy_",
+    "name": "love this life <3 <3",
+    "avatar": "https://images.unsplash.com/photo-1594616838951-c155f8d978a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 14,
+    "username": "lil.dumpbill",
+    "name": "Lil Dumpbill",
+    "avatar": "https://images.unsplash.com/photo-1625426193702-15200f5c008f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  },
+  {
+    "id": 15,
+    "username": "fncfide",
+    "name": "Fncfide",
+    "avatar": "https://images.unsplash.com/photo-1569913486515-b74bf7751574?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=389&q=80",
+    "profile": "https://instagram.com/dancerbaodi1503/",
+    "hasStory": false,
+    "isFollowed": false
+  }
+]
