@@ -1,25 +1,22 @@
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
 import PostList from '../components/PostList';
 import {useSavedPosts} from '../hooks/useSavedPosts';
 import {PageContent} from '../components/styled/Lib';
 import {SavedContentSpinner} from '../components/styled/SavedContent.styled';
 
 const SavedContent = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const {savedPosts} = useSavedPosts();
-
-  const hasPosts = savedPosts.length > 0;
+  const {isLoading, savedPosts, getCurrentUserSavedPosts, hasSavedPosts} =
+    useSavedPosts();
 
   useEffect(() => {
-    let timeoutId = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    // let didCancel = false;
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []);
+    getCurrentUserSavedPosts();
+
+    // return () => {
+    //   didCancel = true; // Remember if we start fetching something else
+    // };
+  }, [getCurrentUserSavedPosts]);
 
   if (isLoading) {
     return (
@@ -29,10 +26,12 @@ const SavedContent = () => {
     );
   }
 
-  if (!hasPosts) {
-    <PageContent>
-      <p>No Saved Posts.</p>
-    </PageContent>;
+  if (!hasSavedPosts) {
+    return (
+      <PageContent>
+        <p>No Saved Posts.</p>
+      </PageContent>
+    );
   }
 
   return <PostList posts={savedPosts} />;

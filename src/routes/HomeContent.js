@@ -9,7 +9,7 @@ const HomeContent = () => {
 
   const posts = postsData;
 
-  const hasPosts = posts.length > 0;
+  const hasPosts = posts?.length > 0;
 
   useEffect(() => {
     let timeoutId = setTimeout(() => {
@@ -30,9 +30,11 @@ const HomeContent = () => {
   }
 
   if (!hasPosts) {
-    <PageContent>
-      <p>No Posts.</p>
-    </PageContent>;
+    return (
+      <PageContent>
+        <p>No Posts.</p>
+      </PageContent>
+    );
   }
 
   return <PostList posts={postsData} />;
