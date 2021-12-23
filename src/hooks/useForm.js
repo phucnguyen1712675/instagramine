@@ -1,4 +1,5 @@
 import {useReducer} from 'react';
+import PropTypes from 'prop-types';
 
 const SET_VALUES = 'SET_VALUES';
 const SET_ERRORS = 'SET_ERRORS';
@@ -73,7 +74,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
     dispatch({type: HANDLE_BLUR, payload: {name, errors: validateErrors}});
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const validateErrors = validate(values);
@@ -83,7 +84,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
     } else {
       errors && dispatch({type: SET_ERRORS, payload: {}});
 
-      onSubmit(values);
+      await onSubmit(values);
     }
   };
 
@@ -100,6 +101,12 @@ const useForm = ({initialValues, onSubmit, validate}) => {
     handleBlur,
     reset,
   };
+};
+
+useForm.propTypes = {
+  initialValues: PropTypes.object,
+  onSubmit: PropTypes.func,
+  validate: PropTypes.func,
 };
 
 export {useForm};

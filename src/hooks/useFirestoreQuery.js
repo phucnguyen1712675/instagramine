@@ -13,6 +13,7 @@ import {
 function getDocData(doc) {
   return doc.exists ? {id: doc.id, ...doc.data()} : null;
 }
+
 // Get array of doc data from collection
 function getCollectionData(collection) {
   return collection.docs.map(getDocData);
@@ -78,22 +79,3 @@ useFirestoreQuery.propTypes = {
 };
 
 export {useFirestoreQuery};
-
-// function ProfilePage({ uid }) {
-//   // Subscribe to Firestore document
-//   const { data, status, error } = useFirestoreQuery(
-//     firestore.collection("profiles").doc(uid)
-//   );
-//   if (status === "loading") {
-//     return "Loading...";
-//   }
-//   if (status === "error") {
-//     return `Error: ${error.message}`;
-//   }
-//   return (
-//     <div>
-//       <ProfileHeader avatar={data.avatar} name={data.name} />
-//       <Posts posts={data.posts} />
-//     </div>
-//   );
-// }

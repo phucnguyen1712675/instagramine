@@ -1,9 +1,7 @@
-import {useState, useRef, useEffect, useCallback} from 'react';
+import {useReducer, useRef, useEffect, useCallback} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
+import {AuthErrorCodes} from 'firebase/auth';
 import Header from './Header';
-import {PATHS} from '../constants';
-import {useAuth} from '../hooks/useAuth';
-import {SavedPostsContextProvider} from '../store/saved-posts-context';
 import UserMenu from './UserMenu';
 import Tooltip from './Tooltip';
 import SettingIcon from './icons/SettingIcon';
@@ -30,14 +28,28 @@ import {
   MainContent,
   SidebarButton,
 } from './styled/HomeLayout.styled';
+import {PATHS} from '../constants';
+import {useAuth} from '../hooks/useAuth';
+import {SavedPostsContextProvider} from '../store/saved-posts-context';
+import {
+  SET_TOGGLE_SIDEBAR_BTN_CHECKED,
+  SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
+  SET_SHOW_TOGGLE_SIDEBAR,
+} from '../actions/home-layout-page-actions';
+import HomeLayoutPageReducer from '../reducers/home-layout-page-reducer';
 
 const HomeLayout = () => {
-  const [toggleSidebarBtnChecked, setToggleSidebarBtnChecked] = useState(false);
+  const [state, dispatch] = useReducer(HomeLayoutPageReducer, {
+    toggleSidebarBtnChecked: false,
+    toggleSettingMenuBtnChecked: false,
+    showToggleSidebar: false,
+  });
 
-  const [toggleSettingMenuBtnChecked, setToggleSettingMenuBtnChecked] =
-    useState(false);
-
-  const [showToggleSidebar, setShowToggleSidebar] = useState(false);
+  const {
+    toggleSidebarBtnChecked,
+    toggleSettingMenuBtnChecked,
+    showToggleSidebar,
+  } = state;
 
   const tooltipRef = useRef(null);
 
@@ -46,7 +58,10 @@ const HomeLayout = () => {
   const menuBtnRef = useCallback(
     (node) => {
       if (node !== null && showToggleSidebar !== node.isMenuBtnOnScreen) {
-        setShowToggleSidebar(node.isMenuBtnOnScreen);
+        dispatch({
+          type: SET_SHOW_TOGGLE_SIDEBAR,
+          payload: node.isMenuBtnOnScreen,
+        });
       }
     },
     [showToggleSidebar]
@@ -70,25 +85,48 @@ const HomeLayout = () => {
 
   useEffect(() => {
     if (toggleSidebarBtnChecked && !showToggleSidebar) {
-      setToggleSidebarBtnChecked(false);
+      dispatch({
+        type: SET_TOGGLE_SIDEBAR_BTN_CHECKED,
+        payload: false,
+      });
       uncheckSidebarBtn();
     }
   }, [toggleSidebarBtnChecked, showToggleSidebar]);
 
   const checkToggleSidebarBtnHandler = (e) => {
-    setToggleSidebarBtnChecked(e.target.checked);
+    dispatch({
+      type: SET_TOGGLE_SIDEBAR_BTN_CHECKED,
+      payload: e.target.checked,
+    });
   };
 
   const checkToggleSettingMenuBtnHandler = (e) => {
-    setToggleSettingMenuBtnChecked(e.target.checked);
+    dispatch({
+      type: SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
+      payload: e.target.checked,
+    });
+  };
+
+  const findError = (error) => {
+    switch (error.code) {
+      case AuthErrorCodes.USER_SIGNED_OUT:
+        return 'User has signed out';
+      default:
+        return 'Something went wrong';
+    }
   };
 
   const logOutHandler = async (e) => {
     e.preventDefault();
 
-    await auth.logOut();
+    const result = await auth.logOut();
 
-    navigate(PATHS.LOGIN);
+    if (!result.hasError) {
+      navigate(PATHS.LOGIN);
+    } else {
+      let message = findError(result.error);
+      alert(message);
+    }
   };
 
   const navigateHandler = (path) => {

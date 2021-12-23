@@ -60,10 +60,8 @@ const SearchBar = () => {
       }
 
       return errors;
-    }
+    },
   });
-
-  const {query} = values;
 
   const {hasOpened, isOpen, isLoading, filteredUsers} = state;
 
@@ -72,21 +70,21 @@ const SearchBar = () => {
   const searchHistoryFakeCheckboxRef = useRef(null);
 
   useEffect(() => {
-    if (query) {
-      dispatch({type: FILTER_USERS, payload: query});
+    if (values.query) {
+      dispatch({type: FILTER_USERS, payload: values.query});
 
       setTimeout(() => {
         dispatch({type: SET_IS_LOADING, payload: false});
       }, 1000);
     }
-  }, [query]);
+  }, [values.query]);
 
   const onSearch = useCallback(() => {
-    if (!query) {
+    if (!values.query) {
       inputRef.current.blur();
       dispatch({type: SET_IS_OPEN, isOpen: false});
     }
-  }, [query]);
+  }, [values.query]);
 
   useEventListener({
     eventName: 'search',
@@ -105,9 +103,9 @@ const SearchBar = () => {
     handler: resizeHandler,
   });
 
-  const showHeader = !query && !isLoading;
+  const showHeader = !values.query && !isLoading;
 
-  const searchItemArr = query ? filteredUsers : searchHistory;
+  const searchItemArr = values.query ? filteredUsers : searchHistory;
 
   const hasItems = searchItemArr.length > 0;
 
@@ -158,7 +156,7 @@ const SearchBar = () => {
         };
         setSearchHistory((prevState) => move(prevState, foundIndex, 0));
       }
-    } else if (query) {
+    } else if (values.query) {
       const newSearchItem = {
         id: user.id,
         username: user.username,
@@ -189,7 +187,7 @@ const SearchBar = () => {
         id="search_input"
         name="query"
         placeholder="Search"
-        value={query}
+        value={values.query}
         onChange={handleChange}
         onFocus={focusInputHandler}
       />
@@ -207,7 +205,7 @@ const SearchBar = () => {
             <SearchHistorySpinner />
           ) : !hasItems ? (
             <NoResultsText>
-              {query ? 'No results found.' : 'No recent searches.'}
+              {values.query ? 'No results found.' : 'No recent searches.'}
             </NoResultsText>
           ) : (
             <SearchHistoryInner>
@@ -254,7 +252,7 @@ const SearchBar = () => {
                           </SearchHistoryUserAdditionalInfo>
                         }
                         optionComponent={
-                          !query ? (
+                          !values.query ? (
                             <RemoveItemButton
                               type="text"
                               onClick={(e) => removeItemHandler(e, user.id)}

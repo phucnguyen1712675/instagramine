@@ -1,16 +1,19 @@
 import {initializeApp} from 'firebase/app';
 import {getAuth} from 'firebase/auth';
+import {getFirestore} from '@firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAQsvQeXkU6ilUIhMbnTHO5kBYH5HDxIOM',
-  authDomain: 'instagramine-db081.firebaseapp.com',
-  projectId: 'instagramine-db081',
-  storageBucket: 'instagramine-db081.appspot.com',
-  messagingSenderId: '791267528738',
-  appId: '1:791267528738:web:96006d52e5fc0f1b11fa7b',
-  measurementId: 'G-B6208EGEHK',
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
+
+export const db = getFirestore(app);

@@ -1,16 +1,17 @@
 import {createContext} from 'react';
 import PropTypes from 'prop-types';
 import {
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signOut,
 } from 'firebase/auth';
-import {auth} from '../firebase-config';
+import {setDoc, doc, getDoc} from 'firebase/firestore';
+import {auth, db} from '../firebase-config';
 import {useLocalStorage} from '../hooks/useLocalStorage';
 
 const AuthContext = createContext({
-  user: {},
+  user: null,
   // eslint-disable-next-line no-unused-vars
   logIn: async (user) => {},
   // eslint-disable-next-line no-unused-vars
@@ -22,22 +23,43 @@ const AuthContext = createContext({
 export const AuthContextProvider = ({children}) => {
   const [user, setUser] = useLocalStorage({
     key: 'user',
-    initialValue: {},
+    initialValue: null,
   });
 
   onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
+    // User logged out
+    if (!currentUser) {
+      setUser(null);
+    }
   });
 
-  const logIn = async (user) => {
+  const logIn = async (newUser) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
+      const {user} = await signInWithEmailAndPassword(
         auth,
-        user.email,
-        user.password
+        newUser.email,
+        newUser.password
       );
+
+      const newUserDocRef = doc(db, 'users', user.uid);
+
+      const newUserDocSnap = await getDoc(newUserDocRef);
+
+      if (!newUserDocSnap.exists()) {
+        return {
+          error: 'User not found',
+          hasError: true,
+        };
+      }
+
+      const newUserData = newUserDocSnap.data();
+
+      setUser({
+        ...newUserData,
+        uid: user.uid,
+      });
+
       return {
-        userCredential,
         hasError: false,
       };
     } catch (error) {
@@ -50,13 +72,26 @@ export const AuthContextProvider = ({children}) => {
 
   const register = async (newUser) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
+      const {user} = await createUserWithEmailAndPassword(
         auth,
         newUser.email,
         newUser.password
       );
+
+      const newUserData = {
+        email: newUser.email,
+        name: newUser.name,
+        username: newUser.username,
+      };
+
+      await setDoc(doc(db, 'users', user.uid), newUserData);
+
+      setUser({
+        ...newUserData,
+        uid: user.uid,
+      });
+
       return {
-        userCredential,
         hasError: false,
       };
     } catch (error) {
@@ -69,9 +104,16 @@ export const AuthContextProvider = ({children}) => {
 
   const logOut = async () => {
     try {
-      return signOut(auth);
+      await signOut(auth);
+
+      return {
+        hasError: false,
+      };
     } catch (error) {
-      console.log(error.message);
+      return {
+        error,
+        hasError: true,
+      };
     }
   };
 

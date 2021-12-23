@@ -1,12 +1,18 @@
-import {useState} from 'react';
+import {useReducer, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
+import {AuthErrorCodes} from 'firebase/auth';
 import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {validateEmail} from '../utils/validate';
-import {useAuth} from '../hooks/useAuth';
-import {useForm} from '../hooks/useForm';
 import AuthLayout from '../components/AuthLayout';
 import HideLabel from '../components/HideLabel';
 import Button from '../components/Button';
+import {validateEmail} from '../utils/validate';
+import {useAuth} from '../hooks/useAuth';
+import {useForm} from '../hooks/useForm';
+import {
+  SET_IS_LOADING,
+  ON_SUBMIT_FAILED,
+} from '../actions/sign-up-page-actions';
+import SignUpPageReducer from '../reducers/sign-up-page-reducer';
 import {
   Logo,
   AuthForm,
@@ -23,38 +29,66 @@ import {
 } from '../components/styled/SignUpPage.styled';
 
 const SignUpPage = () => {
+  const [state, dispatch] = useReducer(SignUpPageReducer, {
+    isLoading: false,
+    error: null,
+  });
+
+  const {isLoading, error} = state;
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
+  const from = location.state?.from?.pathname ?? '/';
+
   const auth = useAuth();
 
-  const from = location.state?.from?.pathname || '/';
+  const findError = (error) => {
+    switch (error.code) {
+      case AuthErrorCodes.EMAIL_EXISTS:
+        return 'Email already in-use';
+      default:
+        return 'Something went wrong';
+    }
+  };
 
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    if (!isLoading && error) {
+      let message = null;
+
+      if (typeof error === 'string' || error instanceof String) {
+        message = error;
+      } else {
+        message = findError(error);
+      }
+
+      alert(message);
+    }
+  }, [isLoading, error]);
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
       email: '',
-      fullName: '',
+      name: '',
       username: '',
       password: '',
       confirmPassword: '',
     },
     onSubmit: async (values) => {
-      setIsLoading(true);
+      dispatch({type: SET_IS_LOADING, payload: true});
 
-      const isSuccess = await auth.register({
+      const result = await auth.register({
         email: values.email,
-        fullName: values.fullName,
+        name: values.name,
         username: values.username,
         password: values.password,
       });
 
-      setIsLoading(false);
-
-      if (isSuccess) {
+      if (!result.hasError) {
         navigate(from, {replace: true});
+      } else {
+        dispatch({type: ON_SUBMIT_FAILED, payload: result.error});
       }
     },
     validate: (values) => {
@@ -66,8 +100,8 @@ const SignUpPage = () => {
         errors.email = 'Please enter valid email';
       }
 
-      if (!values.fullName) {
-        errors.fullName = 'Please enter fullName';
+      if (!values.name) {
+        errors.name = 'Please enter name';
       }
 
       if (!values.username) {
@@ -91,7 +125,7 @@ const SignUpPage = () => {
   const disableSubmitButton =
     isLoading ||
     !values.email ||
-    !values.fullName ||
+    !values.name ||
     !values.username ||
     !values.password ||
     !values.confirmPassword;
@@ -114,15 +148,15 @@ const SignUpPage = () => {
           onChange={handleChange}
         />
         {errors.email && <ErrorText>{errors.email}</ErrorText>}
-        <HideLabel htmlFor="signup_full_name">Full name</HideLabel>
+        <HideLabel htmlFor="signup_name">Name</HideLabel>
         <AuthInput
-          id="signup_full_name"
-          name="fullName"
-          placeholder="Full Name"
-          value={values.fullName}
+          id="signup_name"
+          name="name"
+          placeholder="Name"
+          value={values.name}
           onChange={handleChange}
         />
-        {errors.fullName && <ErrorText>{errors.fullName}</ErrorText>}
+        {errors.name && <ErrorText>{errors.name}</ErrorText>}
         <HideLabel htmlFor="signup_username">Username</HideLabel>
         <AuthInput
           id="signup_username"
