@@ -41,4 +41,4 @@ useEventListener.propTypes = {
   element: PropTypes.object.isRequired,
 };
 
-export {useEventListener};
+export default useEventListener;

@@ -2,21 +2,19 @@ import {createContext, useReducer, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import {collection, getDocs} from 'firebase/firestore';
 import {db} from '../firebase-config';
-import {useAuth} from '../hooks/useAuth';
+import {useAuth, useMounted} from '../hooks';
+import {savedPostsContextReducer} from '../reducers';
 import {
   SET_IS_LOADING,
   SAVE_POST,
   UNSAVE_POST,
   SET_SAVED_POSTS_AFTER_FETCHING,
-} from '../actions/saved-posts-context-actions';
-import SavedPostsContextReducer from '../reducers/saved-posts-context-reducer';
-
-// import {useLocalStorage} from '../hooks/useLocalStorage';
+} from '../actions/savedPostsContextActions';
 
 const SavedPostsContext = createContext({
   isLoading: false,
   savedPosts: null,
-  getCurrentUserSavedPosts: () => {},
+  getCurrentUserSavedPosts: async () => {},
   // eslint-disable-next-line no-unused-vars
   savePost: (post) => {},
   // eslint-disable-next-line no-unused-vars
@@ -26,8 +24,8 @@ const SavedPostsContext = createContext({
   hasSavedPosts: () => false,
 });
 
-export const SavedPostsContextProvider = ({children}) => {
-  const [state, dispatch] = useReducer(SavedPostsContextReducer, {
+const SavedPostsContextProvider = ({children}) => {
+  const [state, dispatch] = useReducer(savedPostsContextReducer, {
     isLoading: false,
     savedPosts: null,
   });
@@ -35,6 +33,8 @@ export const SavedPostsContextProvider = ({children}) => {
   const {isLoading, savedPosts} = state;
 
   const auth = useAuth();
+
+  const mounted = useMounted();
 
   const getCurrentUserSavedPosts = useCallback(async () => {
     try {
@@ -47,20 +47,22 @@ export const SavedPostsContextProvider = ({children}) => {
 
       const {docs} = await getDocs(currentUserSavedPostsCollectionRef);
 
-      if (docs.length > 0) {
-        dispatch({
-          type: SET_SAVED_POSTS_AFTER_FETCHING,
-          payload: docs.map((doc) => ({
-            ...doc.data(),
-          })),
-        });
-      } else {
-        dispatch({type: SET_IS_LOADING, payload: false});
+      if (mounted.current) {
+        if (docs.length > 0) {
+          dispatch({
+            type: SET_SAVED_POSTS_AFTER_FETCHING,
+            payload: docs.map((doc) => ({
+              ...doc.data(),
+            })),
+          });
+        } else {
+          dispatch({type: SET_IS_LOADING, payload: false});
+        }
       }
     } catch (error) {
-      console.log(error);
+      alert('Error fetching saved posts');
     }
-  }, [auth.user.uid]);
+  }, [auth.user.uid, mounted]);
 
   const savePost = (post) => {
     dispatch({type: SAVE_POST, payload: post});
@@ -70,7 +72,7 @@ export const SavedPostsContextProvider = ({children}) => {
     dispatch({type: UNSAVE_POST, payload: id});
   };
 
-  const hasSavedPosts = savedPosts?.length > 0;
+  const hasSavedPosts = () => savedPosts?.length > 0;
 
   const isSavedPost = (id) => {
     if (hasSavedPosts()) {
@@ -100,4 +102,4 @@ SavedPostsContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default SavedPostsContext;
+export {SavedPostsContext, SavedPostsContextProvider};

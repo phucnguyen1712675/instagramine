@@ -1,18 +1,9 @@
-import {useReducer, useEffect} from 'react';
+import {useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {AuthErrorCodes} from 'firebase/auth';
 import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import AuthLayout from '../components/AuthLayout';
-import HideLabel from '../components/HideLabel';
-import Button from '../components/Button';
+import {useAuth, useForm} from '../hooks';
+import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
-import {useAuth} from '../hooks/useAuth';
-import {useForm} from '../hooks/useForm';
-import {
-  SET_IS_LOADING,
-  ON_SUBMIT_FAILED,
-} from '../actions/sign-up-page-actions';
-import LoginPageReducer from '../reducers/login-page-reducer';
 import {
   Logo,
   AuthForm,
@@ -23,13 +14,6 @@ import {
 } from '../components/styled/Lib';
 
 const LoginPage = () => {
-  const [state, dispatch] = useReducer(LoginPageReducer, {
-    isLoading: false,
-    error: null,
-  });
-
-  const {isLoading, error} = state;
-
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -38,31 +22,11 @@ const LoginPage = () => {
 
   const auth = useAuth();
 
-  const findError = (error) => {
-    console.log(error.code);
-    switch (error.code) {
-      case AuthErrorCodes.USER_DELETED:
-      case AuthErrorCodes.INVALID_EMAIL:
-      case AuthErrorCodes.INVALID_PASSWORD:
-        return 'Invalid email or password';
-      default:
-        return 'Something went wrong';
-    }
-  };
-
   useEffect(() => {
-    if (!isLoading && error) {
-      let message = null;
-
-      if (typeof error === 'string' || error instanceof String) {
-        message = error;
-      } else {
-        message = findError(error);
-      }
-
-      alert(message);
+    if (!auth.isLoading && auth.error) {
+      alert(auth.error);
     }
-  }, [isLoading, error]);
+  }, [auth.isLoading, auth.error]);
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
@@ -70,17 +34,13 @@ const LoginPage = () => {
       password: '',
     },
     onSubmit: async (values) => {
-      dispatch({type: SET_IS_LOADING, payload: true});
-
-      const result = await auth.logIn({
+      const isSuccess = await auth.logIn({
         email: values.email,
         password: values.password,
       });
 
-      if (!result.hasError) {
+      if (isSuccess) {
         navigate(from, {replace: true});
-      } else {
-        dispatch({type: ON_SUBMIT_FAILED, payload: result.error});
       }
     },
     validate: (values) => {
@@ -102,7 +62,8 @@ const LoginPage = () => {
     },
   });
 
-  const disableSubmitButton = isLoading || !values.email || !values.password;
+  const disableSubmitButton =
+    auth.isLoading || !values.email || !values.password;
 
   return (
     <AuthLayout
@@ -136,7 +97,7 @@ const LoginPage = () => {
             htmlType="submit"
             type="primary"
             size="large"
-            loading={isLoading}
+            loading={auth.isLoading}
             disabled={disableSubmitButton}
           >
             Login

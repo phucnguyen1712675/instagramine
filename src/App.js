@@ -1,21 +1,20 @@
 import React from 'react';
 import {Routes, Route} from 'react-router-dom';
 import {PATHS} from './constants';
-import {AuthContextProvider} from './store/auth-context';
-import LoginPage from './routes/LoginPage';
-import SignUpPage from './routes/SignUpPage';
-import NoMatchPage from './routes/NoMatchPage';
-import HomeContent from './routes/HomeContent';
-import InboxContent from './routes/InboxContent';
-import ExploreContent from './routes/ExploreContent';
-import ActivityContent from './routes/ActivityContent';
-import ReelContent from './routes/ReelContent';
-import StreamContent from './routes/StreamContent';
-import SavedContent from './routes/SavedContent';
-import AppStyles from './components/AppStyles';
-import RequireAuth from './components/RequireAuth';
-import ProtectedRoute from './components/ProtectedRoute';
-import HomeLayout from './components/HomeLayout';
+import {
+  LoginPage,
+  SignUpPage,
+  NoMatchPage,
+  HomeContent,
+  InboxContent,
+  ExploreContent,
+  ActivityContent,
+  ReelContent,
+  StreamContent,
+  SavedContent,
+} from './routes';
+import {AppStyles, RequireAuth, ProtectedRoute, HomeLayout} from './components';
+import {AuthContextProvider} from './store/authContext';
 
 const App = () => {
   return (

@@ -1,18 +1,9 @@
-import {useReducer, useEffect} from 'react';
+import React from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {AuthErrorCodes} from 'firebase/auth';
 import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import AuthLayout from '../components/AuthLayout';
-import HideLabel from '../components/HideLabel';
-import Button from '../components/Button';
+import {useAuth, useForm} from '../hooks';
+import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
-import {useAuth} from '../hooks/useAuth';
-import {useForm} from '../hooks/useForm';
-import {
-  SET_IS_LOADING,
-  ON_SUBMIT_FAILED,
-} from '../actions/sign-up-page-actions';
-import SignUpPageReducer from '../reducers/sign-up-page-reducer';
 import {
   Logo,
   AuthForm,
@@ -29,13 +20,6 @@ import {
 } from '../components/styled/SignUpPage.styled';
 
 const SignUpPage = () => {
-  const [state, dispatch] = useReducer(SignUpPageReducer, {
-    isLoading: false,
-    error: null,
-  });
-
-  const {isLoading, error} = state;
-
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -43,29 +27,6 @@ const SignUpPage = () => {
   const from = location.state?.from?.pathname ?? '/';
 
   const auth = useAuth();
-
-  const findError = (error) => {
-    switch (error.code) {
-      case AuthErrorCodes.EMAIL_EXISTS:
-        return 'Email already in-use';
-      default:
-        return 'Something went wrong';
-    }
-  };
-
-  useEffect(() => {
-    if (!isLoading && error) {
-      let message = null;
-
-      if (typeof error === 'string' || error instanceof String) {
-        message = error;
-      } else {
-        message = findError(error);
-      }
-
-      alert(message);
-    }
-  }, [isLoading, error]);
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
@@ -76,19 +37,15 @@ const SignUpPage = () => {
       confirmPassword: '',
     },
     onSubmit: async (values) => {
-      dispatch({type: SET_IS_LOADING, payload: true});
-
-      const result = await auth.register({
+      const isSuccess = await auth.register({
         email: values.email,
         name: values.name,
         username: values.username,
         password: values.password,
       });
 
-      if (!result.hasError) {
+      if (isSuccess) {
         navigate(from, {replace: true});
-      } else {
-        dispatch({type: ON_SUBMIT_FAILED, payload: result.error});
       }
     },
     validate: (values) => {
@@ -123,7 +80,7 @@ const SignUpPage = () => {
   });
 
   const disableSubmitButton =
-    isLoading ||
+    auth.isLoading ||
     !values.email ||
     !values.name ||
     !values.username ||
@@ -194,7 +151,7 @@ const SignUpPage = () => {
             htmlType="submit"
             type="primary"
             size="large"
-            loading={isLoading}
+            loading={auth.isLoading}
             disabled={disableSubmitButton}
           >
             Sign up

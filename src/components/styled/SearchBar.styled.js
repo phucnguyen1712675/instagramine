@@ -1,13 +1,16 @@
 import styled, {css} from 'styled-components';
 import {hideScrollBarScrolling} from './Mixins';
 import {SearchInput, Dot, MenuItem} from './Lib';
-import {TextContentWrapper, TextContent, OptionWrapper} from './UserCard.styled';
+import {
+  TextContentWrapper,
+  TextContent,
+  OptionWrapper,
+} from './UserCard.styled';
 import Button from '../Button';
 import Spinner from '../Spinner';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
-import SearchIcon from '../icons/SearchIcon';
-import MultiplyIcon from '../icons/MultiplyIcon';
+import {SearchIcon, MultiplyIcon} from '../icons';
 import {DEVICES} from '../../constants';
 
 export const StyledSearchBar = styled.form`
@@ -147,7 +150,7 @@ export const SearchHistoryItemContent = styled(UserCard)`
   padding: 8px 16px;
   cursor: pointer;
   flex-direction: column;
-	position: relative;
+  position: relative;
 
   @media ${DEVICES.mobileM} {
     flex-direction: row;
@@ -174,12 +177,12 @@ export const SearchHistoryItemContent = styled(UserCard)`
     }
   }
 
-	${OptionWrapper} {
-		position: absolute;
-		top: 50%;
-		right: 0.8rem;
-		transform: translateY(-50%); 
-	}
+  ${OptionWrapper} {
+    position: absolute;
+    top: 50%;
+    right: 0.8rem;
+    transform: translateY(-50%);
+  }
 `;
 
 export const SearchHistoryItemAvatar = styled(Avatar)`

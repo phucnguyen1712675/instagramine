@@ -1,8 +1,8 @@
 import {useContext} from 'react';
-import SavedPostsContext from '../store/saved-posts-context';
+import {SavedPostsContext} from '../store/savedPostsContext';
 
 const useSavedPosts = () => {
   return useContext(SavedPostsContext);
 };
 
-export {useSavedPosts};
+export default useSavedPosts;

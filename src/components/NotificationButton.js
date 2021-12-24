@@ -1,7 +1,6 @@
 import {useReducer, useRef, useEffect} from 'react';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
-import BellIcon from './icons/BellIcon';
-import RightChevron from './icons/RightChevron';
+import {BellIcon, RightChevronIcon} from './icons';
 import {FakeCheckbox, FakeButtonLabel} from './styled/Lib';
 import {
   StyledNotificationButton,
@@ -21,20 +20,20 @@ import {
   RequestItem,
   RequestItemContent,
 } from './styled/NotificationButton.styled';
+import {useOnScreen} from '../hooks';
+import {notificationButtonReducer} from '../reducers';
 import {onErrorMedia} from '../utils/media';
-import {useOnScreen} from '../hooks/useOnScreen';
 import followRequestsData from '../data/follow-requests.json';
-import NotificationButtonReducer from '../reducers/notification-button-reducer';
 import {
   SET_IS_LOADING,
   SET_CHECKED,
   SET_SHOW_REQUESTS,
   SET_FOLLOW_REQUESTS,
   ON_HIDDEN,
-} from '../actions/notification-button-actions';
+} from '../actions/notificationButtonActions';
 
 const NotificationButton = () => {
-  const [state, dispatch] = useReducer(NotificationButtonReducer, {
+  const [state, dispatch] = useReducer(notificationButtonReducer, {
     followRequests: followRequestsData,
     isLoading: true,
     showRequests: false,
@@ -151,7 +150,7 @@ const NotificationButton = () => {
                   optionComponent={
                     <NotificationMenuItemOption>
                       <NotificationMenuItemDot />
-                      <RightChevron />
+                      <RightChevronIcon />
                     </NotificationMenuItemOption>
                   }
                 />

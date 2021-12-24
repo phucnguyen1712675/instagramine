@@ -74,7 +74,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
     dispatch({type: HANDLE_BLUR, payload: {name, errors: validateErrors}});
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const validateErrors = validate(values);
@@ -84,7 +84,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
     } else {
       errors && dispatch({type: SET_ERRORS, payload: {}});
 
-      await onSubmit(values);
+      onSubmit(values);
     }
   };
 
@@ -109,4 +109,4 @@ useForm.propTypes = {
   validate: PropTypes.func,
 };
 
-export {useForm};
+export default useForm;

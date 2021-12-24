@@ -4,11 +4,13 @@ import moment from 'moment';
 import Carousel from './Carousel';
 import Avatar from './Avatar';
 import ReadMore from './ReadMore';
-import CommentIcon from './icons/CommentIcon';
-import ShareIcon from './icons/ShareIcon';
-import ThreeDotsIcon from './icons/ThreeDotsIcon';
-import HeartICon from './icons/HeartIcon';
-import SavedIcon from './icons/SavedIcon';
+import {
+  CommentIcon,
+  ShareIcon,
+  ThreeDotsIcon,
+  HeartIcon,
+  SavedIcon,
+} from './icons';
 import {PostMediaWrapper} from './styled/Lib';
 import {
   StyledPost,
@@ -34,15 +36,15 @@ import {
 } from './styled/Post.styled';
 import PostMedia from './PostMedia';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
-import PostReducer from '../reducers/post-reducer';
-import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
-import {useSavedPosts} from '../hooks/useSavedPosts';
-import PostPropTypes from '../prop-types/post.propTypes';
+import {useSavedPosts} from '../hooks';
+import {postPropTypes} from '../prop-types';
+import {postReducer} from '../reducers';
+import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/postActions';
 
 const Post = ({post}) => {
   const {savePost, unsavePost, isSavedPost} = useSavedPosts();
 
-  const [state, dispatch] = useReducer(PostReducer, {
+  const [state, dispatch] = useReducer(postReducer, {
     likeAmount: post.likeAmount,
     isLiked: post.isLiked,
     isSaved: isSavedPost(post.id),
@@ -129,7 +131,7 @@ const Post = ({post}) => {
               onClick={likeButtonHandler}
               $isLiked={isLiked}
             >
-              <HeartICon />
+              <HeartIcon />
             </LikedButton>
             <PostActionButton type="text">
               <CommentIcon />
@@ -185,7 +187,7 @@ const Post = ({post}) => {
 };
 
 Post.propTypes = {
-  post: PostPropTypes.isRequired,
+  post: postPropTypes.isRequired,
 };
 
 export default Post;

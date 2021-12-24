@@ -3,7 +3,7 @@ import {
   LOADING,
   SUCCESS,
   ERROR,
-} from '../actions/use-firestore-query-actions';
+} from '../actions/useFirestoreQueryActions';
 
 export default (state, action) => {
   switch (action.type) {

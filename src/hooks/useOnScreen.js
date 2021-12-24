@@ -38,4 +38,4 @@ useOnScreen.propTypes = {
   rootMargin: PropTypes.string,
 };
 
-export {useOnScreen};
+export default useOnScreen;

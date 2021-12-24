@@ -1,19 +1,20 @@
 import {useReducer, useRef, useEffect, useCallback} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
-import {AuthErrorCodes} from 'firebase/auth';
 import Header from './Header';
 import UserMenu from './UserMenu';
 import Tooltip from './Tooltip';
-import SettingIcon from './icons/SettingIcon';
-import UserIcon from './icons/UserIcon';
-import HomeIcon from './icons/HomeIcon';
-import InboxIcon from './icons/InboxIcon';
-import ExploreIcon from './icons/ExploreIcon';
-import ActivityIcon from './icons/ActivityIcon';
-import ReelIcon from './icons/ReelIcon';
-import StreamIcon from './icons/StreamIcon';
-import SavedListIcon from './icons/SavedListIcon';
-import MenuSettingIcon from './icons/MenuSettingIcon';
+import {
+  SettingIcon,
+  UserIcon,
+  HomeIcon,
+  InboxIcon,
+  ExploreIcon,
+  ActivityIcon,
+  ReelIcon,
+  StreamIcon,
+  SavedListIcon,
+  MenuSettingIcon,
+} from './icons';
 import {FakeCheckbox, FakeButtonLabel, OverlayLabel} from './styled/Lib';
 import {
   StyledHomeLayout,
@@ -29,17 +30,17 @@ import {
   SidebarButton,
 } from './styled/HomeLayout.styled';
 import {PATHS} from '../constants';
-import {useAuth} from '../hooks/useAuth';
-import {SavedPostsContextProvider} from '../store/saved-posts-context';
+import {useAuth} from '../hooks';
+import {homeLayoutReducer} from '../reducers';
+import {SavedPostsContextProvider} from '../store/savedPostsContext';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
   SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
   SET_SHOW_TOGGLE_SIDEBAR,
-} from '../actions/home-layout-page-actions';
-import HomeLayoutPageReducer from '../reducers/home-layout-page-reducer';
+} from '../actions/homeLayoutActions';
 
 const HomeLayout = () => {
-  const [state, dispatch] = useReducer(HomeLayoutPageReducer, {
+  const [state, dispatch] = useReducer(homeLayoutReducer, {
     toggleSidebarBtnChecked: false,
     toggleSettingMenuBtnChecked: false,
     showToggleSidebar: false,
@@ -107,25 +108,13 @@ const HomeLayout = () => {
     });
   };
 
-  const findError = (error) => {
-    switch (error.code) {
-      case AuthErrorCodes.USER_SIGNED_OUT:
-        return 'User has signed out';
-      default:
-        return 'Something went wrong';
-    }
-  };
-
   const logOutHandler = async (e) => {
     e.preventDefault();
 
-    const result = await auth.logOut();
+    const isSuccess = await auth.logOut();
 
-    if (!result.hasError) {
+    if (isSuccess) {
       navigate(PATHS.LOGIN);
-    } else {
-      let message = findError(result.error);
-      alert(message);
     }
   };
 

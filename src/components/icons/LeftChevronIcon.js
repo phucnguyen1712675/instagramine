@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LeftChevron = (props) => {
+const LeftChevronIcon = (props) => {
   return (
     <svg
       version="1.0"
@@ -27,4 +27,4 @@ const LeftChevron = (props) => {
   );
 };
 
-export default LeftChevron;
+export default LeftChevronIcon;

@@ -1,13 +1,13 @@
 import {useReducer, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {useMemoCompare} from './useMemoCompare';
-import useFirestoreQueryReducer from '../reducers/use-firestore-query-reducer';
+import useMemoCompare from './useMemoCompare';
+import {useFirestoreQueryReducer} from '../reducers';
 import {
   IDLE,
   LOADING,
   SUCCESS,
   ERROR,
-} from '../actions/use-firestore-query-actions';
+} from '../actions/useFirestoreQueryActions';
 
 // Get doc data and merge doc.id
 function getDocData(doc) {
@@ -78,4 +78,4 @@ useFirestoreQuery.propTypes = {
   query: PropTypes.object.isRequired,
 };
 
-export {useFirestoreQuery};
+export default useFirestoreQuery;

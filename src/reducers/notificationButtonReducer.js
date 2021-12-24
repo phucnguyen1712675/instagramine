@@ -4,7 +4,7 @@ import {
   SET_SHOW_REQUESTS,
   SET_FOLLOW_REQUESTS,
   ON_HIDDEN,
-} from '../actions/notification-button-actions';
+} from '../actions/notificationButtonActions';
 
 export default (state, action) => {
   switch (action.type) {

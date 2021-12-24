@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
-import PostList from '../components/PostList';
-import {useSavedPosts} from '../hooks/useSavedPosts';
+import {useSavedPosts} from '../hooks';
+import {PostList} from '../components';
 import {PageContent} from '../components/styled/Lib';
 import {SavedContentSpinner} from '../components/styled/SavedContent.styled';
 
@@ -9,13 +9,7 @@ const SavedContent = () => {
     useSavedPosts();
 
   useEffect(() => {
-    // let didCancel = false;
-
     getCurrentUserSavedPosts();
-
-    // return () => {
-    //   didCancel = true; // Remember if we start fetching something else
-    // };
   }, [getCurrentUserSavedPosts]);
 
   if (isLoading) {
@@ -26,7 +20,7 @@ const SavedContent = () => {
     );
   }
 
-  if (!hasSavedPosts) {
+  if (!hasSavedPosts()) {
     return (
       <PageContent>
         <p>No Saved Posts.</p>

@@ -1,7 +1,4 @@
-import {
-  SET_IS_LOADING,
-  ON_SUBMIT_FAILED,
-} from '../actions/sign-up-page-actions';
+import {SET_IS_LOADING, ON_ERROR} from '../actions/requestActions';
 
 export default (state, action) => {
   switch (action.type) {
@@ -10,7 +7,7 @@ export default (state, action) => {
         ...state,
         isLoading: action.payload,
       };
-    case ON_SUBMIT_FAILED:
+    case ON_ERROR:
       return {
         ...state,
         isLoading: false,

@@ -3,7 +3,7 @@ import {
   SET_IS_LOADING,
   OPEN_FIRST_TIME,
   FILTER_USERS,
-} from '../actions/search-bar-actions';
+} from '../actions/searchBarActions';
 import usersData from '../data/users.json';
 
 export default (state, action) => {

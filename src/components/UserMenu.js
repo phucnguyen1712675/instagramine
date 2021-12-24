@@ -1,6 +1,6 @@
 import React from 'react';
 import NotificationButton from './NotificationButton';
-import PlayIcon from './icons/PlayIcon';
+import {PlayIcon} from './icons';
 import {
   StyledUserMenu,
   UserMenuTopContent,
@@ -34,7 +34,7 @@ import {
 } from './styled/UserMenu.styled';
 import {MAX_STORIES_NUMBER} from '../constants';
 import {onErrorMedia} from '../utils/media';
-import {useAuth} from '../hooks/useAuth';
+import {useAuth} from '../hooks';
 
 const UserMenu = () => {
   const auth = useAuth();

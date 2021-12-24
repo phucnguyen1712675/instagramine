@@ -24,19 +24,17 @@ import {
   SearchHistoryUserAdditionalInfoDot,
   NoResultsText,
 } from './styled/SearchBar.styled';
-import {useEventListener} from '../hooks/useEventListener';
-import {useForm} from '../hooks/useForm';
-import {useLocalStorage} from '../hooks/useLocalStorage';
-import SearchBarReducer from '../reducers/search-bar-reducer';
+import {useEventListener, useForm, useLocalStorage} from '../hooks';
+import {searchBarReducer} from '../reducers';
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,
   OPEN_FIRST_TIME,
   FILTER_USERS,
-} from '../actions/search-bar-actions';
+} from '../actions/searchBarActions';
 
 const SearchBar = () => {
-  const [state, dispatch] = useReducer(SearchBarReducer, {
+  const [state, dispatch] = useReducer(searchBarReducer, {
     hasOpened: false,
     isOpen: false,
     isLoading: true,

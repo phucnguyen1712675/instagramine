@@ -3,7 +3,7 @@ import {
   SAVE_POST,
   UNSAVE_POST,
   SET_SAVED_POSTS_AFTER_FETCHING,
-} from '../actions/saved-posts-context-actions';
+} from '../actions/savedPostsContextActions';
 
 export default (state, action) => {
   switch (action.type) {

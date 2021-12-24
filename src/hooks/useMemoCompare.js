@@ -28,7 +28,7 @@ useMemoCompare.propTypes = {
   compare: PropTypes.func.isRequired,
 };
 
-export {useMemoCompare};
+export default useMemoCompare;
 
 // // Use the previous obj value if the "id" property hasn't changed
 // const objFinal = useMemoCompare(obj, (prev, next) => {

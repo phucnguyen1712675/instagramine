@@ -7,17 +7,17 @@ import {
   RequestItemFollowButton,
   RequestItemDeleteButton,
 } from './styled/RequestItemButtonGroup.styled';
-import RequestItemReducer from '../reducers/request-item-button-group-reducer';
+import {requestItemButtonReducer} from '../reducers';
 import {
   SET_IS_CONFIRM_BUTTON_LOADING,
   SET_IS_DELETE_BUTTON_LOADING,
   SET_IS_FOLLOW_BUTTON_LOADING,
   REQUEST_HAS_BEEN_CONFIRMED,
   USER_HAS_BEEN_FOLLOWED,
-} from '../actions/request-item-button-group-actions';
+} from '../actions/requestItemButtonGroupActions';
 
 const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
-  const [state, dispatch] = useReducer(RequestItemReducer, {
+  const [state, dispatch] = useReducer(requestItemButtonReducer, {
     isConfirmed: false,
     isFollowed: false,
     isConfirmButtonLoading: false,

@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import PostList from '../components/PostList';
+import {PostList} from '../components';
 import {PageContent} from '../components/styled/Lib';
 import {HomeContentSpinner} from '../components/styled/HomeContent.styled';
 import postsData from '../data/posts.json';

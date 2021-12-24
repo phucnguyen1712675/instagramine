@@ -1,4 +1,4 @@
-import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
+import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/postActions';
 
 export default (state, action) => {
   switch (action.type) {

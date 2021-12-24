@@ -4,7 +4,7 @@ import {
   SET_IS_FOLLOW_BUTTON_LOADING,
   REQUEST_HAS_BEEN_CONFIRMED,
   USER_HAS_BEEN_FOLLOWED,
-} from '../actions/request-item-button-group-actions';
+} from '../actions/requestItemButtonGroupActions';
 
 export default (state, action) => {
   switch (action.type) {

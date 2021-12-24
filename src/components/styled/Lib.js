@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components';
 import {circle} from './Mixins';
-import LogoTextIcon from '../icons/LogoTextIcon';
+import {LogoTextIcon} from '../icons';
 import {DEVICES} from '../../constants';
 
 export const Dot = styled.span`
