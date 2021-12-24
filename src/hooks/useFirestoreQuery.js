@@ -1,4 +1,5 @@
 import {useReducer, useEffect} from 'react';
+import {onSnapshot, refEqual} from 'firebase/firestore';
 import PropTypes from 'prop-types';
 import useMemoCompare from './useMemoCompare';
 import {useFirestoreQueryReducer} from '../reducers';
@@ -11,7 +12,7 @@ import {
 
 // Get doc data and merge doc.id
 function getDocData(doc) {
-  return doc.exists ? {id: doc.id, ...doc.data()} : null;
+  return doc.exists() ? {id: doc.id, ...doc.data()} : null;
 }
 
 // Get array of doc data from collection
@@ -41,7 +42,7 @@ const useFirestoreQuery = ({query}) => {
     next: query,
     compare: (prevQuery) => {
       // Use built-in Firestore isEqual method to determine if "equal"
-      return prevQuery && query && query.isEqual(prevQuery);
+      return prevQuery && query && refEqual(query, prevQuery);
     },
   });
 
@@ -57,12 +58,14 @@ const useFirestoreQuery = ({query}) => {
 
     // Subscribe to query with onSnapshot
     // Will unsubscribe on cleanup since this returns an unsubscribe function
-    return queryCached.onSnapshot(
-      (response) => {
+    return onSnapshot(
+      queryCached,
+      (snapshot) => {
         // Get data for collection or doc
-        const data = response.docs
-          ? getCollectionData(response)
-          : getDocData(response);
+        const data = snapshot.docs
+          ? getCollectionData(snapshot)
+          : getDocData(snapshot);
+
         dispatch({type: SUCCESS, payload: data});
       },
       (error) => {

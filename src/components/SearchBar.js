@@ -1,4 +1,6 @@
 import {useReducer, useRef, useCallback, useEffect} from 'react';
+// eslint-disable-next-line no-unused-vars
+import {collection, getDocs} from 'firebase/firestore';
 import HideLabel from './HideLabel';
 import {FakeCheckbox, OverlayLabel} from './styled/Lib';
 import {
@@ -24,14 +26,37 @@ import {
   SearchHistoryUserAdditionalInfoDot,
   NoResultsText,
 } from './styled/SearchBar.styled';
-import {useEventListener, useForm, useLocalStorage} from '../hooks';
+import {db} from '../firebase-config';
+import {
+  useEventListener,
+  useForm,
+  useLocalStorage,
+  useMounted,
+  useAuth,
+  useFirestoreQuery,
+} from '../hooks';
 import {searchBarReducer} from '../reducers';
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,
+  SET_FILTERED_USERS,
   OPEN_FIRST_TIME,
-  FILTER_USERS,
 } from '../actions/searchBarActions';
+
+const move = (array, from, to) => {
+  if (to === from) return array;
+
+  var target = array[from];
+  var increment = to < from ? -1 : 1;
+
+  for (var k = from; k != to; k += increment) {
+    array[k] = array[k + increment];
+  }
+
+  array[to] = target;
+
+  return array;
+};
 
 const SearchBar = () => {
   const [state, dispatch] = useReducer(searchBarReducer, {
@@ -43,7 +68,7 @@ const SearchBar = () => {
 
   const [searchHistory, setSearchHistory] = useLocalStorage({
     key: 'searchHistory',
-    initialValue: [],
+    initialValue: null,
   });
 
   const {values, handleChange, handleSubmit, reset} = useForm({
@@ -65,15 +90,35 @@ const SearchBar = () => {
 
   const searchHistoryFakeCheckboxRef = useRef(null);
 
+  // eslint-disable-next-line no-unused-vars
+  const auth = useAuth();
+
+  const mounted = useMounted();
+
+  const {
+    data: users,
+    status,
+    error,
+  } = useFirestoreQuery({
+    query: collection(db, 'users'),
+  });
+
+  useEffect(() => {
+    if (status !== 'loading' && status === 'error') {
+      alert(error.message);
+    }
+  }, [status, error]);
+
   useEffect(() => {
     if (values.query) {
-      dispatch({type: FILTER_USERS, payload: values.query});
+      const filteredUsers = users.filter((user) => {
+        const username = user.username.toLowerCase();
+        return username.includes(values.query);
+      });
 
-      setTimeout(() => {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }, 1000);
+      dispatch({type: SET_FILTERED_USERS, payload: filteredUsers});
     }
-  }, [values.query]);
+  }, [values.query, users]);
 
   const onSearch = useCallback(() => {
     if (!values.query) {
@@ -103,12 +148,14 @@ const SearchBar = () => {
 
   const searchItemArr = values.query ? state.filteredUsers : searchHistory;
 
-  const hasItems = searchItemArr.length > 0;
+  const hasItems = searchItemArr?.length > 0;
 
   const shouldCenterChild = state.isLoading || !hasItems;
 
+  const hasSearchHistory = () => searchHistory?.length > 0;
+
   const clearAllHandler = () => {
-    setSearchHistory([]);
+    setSearchHistory(null);
   };
 
   const isOpenHandler = (e) => {
@@ -131,40 +178,34 @@ const SearchBar = () => {
 
   const clickItemHandler = (e, user) => {
     e.preventDefault();
-    const foundIndex = searchHistory.findIndex((u) => u.id === user.id);
 
-    if (foundIndex !== -1) {
-      // Not the first item
-      if (foundIndex !== 0) {
-        const move = (array, from, to) => {
-          if (to === from) return array;
+    if (hasSearchHistory()) {
+      const foundIndex = searchHistory.findIndex((u) => u.id === user.id);
 
-          var target = array[from];
-          var increment = to < from ? -1 : 1;
-
-          for (var k = from; k != to; k += increment) {
-            array[k] = array[k + increment];
+      if (foundIndex !== -1) {
+        // Not the first item
+        if (foundIndex !== 0) {
+          if (mounted.current) {
+            setSearchHistory((prevState) => move(prevState, foundIndex, 0));
           }
-
-          array[to] = target;
-
-          return array;
+        }
+      } else if (values.query) {
+        const newSearchItem = {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          avatar: user.avatar,
+          profile: user.profile,
+          isFollowed: user.isFollowed,
+          hasStory: user.hasStory,
+          hasStoryBeenSeen: user.hasStoryBeenSeen,
         };
-        setSearchHistory((prevState) => move(prevState, foundIndex, 0));
+
+        if (mounted.current) {
+          // Add new item to the beginning of the array
+          setSearchHistory((prevState) => [newSearchItem, ...prevState]);
+        }
       }
-    } else if (values.query) {
-      const newSearchItem = {
-        id: user.id,
-        username: user.username,
-        name: user.name,
-        avatar: user.avatar,
-        profile: user.profile,
-        isFollowed: user.isFollowed,
-        hasStory: user.hasStory,
-        hasStoryBeenSeen: user.hasStoryBeenSeen,
-      };
-      // Add new item to the beginning of the array
-      setSearchHistory((prevState) => [newSearchItem, ...prevState]);
     }
     // Clear the query
     reset();
@@ -197,7 +238,7 @@ const SearchBar = () => {
       <OverlayLabel htmlFor="checkbox_search_history" />
       {state.isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
-          {state.isLoading ? (
+          {state.isLoading && status === 'loading' ? (
             <SearchHistorySpinner />
           ) : !hasItems ? (
             <NoResultsText>

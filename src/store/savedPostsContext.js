@@ -14,7 +14,7 @@ import {
 const SavedPostsContext = createContext({
   isLoading: false,
   savedPosts: null,
-  getCurrentUserSavedPosts: async () => {},
+  getSavedPosts: async () => {},
   // eslint-disable-next-line no-unused-vars
   savePost: (post) => {},
   // eslint-disable-next-line no-unused-vars
@@ -34,16 +34,16 @@ const SavedPostsContextProvider = ({children}) => {
 
   const mounted = useMounted();
 
-  const getCurrentUserSavedPosts = useCallback(async () => {
+  const getSavedPosts = useCallback(async () => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      const currentUserSavedPostsCollectionRef = collection(
+      const savedPostsCollectionRef = collection(
         db,
         `users/${auth.user.uid}/saved-posts`
       );
 
-      const {docs} = await getDocs(currentUserSavedPostsCollectionRef);
+      const {docs} = await getDocs(savedPostsCollectionRef);
 
       if (mounted.current) {
         if (docs.length > 0) {
@@ -58,7 +58,7 @@ const SavedPostsContextProvider = ({children}) => {
         }
       }
     } catch (error) {
-      alert('Error fetching saved posts');
+      alert(`Error fetching saved posts: ${error}`);
     }
   }, [auth.user.uid, mounted]);
 
@@ -81,7 +81,7 @@ const SavedPostsContextProvider = ({children}) => {
 
   const value = {
     ...state,
-    getCurrentUserSavedPosts,
+    getSavedPosts,
     savePost,
     unsavePost,
     isSavedPost,

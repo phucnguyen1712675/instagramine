@@ -5,12 +5,11 @@ import {PageContent} from '../components/styled/Lib';
 import {SavedContentSpinner} from '../components/styled/SavedContent.styled';
 
 const SavedContent = () => {
-  const {isLoading, savedPosts, getCurrentUserSavedPosts, hasSavedPosts} =
-    useSavedPosts();
+  const {isLoading, savedPosts, getSavedPosts, hasSavedPosts} = useSavedPosts();
 
   useEffect(() => {
-    getCurrentUserSavedPosts();
-  }, [getCurrentUserSavedPosts]);
+    getSavedPosts();
+  }, [getSavedPosts]);
 
   if (isLoading) {
     return (
