@@ -30,8 +30,6 @@ const SavedPostsContextProvider = ({children}) => {
     savedPosts: null,
   });
 
-  const {isLoading, savedPosts} = state;
-
   const auth = useAuth();
 
   const mounted = useMounted();
@@ -72,18 +70,17 @@ const SavedPostsContextProvider = ({children}) => {
     dispatch({type: UNSAVE_POST, payload: id});
   };
 
-  const hasSavedPosts = () => savedPosts?.length > 0;
+  const hasSavedPosts = () => state.savedPosts?.length > 0;
 
   const isSavedPost = (id) => {
     if (hasSavedPosts()) {
-      return savedPosts.findIndex((post) => post.id === id) !== -1;
+      return state.savedPosts.findIndex((post) => post.id === id) !== -1;
     }
     return false;
   };
 
   const value = {
-    isLoading,
-    savedPosts,
+    ...state,
     getCurrentUserSavedPosts,
     savePost,
     unsavePost,

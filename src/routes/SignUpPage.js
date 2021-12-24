@@ -1,4 +1,4 @@
-import React from 'react';
+import {useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
 import {useAuth, useForm} from '../hooks';
@@ -27,6 +27,12 @@ const SignUpPage = () => {
   const from = location.state?.from?.pathname ?? '/';
 
   const auth = useAuth();
+
+  useEffect(() => {
+    if (!auth.isLoading && auth.error) {
+      alert(auth.error);
+    }
+  }, [auth.isLoading, auth.error]);
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {

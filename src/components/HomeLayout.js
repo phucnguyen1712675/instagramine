@@ -46,26 +46,20 @@ const HomeLayout = () => {
     showToggleSidebar: false,
   });
 
-  const {
-    toggleSidebarBtnChecked,
-    toggleSettingMenuBtnChecked,
-    showToggleSidebar,
-  } = state;
-
   const tooltipRef = useRef(null);
 
   const menuBtnCheckbox = useRef(null);
 
   const menuBtnRef = useCallback(
     (node) => {
-      if (node !== null && showToggleSidebar !== node.isMenuBtnOnScreen) {
+      if (node !== null && state.showToggleSidebar !== node.isMenuBtnOnScreen) {
         dispatch({
           type: SET_SHOW_TOGGLE_SIDEBAR,
           payload: node.isMenuBtnOnScreen,
         });
       }
     },
-    [showToggleSidebar]
+    [state.showToggleSidebar]
   );
 
   const {pathname} = useLocation();
@@ -75,24 +69,30 @@ const HomeLayout = () => {
   const auth = useAuth();
 
   useEffect(() => {
-    if (toggleSettingMenuBtnChecked) {
+    if (!auth.isLoading && auth.error) {
+      alert(auth.error);
+    }
+  }, [auth.isLoading, auth.error]);
+
+  useEffect(() => {
+    if (state.toggleSettingMenuBtnChecked) {
       tooltipRef.current.setShowState(false);
     }
-  }, [toggleSettingMenuBtnChecked]);
+  }, [state.toggleSettingMenuBtnChecked]);
 
   const uncheckSidebarBtn = () => {
     menuBtnCheckbox.current.checked = false;
   };
 
   useEffect(() => {
-    if (toggleSidebarBtnChecked && !showToggleSidebar) {
+    if (state.toggleSidebarBtnChecked && !state.showToggleSidebar) {
       dispatch({
         type: SET_TOGGLE_SIDEBAR_BTN_CHECKED,
         payload: false,
       });
       uncheckSidebarBtn();
     }
-  }, [toggleSidebarBtnChecked, showToggleSidebar]);
+  }, [state.toggleSidebarBtnChecked, state.showToggleSidebar]);
 
   const checkToggleSidebarBtnHandler = (e) => {
     dispatch({
@@ -121,7 +121,7 @@ const HomeLayout = () => {
   const navigateHandler = (path) => {
     navigate(path);
 
-    if (showToggleSidebar) {
+    if (state.showToggleSidebar) {
       uncheckSidebarBtn();
     }
   };
@@ -181,22 +181,22 @@ const HomeLayout = () => {
       <FakeCheckbox
         ref={menuBtnCheckbox}
         id="toggle_sidebar_button"
-        value={toggleSidebarBtnChecked}
+        value={state.toggleSidebarBtnChecked}
         onChange={checkToggleSidebarBtnHandler}
       />
       <SidebarOverlay htmlFor="toggle_sidebar_button" />
-      <Sidebar $showToggleSidebar={showToggleSidebar}>
+      <Sidebar $showToggleSidebar={state.showToggleSidebar}>
         <Nav>
           {navigationContent}
           <SettingButton
             ref={tooltipRef}
             content="Settings"
             position="right"
-            trigger={toggleSettingMenuBtnChecked ? 'none' : 'hover'}
+            trigger={state.toggleSettingMenuBtnChecked ? 'none' : 'hover'}
           >
             <FakeCheckbox
               id="checkbox_setting_menu"
-              value={toggleSettingMenuBtnChecked}
+              value={state.toggleSettingMenuBtnChecked}
               onChange={checkToggleSettingMenuBtnHandler}
             />
             <FakeButtonLabel htmlFor="checkbox_setting_menu">

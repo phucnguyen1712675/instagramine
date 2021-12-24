@@ -11,7 +11,7 @@ import {setDoc, doc, getDoc} from 'firebase/firestore';
 import {useLocalStorage, useMounted} from '../hooks';
 import {auth, db} from '../firebase-config';
 import {requestReducer} from '../reducers';
-import {SET_IS_LOADING, ON_ERROR} from '../actions/requestActions';
+import {SET_IS_LOADING, ON_SUCCESS, ON_ERROR} from '../actions/requestActions';
 
 const AuthContext = createContext({
   isLoading: false,
@@ -99,7 +99,7 @@ const AuthContextProvider = ({children}) => {
       const newUserData = newUserDocSnap.data();
 
       if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
+        dispatch({type: ON_SUCCESS});
 
         setUser({
           ...newUserData,
@@ -136,7 +136,7 @@ const AuthContextProvider = ({children}) => {
       await setDoc(doc(db, 'users', user.uid), newUserData);
 
       if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
+        dispatch({type: ON_SUCCESS});
 
         setUser({
           ...newUserData,
@@ -161,7 +161,7 @@ const AuthContextProvider = ({children}) => {
       await signOut(auth);
 
       if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
+        dispatch({type: ON_SUCCESS});
       }
 
       return true;

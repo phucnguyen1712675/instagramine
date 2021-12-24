@@ -56,8 +56,6 @@ const useForm = ({initialValues, onSubmit, validate}) => {
     errors: {},
   });
 
-  const {values, touchedValues, errors} = state;
-
   const handleChange = (event) => {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -69,7 +67,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
   const handleBlur = (event) => {
     const target = event.target;
     const name = target.name;
-    const validateErrors = validate(values);
+    const validateErrors = validate(state.values);
 
     dispatch({type: HANDLE_BLUR, payload: {name, errors: validateErrors}});
   };
@@ -77,14 +75,14 @@ const useForm = ({initialValues, onSubmit, validate}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const validateErrors = validate(values);
+    const validateErrors = validate(state.values);
 
     if (Object.keys(validateErrors).length !== 0) {
       dispatch({type: SET_ERRORS, payload: validateErrors});
     } else {
-      errors && dispatch({type: SET_ERRORS, payload: {}});
+      state.errors && dispatch({type: SET_ERRORS, payload: {}});
 
-      onSubmit(values);
+      onSubmit(state.values);
     }
   };
 
@@ -93,9 +91,7 @@ const useForm = ({initialValues, onSubmit, validate}) => {
   };
 
   return {
-    values,
-    touchedValues,
-    errors,
+    ...state,
     handleChange,
     handleSubmit,
     handleBlur,

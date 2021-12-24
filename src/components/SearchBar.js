@@ -61,8 +61,6 @@ const SearchBar = () => {
     },
   });
 
-  const {hasOpened, isOpen, isLoading, filteredUsers} = state;
-
   const inputRef = useRef(null);
 
   const searchHistoryFakeCheckboxRef = useRef(null);
@@ -91,23 +89,23 @@ const SearchBar = () => {
   });
 
   const resizeHandler = useCallback(() => {
-    if (isOpen) {
+    if (state.isOpen) {
       dispatch({type: SET_IS_OPEN, isOpen: false});
     }
-  }, [isOpen]);
+  }, [state.isOpen]);
 
   useEventListener({
     eventName: 'resize',
     handler: resizeHandler,
   });
 
-  const showHeader = !values.query && !isLoading;
+  const showHeader = !values.query && !state.isLoading;
 
-  const searchItemArr = values.query ? filteredUsers : searchHistory;
+  const searchItemArr = values.query ? state.filteredUsers : searchHistory;
 
   const hasItems = searchItemArr.length > 0;
 
-  const shouldCenterChild = isLoading || !hasItems;
+  const shouldCenterChild = state.isLoading || !hasItems;
 
   const clearAllHandler = () => {
     setSearchHistory([]);
@@ -120,7 +118,7 @@ const SearchBar = () => {
   const focusInputHandler = () => {
     searchHistoryFakeCheckboxRef.current.checked = true;
 
-    if (hasOpened) {
+    if (state.hasOpened) {
       dispatch({type: SET_IS_OPEN, payload: true});
     } else {
       dispatch({type: OPEN_FIRST_TIME});
@@ -193,13 +191,13 @@ const SearchBar = () => {
       <FakeCheckbox
         ref={searchHistoryFakeCheckboxRef}
         id="checkbox_search_history"
-        value={isOpen}
+        value={state.isOpen}
         onChange={isOpenHandler}
       />
       <OverlayLabel htmlFor="checkbox_search_history" />
-      {isOpen && (
+      {state.isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
-          {isLoading ? (
+          {state.isLoading ? (
             <SearchHistorySpinner />
           ) : !hasItems ? (
             <NoResultsText>

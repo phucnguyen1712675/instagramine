@@ -50,8 +50,6 @@ const Post = ({post}) => {
     isSaved: isSavedPost(post.id),
   });
 
-  const {likeAmount, isLiked, isSaved} = state;
-
   const getDiffDays = (date1, date2 = Date.now()) => {
     const diffTime = Math.abs(date2 - date1);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -74,11 +72,11 @@ const Post = ({post}) => {
   const formattedPostDate = formatPostDate(post.date);
 
   const likeButtonHandler = () => {
-    dispatch({type: !isLiked ? LIKE_POST : UNLIKE_POST});
+    dispatch({type: !state.isLiked ? LIKE_POST : UNLIKE_POST});
   };
 
   const savePostHandler = () => {
-    if (isSaved) {
+    if (state.isSaved) {
       unsavePost(post.id);
     } else {
       savePost(post);
@@ -129,7 +127,7 @@ const Post = ({post}) => {
             <LikedButton
               type="text"
               onClick={likeButtonHandler}
-              $isLiked={isLiked}
+              $isLiked={state.isLiked}
             >
               <HeartIcon />
             </LikedButton>
@@ -142,7 +140,7 @@ const Post = ({post}) => {
             <SavedButton
               type="text"
               onClick={savePostHandler}
-              $isSaved={isSaved}
+              $isSaved={state.isSaved}
             >
               <SavedIcon />
             </SavedButton>
@@ -155,7 +153,7 @@ const Post = ({post}) => {
               </PostLikedUsersHighlight>
               <span> and </span>
               <PostLikedUsersHighlight href={post.likedUsersLink}>
-                {likeAmount} others
+                {state.likeAmount} others
               </PostLikedUsersHighlight>
             </PostLikedUsersStatement>
             <PostLikedUsersAvatarGroup href={post.likedUsersLink}>

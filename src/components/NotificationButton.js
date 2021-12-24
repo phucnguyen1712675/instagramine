@@ -46,13 +46,11 @@ const NotificationButton = () => {
 
   const isNotificationPopupScreen = useOnScreen({ref: notificationPopupRef});
 
-  const {followRequests, isLoading, showRequests, checked} = state;
-
-  const followRequestsLength = followRequests.length;
+  const followRequestsLength = state.followRequests.length;
 
   const hasNotifications = followRequestsLength > 0;
 
-  const shouldCenterChild = isLoading || !hasNotifications;
+  const shouldCenterChild = state.isLoading || !hasNotifications;
 
   useEffect(() => {
     if (isNotificationPopupScreen) {
@@ -68,10 +66,10 @@ const NotificationButton = () => {
   }, [isNotificationPopupScreen]);
 
   useEffect(() => {
-    if (checked) {
+    if (state.checked) {
       tooltipRef.current.setShowState(false);
     }
-  }, [checked]);
+  }, [state.checked]);
 
   const checkHandler = (e) => {
     dispatch({type: SET_CHECKED, payload: e.target.checked});
@@ -85,7 +83,7 @@ const NotificationButton = () => {
   const confirmRequest = (userId) => {};
 
   const removeRequest = (userId) => {
-    const newFollowRequests = followRequests.filter(
+    const newFollowRequests = state.followRequests.filter(
       (user) => user.id !== userId
     );
     dispatch({type: SET_FOLLOW_REQUESTS, payload: newFollowRequests});
@@ -94,7 +92,7 @@ const NotificationButton = () => {
   return (
     <StyledNotificationButton
       ref={tooltipRef}
-      trigger={checked ? 'none' : 'hover'}
+      trigger={state.checked ? 'none' : 'hover'}
       content="Notifications"
       position="left"
     >
@@ -107,20 +105,20 @@ const NotificationButton = () => {
         ref={notificationPopupRef}
         $shouldCenterChild={shouldCenterChild}
       >
-        {isLoading ? (
+        {state.isLoading ? (
           <NotificationMenuSpinner />
         ) : !hasNotifications ? (
           <NoNotificationsText>No notifications</NoNotificationsText>
         ) : (
           <NotificationMenu>
-            {!showRequests && hasNotifications ? (
+            {!state.showRequests && hasNotifications ? (
               <AllRequestsItem onClick={seeRequestsHandler}>
                 <AllRequestsItemContent
                   topTextAsHeading
                   avatarComponent={
                     followRequestsLength > 1 ? (
                       <NotificationMenuItemAvatarGroup>
-                        {followRequests.slice(0, 2).map((user, index) => (
+                        {state.followRequests.slice(0, 2).map((user, index) => (
                           <NotificationMenuItemAvatarGroupWrapper key={index}>
                             <img
                               src={user.avatar}
@@ -133,7 +131,7 @@ const NotificationButton = () => {
                     ) : (
                       <NotificationMenuItemAvatarWrapper>
                         <img
-                          src={followRequests[0].avatar}
+                          src={state.followRequests[0].avatar}
                           alt=""
                           onError={onErrorMedia}
                         />
@@ -143,7 +141,7 @@ const NotificationButton = () => {
                   topText="Follow Requests"
                   bottomTextComponent={
                     <NotificationMenuItemBottomText>
-                      {followRequests[0].username} and{' '}
+                      {state.followRequests[0].username} and{' '}
                       {followRequestsLength - 1} others
                     </NotificationMenuItemBottomText>
                   }
@@ -156,7 +154,7 @@ const NotificationButton = () => {
                 />
               </AllRequestsItem>
             ) : (
-              followRequests.map((user) => (
+              state.followRequests.map((user) => (
                 <RequestItem key={user.id}>
                   <RequestItemContent
                     avatarComponent={

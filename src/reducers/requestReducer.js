@@ -1,4 +1,8 @@
-import {SET_IS_LOADING, ON_ERROR} from '../actions/requestActions';
+import {
+  SET_IS_LOADING,
+  ON_SUCCESS,
+  ON_ERROR,
+} from '../actions/requestActions';
 
 export default (state, action) => {
   switch (action.type) {
@@ -6,6 +10,12 @@ export default (state, action) => {
       return {
         ...state,
         isLoading: action.payload,
+      };
+    case ON_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
       };
     case ON_ERROR:
       return {

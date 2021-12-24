@@ -25,14 +25,6 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
     isFollowButtonLoading: false,
   });
 
-  const {
-    isConfirmed,
-    isFollowed,
-    isConfirmButtonLoading,
-    isDeleteButtonLoading,
-    isFollowButtonLoading,
-  } = state;
-
   const confirmRequestHandler = () => {
     dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
 
@@ -67,22 +59,22 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
 
   return (
     <StyledRequestItemButtonGroup>
-      {!isConfirmed ? (
+      {!state.isConfirmed ? (
         <>
-          <DisabledButtonWrapper $disabled={isDeleteButtonLoading}>
+          <DisabledButtonWrapper $disabled={state.isDeleteButtonLoading}>
             <RequestItemConfirmButton
               type="primary"
-              loading={isConfirmButtonLoading}
-              disabled={isDeleteButtonLoading}
+              loading={state.isConfirmButtonLoading}
+              disabled={state.isDeleteButtonLoading}
               onClick={confirmRequestHandler}
             >
               Confirm
             </RequestItemConfirmButton>
           </DisabledButtonWrapper>
-          <DisabledButtonWrapper $disabled={isConfirmButtonLoading}>
+          <DisabledButtonWrapper $disabled={state.isConfirmButtonLoading}>
             <RequestItemDeleteButton
-              loading={isDeleteButtonLoading}
-              disabled={isConfirmButtonLoading}
+              loading={state.isDeleteButtonLoading}
+              disabled={state.isConfirmButtonLoading}
               onClick={removeRequestHandler}
             >
               Delete
@@ -90,15 +82,15 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
           </DisabledButtonWrapper>
         </>
       ) : (
-        <DisabledButtonWrapper $disabled={isFollowButtonLoading}>
+        <DisabledButtonWrapper $disabled={state.isFollowButtonLoading}>
           <RequestItemFollowButton
-            type={!isFollowed ? 'primary' : 'default'}
-            loading={isFollowButtonLoading}
-            disabled={isFollowButtonLoading}
+            type={!state.isFollowed ? 'primary' : 'default'}
+            loading={state.isFollowButtonLoading}
+            disabled={state.isFollowButtonLoading}
             onClick={followUserHandler}
-            $isFollowed={isFollowed}
+            $isFollowed={state.isFollowed}
           >
-            {isFollowed ? 'Following' : 'Follow'}
+            {state.isFollowed ? 'Following' : 'Follow'}
           </RequestItemFollowButton>
         </DisabledButtonWrapper>
       )}
