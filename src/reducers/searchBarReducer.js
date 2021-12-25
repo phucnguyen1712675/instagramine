@@ -20,6 +20,7 @@ export default (state, action) => {
     case SET_FILTERED_USERS:
       return {
         ...state,
+        isLoading: false,
         filteredUsers: action.payload,
       };
     case OPEN_FIRST_TIME:

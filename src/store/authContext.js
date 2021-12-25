@@ -7,11 +7,23 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import {setDoc, doc, getDoc} from 'firebase/firestore';
+import {
+  setDoc,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  limit,
+} from 'firebase/firestore';
 import {useLocalStorage, useMounted} from '../hooks';
 import {auth, db} from '../firebase-config';
 import {requestReducer} from '../reducers';
+import {MAX_STORIES_NUMBER} from '../constants';
 import {SET_IS_LOADING, ON_SUCCESS, ON_ERROR} from '../actions/requestActions';
+import {getCollectionData} from '../utils/firestore';
 
 const AuthContext = createContext({
   isLoading: false,
@@ -86,29 +98,50 @@ const AuthContextProvider = ({children}) => {
         newUser.password
       );
 
-      const newUserDocRef = doc(db, 'users', user.uid);
-
-      const newUserDocSnap = await getDoc(newUserDocRef);
+      const newUserDocSnap = await getDoc(doc(db, 'users', user.uid));
 
       if (!newUserDocSnap.exists()) {
-        dispatch({type: ON_ERROR, payload: 'User not found'});
+        if (mounted.current) {
+          dispatch({type: ON_ERROR, payload: 'User not found'});
+        }
 
         return false;
       }
 
       const newUserData = newUserDocSnap.data();
 
+      const userStoryCateJunctions = await getDocs(
+        query(
+          collection(db, 'junction_user_story_category'),
+          where('uid', '==', newUserDocSnap.id),
+          orderBy('views', 'desc'),
+          limit(MAX_STORIES_NUMBER)
+        )
+      );
+
+      const storyCategoriesSnapshot = await Promise.all(
+        userStoryCateJunctions.docs
+          .filter((document) => document.exists())
+          .map((document) =>
+            getDoc(doc(db, 'story_categories', document.data().storyCategoryId))
+          )
+      );
+
+      const userStoryCategories = getCollectionData(storyCategoriesSnapshot);
+
       if (mounted.current) {
         dispatch({type: ON_SUCCESS});
 
         setUser({
           ...newUserData,
-          uid: user.uid,
+          uid: newUserDocSnap.id,
+          storyCategories: userStoryCategories,
         });
       }
 
       return true;
     } catch (error) {
+      console.log(error);
       const errorMessage = findLoginError(error.code);
 
       dispatch({type: ON_ERROR, payload: errorMessage});
@@ -131,6 +164,17 @@ const AuthContextProvider = ({children}) => {
         email: newUser.email,
         name: newUser.name,
         username: newUser.username,
+        // Fake data
+        avatar:
+          'https://user-images.githubusercontent.com/47315479/81145216-7fbd8700-8f7e-11ea-9d49-bd5fb4a888f1.png',
+        profile: 'https://www.instagram.com/phuc7320/',
+        job: 'Wildlife Photographer',
+        numberOfPosts: 98,
+        numberOfFollowers: 3500,
+        numberOfFollowingUsers: 900,
+        bio: 'My specialty lies in creating colorful creations, amazing designs, and high-quality website artworks that have the potential to capture the attention while making a very positive first impression on the visitor visitor visitor visitor visitor',
+        hasStory: false,
+        socialLinks: ['https://dribbble.com/nkchaudhary01'],
       };
 
       await setDoc(doc(db, 'users', user.uid), newUserData);

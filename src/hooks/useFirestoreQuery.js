@@ -9,16 +9,7 @@ import {
   SUCCESS,
   ERROR,
 } from '../actions/useFirestoreQueryActions';
-
-// Get doc data and merge doc.id
-function getDocData(doc) {
-  return doc.exists() ? {id: doc.id, ...doc.data()} : null;
-}
-
-// Get array of doc data from collection
-function getCollectionData(collection) {
-  return collection.docs.map(getDocData);
-}
+import {getDocData, getCollectionData} from '../utils/firestore';
 
 const useFirestoreQuery = ({query}) => {
   // Our initial state
@@ -63,7 +54,7 @@ const useFirestoreQuery = ({query}) => {
       (snapshot) => {
         // Get data for collection or doc
         const data = snapshot.docs
-          ? getCollectionData(snapshot)
+          ? getCollectionData(snapshot.docs)
           : getDocData(snapshot);
 
         dispatch({type: SUCCESS, payload: data});

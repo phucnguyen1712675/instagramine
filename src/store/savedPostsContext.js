@@ -10,6 +10,7 @@ import {
   UNSAVE_POST,
   SET_SAVED_POSTS_AFTER_FETCHING,
 } from '../actions/savedPostsContextActions';
+import {getCollectionData} from '../utils/firestore';
 
 const SavedPostsContext = createContext({
   isLoading: false,
@@ -38,24 +39,17 @@ const SavedPostsContextProvider = ({children}) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      const savedPostsCollectionRef = collection(
-        db,
-        `users/${auth.user.uid}/saved-posts`
+      const savedPostsSnapshot = await getDocs(
+        collection(db, `users/${auth.user.uid}/saved-posts`)
       );
 
-      const {docs} = await getDocs(savedPostsCollectionRef);
+      const savedPosts = getCollectionData(savedPostsSnapshot.docs);
 
       if (mounted.current) {
-        if (docs.length > 0) {
-          dispatch({
-            type: SET_SAVED_POSTS_AFTER_FETCHING,
-            payload: docs.map((doc) => ({
-              ...doc.data(),
-            })),
-          });
-        } else {
-          dispatch({type: SET_IS_LOADING, payload: false});
-        }
+        dispatch({
+          type: SET_SAVED_POSTS_AFTER_FETCHING,
+          payload: savedPosts,
+        });
       }
     } catch (error) {
       alert(`Error fetching saved posts: ${error}`);

@@ -1,12 +1,13 @@
 import {useReducer, useRef, useCallback, useEffect} from 'react';
-// eslint-disable-next-line no-unused-vars
-import {collection, getDocs} from 'firebase/firestore';
+import {collection, getDocs, query, where} from 'firebase/firestore';
 import HideLabel from './HideLabel';
-import {FakeCheckbox, OverlayLabel} from './styled/Lib';
+import {FakeCheckbox} from './styled/Lib';
 import {
   StyledSearchBar,
   SearchBarInput,
+  SearchBarSearchLabel,
   SearchBarInputSearchIcon,
+  SearchHistoryOverlayLabel,
   SearchHistory,
   SearchHistoryInner,
   SearchHistorySpinner,
@@ -42,6 +43,7 @@ import {
   SET_FILTERED_USERS,
   OPEN_FIRST_TIME,
 } from '../actions/searchBarActions';
+import {getCollectionData} from '../utils/firestore';
 
 const move = (array, from, to) => {
   if (to === from) return array;
@@ -58,11 +60,24 @@ const move = (array, from, to) => {
   return array;
 };
 
+const userConverter = (user) => {
+  return {
+    id: user.id,
+    username: user.username,
+    name: user.name,
+    avatar: user.avatar,
+    profile: user.profile,
+    hasStory: user.hasStory,
+    hasStoryBeenSeen: user.hasStoryBeenSeen,
+    isFollowing: user.isFollowing,
+  };
+};
+
 const SearchBar = () => {
   const [state, dispatch] = useReducer(searchBarReducer, {
     hasOpened: false,
     isOpen: false,
-    isLoading: true,
+    isLoading: false,
     filteredUsers: [],
   });
 
@@ -90,7 +105,6 @@ const SearchBar = () => {
 
   const searchHistoryFakeCheckboxRef = useRef(null);
 
-  // eslint-disable-next-line no-unused-vars
   const auth = useAuth();
 
   const mounted = useMounted();
@@ -104,21 +118,55 @@ const SearchBar = () => {
   });
 
   useEffect(() => {
-    if (status !== 'loading' && status === 'error') {
+    if (status === 'error') {
       alert(error.message);
     }
   }, [status, error]);
 
   useEffect(() => {
-    if (values.query) {
-      const filteredUsers = users.filter((user) => {
-        const username = user.username.toLowerCase();
-        return username.includes(values.query);
+    const getFilteredUsers = async () => {
+      const filteredUsers = users
+        .filter((user) => {
+          const username = user.username.toLowerCase();
+          return username.includes(values.query);
+        })
+        .slice(0, 10);
+
+      dispatch({type: SET_IS_LOADING, payload: true});
+
+      const userFollowingUserJunctions = await getDocs(
+        query(
+          collection(db, 'junction_user_following_user'),
+          where('uid', '==', auth.user.uid)
+        )
+      );
+
+      const followingUserJunctions = getCollectionData(
+        userFollowingUserJunctions.docs
+      );
+
+      const followingUserIds = followingUserJunctions.map(
+        (junction) => junction.followingUserId
+      );
+
+      const filteredUsersToShow = filteredUsers.map((user) => {
+        const convertedUser = userConverter(user);
+
+        return {
+          ...convertedUser,
+          isFollowing: followingUserIds.includes(user.id),
+        };
       });
 
-      dispatch({type: SET_FILTERED_USERS, payload: filteredUsers});
+      if (mounted.current) {
+        dispatch({type: SET_FILTERED_USERS, payload: filteredUsersToShow});
+      }
+    };
+
+    if (values.query) {
+      getFilteredUsers();
     }
-  }, [values.query, users]);
+  }, [values.query, users, auth.user.uid, mounted]);
 
   const onSearch = useCallback(() => {
     if (!values.query) {
@@ -135,6 +183,8 @@ const SearchBar = () => {
 
   const resizeHandler = useCallback(() => {
     if (state.isOpen) {
+      searchHistoryFakeCheckboxRef.current.checked = false;
+      inputRef.current.blur();
       dispatch({type: SET_IS_OPEN, isOpen: false});
     }
   }, [state.isOpen]);
@@ -144,13 +194,14 @@ const SearchBar = () => {
     handler: resizeHandler,
   });
 
-  const showHeader = !values.query && !state.isLoading;
+  const showHeader = !values.query && !state.isLoading && status !== 'loading';
 
   const searchItemArr = values.query ? state.filteredUsers : searchHistory;
 
   const hasItems = searchItemArr?.length > 0;
 
-  const shouldCenterChild = state.isLoading || !hasItems;
+  const shouldCenterChild =
+    state.isLoading || status === 'loading' || !hasItems;
 
   const hasSearchHistory = () => searchHistory?.length > 0;
 
@@ -169,50 +220,43 @@ const SearchBar = () => {
       dispatch({type: SET_IS_OPEN, payload: true});
     } else {
       dispatch({type: OPEN_FIRST_TIME});
-
-      setTimeout(() => {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }, 1000);
     }
   };
 
   const clickItemHandler = (e, user) => {
     e.preventDefault();
 
-    if (hasSearchHistory()) {
+    const hasHistory = hasSearchHistory();
+
+    const unshiftUser = (user) => {
+      const newSearchItem = userConverter(user);
+
+      setSearchHistory((prevState) => {
+        if (!prevState) {
+          return [newSearchItem];
+        } else {
+          return [newSearchItem, ...prevState];
+        }
+      });
+    };
+
+    if (hasHistory && values.query) {
       const foundIndex = searchHistory.findIndex((u) => u.id === user.id);
 
-      if (foundIndex !== -1) {
-        // Not the first item
-        if (foundIndex !== 0) {
-          if (mounted.current) {
-            setSearchHistory((prevState) => move(prevState, foundIndex, 0));
-          }
-        }
-      } else if (values.query) {
-        const newSearchItem = {
-          id: user.id,
-          username: user.username,
-          name: user.name,
-          avatar: user.avatar,
-          profile: user.profile,
-          isFollowed: user.isFollowed,
-          hasStory: user.hasStory,
-          hasStoryBeenSeen: user.hasStoryBeenSeen,
-        };
-
-        if (mounted.current) {
-          // Add new item to the beginning of the array
-          setSearchHistory((prevState) => [newSearchItem, ...prevState]);
-        }
+      // Not the first item
+      if (![-1, 0].includes(foundIndex)) {
+        setSearchHistory((prevState) => move(prevState, foundIndex, 0));
+      } else {
+        unshiftUser(user);
       }
+    } else if (values.query) {
+      unshiftUser(user);
     }
     // Clear the query
     reset();
   };
 
-  const removeItemHandler = (e, id) => {
-    e.preventDefault();
+  const removeItemHandler = (id) => {
     setSearchHistory((prevState) => prevState.filter((user) => user.id !== id));
   };
 
@@ -228,17 +272,19 @@ const SearchBar = () => {
         onChange={handleChange}
         onFocus={focusInputHandler}
       />
-      <SearchBarInputSearchIcon />
+      <SearchBarSearchLabel htmlFor="search_input">
+        <SearchBarInputSearchIcon />
+      </SearchBarSearchLabel>
       <FakeCheckbox
         ref={searchHistoryFakeCheckboxRef}
         id="checkbox_search_history"
         value={state.isOpen}
         onChange={isOpenHandler}
       />
-      <OverlayLabel htmlFor="checkbox_search_history" />
+      <SearchHistoryOverlayLabel htmlFor="checkbox_search_history" />
       {state.isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
-          {state.isLoading && status === 'loading' ? (
+          {state.isLoading || status === 'loading' ? (
             <SearchHistorySpinner />
           ) : !hasItems ? (
             <NoResultsText>
@@ -278,7 +324,7 @@ const SearchBar = () => {
                             <SearchHistoryUsernameText>
                               {user.name}
                             </SearchHistoryUsernameText>
-                            {user.isFollowed && (
+                            {user.isFollowing && (
                               <>
                                 <SearchHistoryUserAdditionalInfoDot />
                                 <SearchHistoryFollowingText>
@@ -292,10 +338,10 @@ const SearchBar = () => {
                           !values.query ? (
                             <RemoveItemButton
                               type="text"
-                              onClick={(e) => removeItemHandler(e, user.id)}
+                              onClick={() => removeItemHandler(user.id)}
                               disabledHover
                             >
-                              <RemoveHistoryItemButtonIcon />
+                              -<RemoveHistoryItemButtonIcon />
                             </RemoveItemButton>
                           ) : null
                         }

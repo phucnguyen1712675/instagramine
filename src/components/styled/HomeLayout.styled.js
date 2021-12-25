@@ -59,6 +59,7 @@ export const Sidebar = styled.aside`
   }
 
   @media ${DEVICES.laptop} {
+		z-index: 1;
     transform: unset;
     grid-area: sidebar;
     position: relative;

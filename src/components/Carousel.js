@@ -22,6 +22,7 @@ const Carousel = ({media}) => {
   ));
 
   const mediaLength = media.length;
+
   const carouselIndicators = [];
 
   for (let i = 0; i < mediaLength; i++) {

@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components';
 import {hideScrollBarScrolling} from './Mixins';
-import {SearchInput, Dot, MenuItem} from './Lib';
+import {SearchInput, Dot, MenuItem, OverlayLabel} from './Lib';
 import {
   TextContentWrapper,
   TextContent,
@@ -49,23 +49,34 @@ export const SearchBarInput = styled(SearchInput)`
   }
 `;
 
-export const SearchBarInputSearchIcon = styled(SearchIcon)`
+export const SearchBarSearchLabel = styled.label`
   position: absolute;
   top: 0;
   left: 18px;
   height: 100%;
+	display: flex;
+	align-items: center;
   z-index: 2;
-  color: ${({theme}) => theme.colors.blueAlpha};
-  font-size: 1.8rem;
 
   ${SearchInput}:focus ~ & {
     display: none;
   }
 `;
 
+export const SearchBarInputSearchIcon = styled(SearchIcon)`
+  color: ${({theme}) => theme.colors.blueAlpha};
+  font-size: 1.8rem;
+`;
+
 const flexCenter = css`
   justify-content: center;
   align-items: center;
+`;
+
+export const SearchHistoryOverlayLabel = styled(OverlayLabel)`
+  @media ${DEVICES.laptop} {
+    z-index: 2;
+  }
 `;
 
 export const SearchHistory = styled.div`
@@ -98,6 +109,10 @@ export const SearchHistory = styled.div`
     left: unset;
     top: calc(100% + var(--space));
     width: calc(var(--width-search-bar) + var(--width-search-history-diff));
+  }
+
+  @media ${DEVICES.laptop} {
+    z-index: 2;
   }
 
   @media ${DEVICES.laptopL} {

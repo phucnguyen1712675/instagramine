@@ -36,78 +36,28 @@ import {MAX_STORIES_NUMBER} from '../constants';
 import {onErrorMedia} from '../utils/media';
 import {useAuth} from '../hooks';
 
+const kFormatter = (num) =>
+  Math.abs(num) > 999
+    ? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + 'K'
+    : Math.sign(num) * Math.abs(num);
+
+const socialLinkFormatter = (socialLink) =>
+  socialLink.replace('https://', 'www.');
+
 const UserMenu = () => {
   const auth = useAuth();
 
-  const kFormatter = (num) =>
-    Math.abs(num) > 999
-      ? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + 'K'
-      : Math.sign(num) * Math.abs(num);
-
-  const socialLinkFormatter = (socialLink) =>
-    socialLink.replace('https://', 'www.');
-
-  const socialLinksContent = ['https://dribbble.com/nkchaudhary01']
-    .slice(0, 3)
+  const socialLinksContent = auth.user.socialLinks
+    ?.slice(0, 3)
     .map((link, index) => (
       <BioContentSocialLink key={index} href={link}>
         {socialLinkFormatter(link)}
       </BioContentSocialLink>
     ));
 
-  const playStoriesButton = (
-    <StoriesContentStoryItem key={MAX_STORIES_NUMBER}>
-      <PlayButton
-        size="large"
-        shape="circle"
-        icon={<PlayIcon />}
-        disabledHover
-      />
-      <StoriesContentStoryItemName>Play All</StoriesContentStoryItemName>
-    </StoriesContentStoryItem>
-  );
-
-  const storiesContent = [
-    {
-      id: 0,
-      name: 'Featured',
-      thumbnail:
-        'https://images.unsplash.com/photo-1620834073708-477e0bbc5a8e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
-    },
-    {
-      id: 1,
-      name: 'India',
-      thumbnail:
-        'https://images.unsplash.com/photo-1532664189809-02133fee698d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=435&q=80',
-    },
-    {
-      id: 2,
-      name: 'Paris',
-      thumbnail:
-        'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1173&q=80',
-    },
-    {
-      id: 3,
-      name: 'Food',
-      thumbnail:
-        'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=387&q=80',
-    },
-    {
-      id: 4,
-      name: 'Hooman',
-      thumbnail:
-        'https://images.unsplash.com/photo-1611721489273-c37c29e70814?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1964&q=80',
-    },
-    {
-      id: 5,
-      name: 'Travel',
-      thumbnail:
-        'https://images.unsplash.com/photo-1503220317375-aaad61436b1b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
-    },
-  ]
-    .slice(0, MAX_STORIES_NUMBER)
-    .map((story, index) => (
-      <StoriesContentStoryItem key={index}>
+  const storiesContent = auth.user.storyCategories
+    ?.map((story) => (
+      <StoriesContentStoryItem key={story.id}>
         <StoriesContentStoryItemInner>
           <StoriesContentCircleImgWrapper>
             <StoriesContentCircleImg
@@ -122,21 +72,31 @@ const UserMenu = () => {
         </StoriesContentStoryItemInner>
       </StoriesContentStoryItem>
     ))
-    .concat(playStoriesButton);
+    .concat(
+      <StoriesContentStoryItem key={MAX_STORIES_NUMBER}>
+        <PlayButton
+          size="large"
+          shape="circle"
+          icon={<PlayIcon />}
+          disabledHover
+        />
+        <StoriesContentStoryItemName>Play All</StoriesContentStoryItemName>
+      </StoriesContentStoryItem>
+    );
 
   return (
     <StyledUserMenu>
       <UserMenuTopContent>
         <ThumbnailContentAvatar
-          url="https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=387&q=80"
-          hasStory
-          hasStoryBeenSeen
+          url={auth.user.avatar}
+          hasStory={auth.user.hasStory}
+          hasStoryBeenSeen={auth.user.hasStoryBeenSeen}
         />
         <ThumbnailContentUserName>
           {auth.user.username}
         </ThumbnailContentUserName>
         <ThumbnailContentJobDescription>
-          Wildlife Photographer
+          {auth.user.job}
         </ThumbnailContentJobDescription>
         <EditButtonWrapper content="Edit profile" position="left">
           <EditButton type="primary" size="large">
@@ -147,20 +107,29 @@ const UserMenu = () => {
       <UserMenuMiddleContent>
         <StatisticalContent>
           <StatisticalContentInner>
-            <StatisticItem>
-              <StatisticNumber>{kFormatter(98)}</StatisticNumber>
-              <StatisticName>Posts</StatisticName>
-            </StatisticItem>
-            <StatisticalContentInnerDot />
-            <StatisticItem>
-              <StatisticNumber>{kFormatter(3500)}</StatisticNumber>
-              <StatisticName>Followers</StatisticName>
-            </StatisticItem>
-            <StatisticalContentInnerDot />
-            <StatisticItem>
-              <StatisticNumber>{kFormatter(900)}</StatisticNumber>
-              <StatisticName>Followings</StatisticName>
-            </StatisticItem>
+            {[
+              auth.user.numberOfPosts,
+              auth.user.numberOfFollowers,
+              auth.user.numberOfFollowingUsers,
+            ].map((field, index) => {
+              if (index === 2) {
+                return (
+                  <StatisticItem key={index}>
+                    <StatisticNumber>{kFormatter(field)}</StatisticNumber>
+                    <StatisticName>Posts</StatisticName>
+                  </StatisticItem>
+                );
+              }
+              return (
+                <React.Fragment key={index}>
+                  <StatisticItem>
+                    <StatisticNumber>{kFormatter(field)}</StatisticNumber>
+                    <StatisticName>Posts</StatisticName>
+                  </StatisticItem>
+                  <StatisticalContentInnerDot />
+                </React.Fragment>
+              );
+            })}
           </StatisticalContentInner>
         </StatisticalContent>
         <BioContentContainer>
@@ -171,10 +140,7 @@ const UserMenu = () => {
             showLessText="(Show less)"
             readMoreLink="https://www.instagram.com/phuc7320/"
           >
-            My specialty lies in creating colorful creations, amazing designs,
-            and high-quality website artworks that have the potential to capture
-            the attention while making a very positive first impression on the
-            visitor visitor visitor visitor visitor
+            {auth.user.bio}
           </BioContent>
           <BioContentSocialLinks>{socialLinksContent}</BioContentSocialLinks>
         </BioContentContainer>
