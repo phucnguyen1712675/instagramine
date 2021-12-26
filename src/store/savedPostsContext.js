@@ -1,6 +1,15 @@
 import {createContext, useReducer, useCallback} from 'react';
 import PropTypes from 'prop-types';
-import {collection, getDocs} from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  FieldValue,
+} from 'firebase/firestore';
 import {db} from '../firebase-config';
 import {useAuth, useMounted} from '../hooks';
 import {savedPostsContextReducer} from '../reducers';
@@ -39,29 +48,61 @@ const SavedPostsContextProvider = ({children}) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      const savedPostsSnapshot = await getDocs(
-        collection(db, `users/${auth.user.uid}/saved-posts`)
+      const userSavedPostJunction = await getDocs(
+        query(
+          collection(db, 'junction_user_saved_post'),
+          where('uid', '==', auth.user.uid)
+        )
       );
 
-      const savedPosts = getCollectionData(savedPostsSnapshot.docs);
+      if (userSavedPostJunction.docs > 0) {
+        const savedPosts = getCollectionData(userSavedPostJunction.docs);
 
-      if (mounted.current) {
-        dispatch({
-          type: SET_SAVED_POSTS_AFTER_FETCHING,
-          payload: savedPosts,
-        });
+        if (mounted.current) {
+          dispatch({
+            type: SET_SAVED_POSTS_AFTER_FETCHING,
+            payload: savedPosts,
+          });
+        }
       }
     } catch (error) {
       alert(`Error fetching saved posts: ${error}`);
     }
   }, [auth.user.uid, mounted]);
 
-  const savePost = (post) => {
-    dispatch({type: SAVE_POST, payload: post});
+  const savePost = async (post) => {
+    try {
+      const itemToAdd = {
+        uid: auth.user.uid,
+        savedPostId: post.id,
+        createdAt: FieldValue.serverTimestamp(),
+      };
+
+      await setDoc(
+        doc(db, `junction_user_saved_post/${auth.user.uid}_${post.id}`),
+        itemToAdd
+      );
+
+      if (mounted.current) {
+        dispatch({type: SAVE_POST, payload: post});
+      }
+    } catch (error) {
+      alert(`Error saving post: ${error}`);
+    }
   };
 
-  const unsavePost = (id) => {
-    dispatch({type: UNSAVE_POST, payload: id});
+  const unsavePost = async (id) => {
+    try {
+      await deleteDoc(
+        doc(db, `junction_user_saved_post/${auth.user.uid}_${id}`)
+      );
+
+      if (mounted.current) {
+        dispatch({type: UNSAVE_POST, payload: id});
+      }
+    } catch (error) {
+      alert(`Error un-saving post: ${error}`);
+    }
   };
 
   const hasSavedPosts = () => state.savedPosts?.length > 0;

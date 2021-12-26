@@ -1,5 +1,14 @@
 import {useReducer, useRef, useCallback, useEffect} from 'react';
-import {collection, getDocs, query, where} from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  query,
+  setDoc,
+  where,
+  doc,
+  FieldValue,
+  deleteDoc,
+} from 'firebase/firestore';
 import HideLabel from './HideLabel';
 import {FakeCheckbox} from './styled/Lib';
 import {
@@ -70,6 +79,7 @@ const userConverter = (user) => {
     hasStory: user.hasStory,
     hasStoryBeenSeen: user.hasStoryBeenSeen,
     isFollowing: user.isFollowing,
+    createdAt: user.createdAt,
   };
 };
 
@@ -123,6 +133,37 @@ const SearchBar = () => {
     }
   }, [status, error]);
 
+  const getUserSearchHistory = useCallback(async () => {
+    try {
+      const searchHistorySnapshot = await getDocs(
+        collection(db, `users/${auth.user.uid}/search-history`)
+      );
+
+      return getCollectionData(searchHistorySnapshot.docs);
+    } catch (error) {
+      alert(`Error fetching search history: ${error}`);
+    }
+  }, [auth.user.uid]);
+
+  useEffect(() => {
+    const getSearchHistory = async () => {
+      dispatch({type: SET_IS_LOADING, payload: true});
+
+      const searchHistoryData = await getUserSearchHistory();
+
+      if (mounted.current) {
+        if (searchHistoryData.length > 0) {
+          setSearchHistory(searchHistoryData);
+        }
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }
+    };
+
+    if (state.hasOpened) {
+      getSearchHistory();
+    }
+  }, [state.hasOpened, mounted, setSearchHistory, getUserSearchHistory]);
+
   useEffect(() => {
     const getFilteredUsers = async () => {
       const filteredUsers = users
@@ -141,22 +182,35 @@ const SearchBar = () => {
         )
       );
 
-      const followingUserJunctions = getCollectionData(
-        userFollowingUserJunctions.docs
-      );
+      let filteredUsersToShow = null;
 
-      const followingUserIds = followingUserJunctions.map(
-        (junction) => junction.followingUserId
-      );
+      if (userFollowingUserJunctions.docs > 0) {
+        const followingUserJunctions = getCollectionData(
+          userFollowingUserJunctions.docs
+        );
 
-      const filteredUsersToShow = filteredUsers.map((user) => {
-        const convertedUser = userConverter(user);
+        const followingUserIds = followingUserJunctions.map(
+          (junction) => junction.followingUserId
+        );
 
-        return {
-          ...convertedUser,
-          isFollowing: followingUserIds.includes(user.id),
-        };
-      });
+        filteredUsersToShow = filteredUsers.map((user) => {
+          const convertedUser = userConverter(user);
+
+          return {
+            ...convertedUser,
+            isFollowing: followingUserIds.includes(user.id),
+          };
+        });
+      } else {
+        filteredUsersToShow = filteredUsers.map((user) => {
+          const convertedUser = userConverter(user);
+
+          return {
+            ...convertedUser,
+            isFollowing: false,
+          };
+        });
+      }
 
       if (mounted.current) {
         dispatch({type: SET_FILTERED_USERS, payload: filteredUsersToShow});
@@ -205,8 +259,18 @@ const SearchBar = () => {
 
   const hasSearchHistory = () => searchHistory?.length > 0;
 
-  const clearAllHandler = () => {
-    setSearchHistory(null);
+  const clearAllHandler = async () => {
+    const searchHistoryData = await getUserSearchHistory();
+
+    await Promise.all(
+      searchHistoryData.forEach((item) => {
+        deleteDoc(doc(db, `users/${auth.user.uid}/search-history/${item.id}`));
+      })
+    );
+
+    if (mounted.current) {
+      setSearchHistory(null);
+    }
   };
 
   const isOpenHandler = (e) => {
@@ -228,16 +292,32 @@ const SearchBar = () => {
 
     const hasHistory = hasSearchHistory();
 
-    const unshiftUser = (user) => {
-      const newSearchItem = userConverter(user);
+    const unshiftUser = async (user) => {
+      try {
+        const newSearchItem = userConverter(user);
 
-      setSearchHistory((prevState) => {
-        if (!prevState) {
-          return [newSearchItem];
-        } else {
-          return [newSearchItem, ...prevState];
+        const itemToAdd = {
+          ...newSearchItem,
+          createdAt: FieldValue.serverTimestamp(),
+        };
+
+        await setDoc(
+          doc(db, `users/${auth.user.uid}/search-history/${newSearchItem.id}`),
+          itemToAdd
+        );
+
+        if (mounted.current) {
+          setSearchHistory((prevState) => {
+            if (!prevState) {
+              return [newSearchItem];
+            } else {
+              return [newSearchItem, ...prevState];
+            }
+          });
         }
-      });
+      } catch (error) {
+        alert(`Error adding user to search history: ${error}`);
+      }
     };
 
     if (hasHistory && values.query) {
@@ -256,8 +336,18 @@ const SearchBar = () => {
     reset();
   };
 
-  const removeItemHandler = (id) => {
-    setSearchHistory((prevState) => prevState.filter((user) => user.id !== id));
+  const removeItemHandler = async (id) => {
+    try {
+      await deleteDoc(doc(db, `users/${auth.user.uid}/search-history/${id}`));
+
+      if (mounted.current) {
+        setSearchHistory((prevState) =>
+          prevState.filter((user) => user.id !== id)
+        );
+      }
+    } catch (error) {
+      alert(`Error removing user from search history: ${error}`);
+    }
   };
 
   return (

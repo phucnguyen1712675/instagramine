@@ -98,7 +98,7 @@ const AuthContextProvider = ({children}) => {
         newUser.password
       );
 
-      const newUserDocSnap = await getDoc(doc(db, 'users', user.uid));
+      const newUserDocSnap = await getDoc(doc(db, `users/${user.uid}`));
 
       if (!newUserDocSnap.exists()) {
         if (mounted.current) {
@@ -123,25 +123,37 @@ const AuthContextProvider = ({children}) => {
         userStoryCateJunctions.docs
           .filter((document) => document.exists())
           .map((document) =>
-            getDoc(doc(db, 'story_categories', document.data().storyCategoryId))
+            getDoc(
+              doc(db, `story_categories/${document.data().storyCategoryId}`)
+            )
           )
       );
 
-      const userStoryCategories = getCollectionData(storyCategoriesSnapshot);
+      let userStoryCategories = null;
+
+      if (storyCategoriesSnapshot.length > 0) {
+        userStoryCategories = getCollectionData(storyCategoriesSnapshot);
+      }
 
       if (mounted.current) {
-        dispatch({type: ON_SUCCESS});
+        if (userStoryCategories) {
+          setUser({
+            ...newUserData,
+            uid: newUserDocSnap.id,
+            storyCategories: userStoryCategories,
+          });
+        } else {
+          setUser({
+            ...newUserData,
+            uid: newUserDocSnap.id,
+          });
+        }
 
-        setUser({
-          ...newUserData,
-          uid: newUserDocSnap.id,
-          storyCategories: userStoryCategories,
-        });
+        dispatch({type: ON_SUCCESS});
       }
 
       return true;
     } catch (error) {
-      console.log(error);
       const errorMessage = findLoginError(error.code);
 
       dispatch({type: ON_ERROR, payload: errorMessage});
