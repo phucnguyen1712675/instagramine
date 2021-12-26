@@ -1,8 +1,6 @@
 import {
   SET_IS_LOADING,
-  SAVE_POST,
-  UNSAVE_POST,
-  SET_SAVED_POSTS_AFTER_FETCHING,
+  SET_SAVED_POSTS_AFTER_LOADING,
 } from '../actions/savedPostsContextActions';
 
 export default (state, action) => {
@@ -12,19 +10,7 @@ export default (state, action) => {
         ...state,
         isLoading: action.payload,
       };
-    case SAVE_POST:
-      return {
-        ...state,
-        savedPosts: [action.payload, ...state.savedPosts],
-      };
-    case UNSAVE_POST:
-      return {
-        ...state,
-        savedPosts: state.savedPosts.filter(
-          (post) => post.id !== action.payload
-        ),
-      };
-    case SET_SAVED_POSTS_AFTER_FETCHING:
+    case SET_SAVED_POSTS_AFTER_LOADING:
       return {
         ...state,
         isLoading: false,

@@ -15,9 +15,7 @@ import {useAuth, useMounted} from '../hooks';
 import {savedPostsContextReducer} from '../reducers';
 import {
   SET_IS_LOADING,
-  SAVE_POST,
-  UNSAVE_POST,
-  SET_SAVED_POSTS_AFTER_FETCHING,
+  SET_SAVED_POSTS_AFTER_LOADING,
 } from '../actions/savedPostsContextActions';
 import {getCollectionData} from '../utils/firestore';
 
@@ -60,18 +58,26 @@ const SavedPostsContextProvider = ({children}) => {
 
         if (mounted.current) {
           dispatch({
-            type: SET_SAVED_POSTS_AFTER_FETCHING,
+            type: SET_SAVED_POSTS_AFTER_LOADING,
             payload: savedPosts,
           });
         }
+      } else {
+        dispatch({type: SET_IS_LOADING, payload: false});
       }
     } catch (error) {
+      if (mounted.current) {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }
+
       alert(`Error fetching saved posts: ${error}`);
     }
   }, [auth.user.uid, mounted]);
 
   const savePost = async (post) => {
     try {
+      dispatch({type: SET_IS_LOADING, payload: true});
+
       const itemToAdd = {
         uid: auth.user.uid,
         savedPostId: post.id,
@@ -83,24 +89,46 @@ const SavedPostsContextProvider = ({children}) => {
         itemToAdd
       );
 
+      const savedPostsPayload = [post, ...state.savedPosts];
+
       if (mounted.current) {
-        dispatch({type: SAVE_POST, payload: post});
+        dispatch({
+          type: SET_SAVED_POSTS_AFTER_LOADING,
+          payload: savedPostsPayload,
+        });
       }
     } catch (error) {
+      if (mounted.current) {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }
+
       alert(`Error saving post: ${error}`);
     }
   };
 
   const unsavePost = async (id) => {
     try {
+      dispatch({type: SET_IS_LOADING, payload: true});
+
       await deleteDoc(
         doc(db, `junction_user_saved_post/${auth.user.uid}_${id}`)
       );
 
+      const savedPostsPayload = state.savedPosts.filter(
+        (post) => post.id !== id
+      );
+
       if (mounted.current) {
-        dispatch({type: UNSAVE_POST, payload: id});
+        dispatch({
+          type: SET_SAVED_POSTS_AFTER_LOADING,
+          payload: savedPostsPayload,
+        });
       }
     } catch (error) {
+      if (mounted.current) {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }
+
       alert(`Error un-saving post: ${error}`);
     }
   };

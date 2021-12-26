@@ -1,5 +1,6 @@
 import {useReducer} from 'react';
 import PropTypes from 'prop-types';
+import {writeBatch, doc, deleteDoc} from 'firebase/firestore';
 import {DisabledButtonWrapper} from './styled/Lib';
 import {
   StyledRequestItemButtonGroup,
@@ -8,6 +9,8 @@ import {
   RequestItemDeleteButton,
 } from './styled/RequestItemButtonGroup.styled';
 import {requestItemButtonReducer} from '../reducers';
+import {useAuth, useMounted} from '../hooks';
+import {db} from '../firebase-config';
 import {
   SET_IS_CONFIRM_BUTTON_LOADING,
   SET_IS_DELETE_BUTTON_LOADING,
@@ -15,36 +18,89 @@ import {
   REQUEST_HAS_BEEN_CONFIRMED,
   USER_HAS_BEEN_FOLLOWED,
 } from '../actions/requestItemButtonGroupActions';
+import {SET_FOLLOW_REQUESTS} from '../actions/notificationButtonActions';
 
-const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
+const RequestItemButtonGroup = ({userId, dispatchCb}) => {
   const [state, dispatch] = useReducer(requestItemButtonReducer, {
     isConfirmed: false,
-    isFollowed: false,
+    isFollowing: false,
     isConfirmButtonLoading: false,
     isDeleteButtonLoading: false,
     isFollowButtonLoading: false,
   });
 
-  const confirmRequestHandler = () => {
-    dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
+  const auth = useAuth();
 
-    setTimeout(() => {
-      dispatch({
-        type: REQUEST_HAS_BEEN_CONFIRMED,
-      });
+  const mounted = useMounted();
 
-      confirmRequest(userId);
-    }, 1000);
+  const confirmRequestHandler = async () => {
+    try {
+      dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
+
+      // Get a new write batch
+      const batch = writeBatch();
+
+      // Remove from request sender
+      batch.delete(
+        doc(db, `junction_user_request_sender/${auth.user.uid}_${userId}`)
+      );
+
+      // user with userId follows user with auth.user.uid
+      const itemToAdd = {
+        uid: userId,
+        followingUserId: auth.user.uid,
+      };
+
+      // Add to following user collection
+      batch.set(
+        doc(db, `junction_user_following_user/${userId}_${auth.user.uid}`),
+        itemToAdd
+      );
+
+      // Commit the batch
+      await batch.commit();
+
+      if (mounted.current) {
+        dispatch({
+          type: REQUEST_HAS_BEEN_CONFIRMED,
+        });
+      }
+    } catch (error) {
+      if (mounted.current) {
+        dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: false});
+      }
+
+      alert(`Error confirming follow request: ${error}`);
+    }
   };
 
-  const removeRequestHandler = () => {
-    dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
+  const removeRequestHandler = async () => {
+    try {
+      dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
 
-    setTimeout(() => {
+      await deleteDoc(
+        doc(db, `junction_user_request_sender/${auth.user.uid}_${userId}`)
+      );
+
+      const newFollowRequests = state.followRequests.filter(
+        (user) => user.id !== userId
+      );
+
+      if (mounted.current) {
+        dispatchCb({
+          type: SET_FOLLOW_REQUESTS,
+          payload: newFollowRequests,
+        });
+      }
+
+      if (mounted.current) {
+        dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
+      }
+    } catch (error) {
       dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
 
-      removeRequest(userId);
-    }, 1000);
+      alert(`Error removing follow request: ${error}`);
+    }
   };
 
   const followUserHandler = () => {
@@ -84,13 +140,13 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
       ) : (
         <DisabledButtonWrapper $disabled={state.isFollowButtonLoading}>
           <RequestItemFollowButton
-            type={!state.isFollowed ? 'primary' : 'default'}
+            type={!state.isFollowing ? 'primary' : 'default'}
             loading={state.isFollowButtonLoading}
             disabled={state.isFollowButtonLoading}
             onClick={followUserHandler}
-            $isFollowed={state.isFollowed}
+            $isFollowing={state.isFollowing}
           >
-            {state.isFollowed ? 'Following' : 'Follow'}
+            {state.isFollowing ? 'Following' : 'Follow'}
           </RequestItemFollowButton>
         </DisabledButtonWrapper>
       )}
@@ -100,8 +156,7 @@ const RequestItemButtonGroup = ({userId, confirmRequest, removeRequest}) => {
 
 RequestItemButtonGroup.propTypes = {
   userId: PropTypes.number.isRequired,
-  confirmRequest: PropTypes.func.isRequired,
-  removeRequest: PropTypes.func.isRequired,
+  dispatchCb: PropTypes.func.isRequired,
 };
 
 export default RequestItemButtonGroup;

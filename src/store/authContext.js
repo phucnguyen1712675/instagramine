@@ -135,19 +135,23 @@ const AuthContextProvider = ({children}) => {
         userStoryCategories = getCollectionData(storyCategoriesSnapshot);
       }
 
+      let newUserDataToSet = null;
+
+      if (userStoryCategories) {
+        newUserDataToSet = {
+          ...newUserData,
+          uid: newUserDocSnap.id,
+          storyCategories: userStoryCategories,
+        };
+      } else {
+        newUserDataToSet = {
+          ...newUserData,
+          uid: newUserDocSnap.id,
+        };
+      }
+
       if (mounted.current) {
-        if (userStoryCategories) {
-          setUser({
-            ...newUserData,
-            uid: newUserDocSnap.id,
-            storyCategories: userStoryCategories,
-          });
-        } else {
-          setUser({
-            ...newUserData,
-            uid: newUserDocSnap.id,
-          });
-        }
+        setUser(newUserDataToSet);
 
         dispatch({type: ON_SUCCESS});
       }
@@ -192,12 +196,12 @@ const AuthContextProvider = ({children}) => {
       await setDoc(doc(db, 'users', user.uid), newUserData);
 
       if (mounted.current) {
-        dispatch({type: ON_SUCCESS});
-
         setUser({
           ...newUserData,
           uid: user.uid,
         });
+
+        dispatch({type: ON_SUCCESS});
       }
 
       return true;

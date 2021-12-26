@@ -1,7 +1,7 @@
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,
-  SET_FILTERED_USERS,
+  SET_FILTERED_USERS_AFTER_FETCHING,
   OPEN_FIRST_TIME,
 } from '../actions/searchBarActions';
 
@@ -17,7 +17,7 @@ export default (state, action) => {
         ...state,
         isLoading: action.payload,
       };
-    case SET_FILTERED_USERS:
+    case SET_FILTERED_USERS_AFTER_FETCHING:
       return {
         ...state,
         isLoading: false,

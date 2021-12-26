@@ -49,7 +49,7 @@ import {searchBarReducer} from '../reducers';
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,
-  SET_FILTERED_USERS,
+  SET_FILTERED_USERS_AFTER_FETCHING,
   OPEN_FIRST_TIME,
 } from '../actions/searchBarActions';
 import {getCollectionData} from '../utils/firestore';
@@ -213,7 +213,10 @@ const SearchBar = () => {
       }
 
       if (mounted.current) {
-        dispatch({type: SET_FILTERED_USERS, payload: filteredUsersToShow});
+        dispatch({
+          type: SET_FILTERED_USERS_AFTER_FETCHING,
+          payload: filteredUsersToShow,
+        });
       }
     };
 

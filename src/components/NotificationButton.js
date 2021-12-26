@@ -1,4 +1,5 @@
 import {useReducer, useRef, useEffect} from 'react';
+import {collection, getDocs, query, where} from 'firebase/firestore';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
 import {BellIcon, RightChevronIcon} from './icons';
 import {FakeCheckbox, FakeButtonLabel} from './styled/Lib';
@@ -20,10 +21,11 @@ import {
   RequestItem,
   RequestItemContent,
 } from './styled/NotificationButton.styled';
-import {useOnScreen} from '../hooks';
+import {useOnScreen, useAuth, useMounted} from '../hooks';
 import {notificationButtonReducer} from '../reducers';
+import {db} from '../firebase-config';
 import {onErrorMedia} from '../utils/media';
-import followRequestsData from '../data/follow-requests.json';
+import {getCollectionData} from '../utils/firestore';
 import {
   SET_IS_LOADING,
   SET_CHECKED,
@@ -32,10 +34,21 @@ import {
   ON_HIDDEN,
 } from '../actions/notificationButtonActions';
 
+const requestUserConverter = (user) => {
+  return {
+    id: user.id,
+    username: user.username,
+    name: user.name,
+    avatar: user.avatar,
+    profile: user.profile,
+    createdAt: user.createdAt,
+  };
+};
+
 const NotificationButton = () => {
   const [state, dispatch] = useReducer(notificationButtonReducer, {
-    followRequests: followRequestsData,
-    isLoading: true,
+    followRequests: [],
+    isLoading: false,
     showRequests: false,
     checked: false,
   });
@@ -52,18 +65,47 @@ const NotificationButton = () => {
 
   const shouldCenterChild = state.isLoading || !hasNotifications;
 
+  const auth = useAuth();
+
+  const mounted = useMounted();
+
   useEffect(() => {
+    const getRequests = async () => {
+      try {
+        dispatch({type: SET_IS_LOADING, payload: true});
+
+        const requestUsersSnapshot = await getDocs(
+          query(
+            collection(db, 'junction_user_request_sender'),
+            where('uid', '==', auth.user.uid)
+          )
+        );
+
+        if (requestUsersSnapshot.docs > 0) {
+          const requestUsers = getCollectionData(requestUsersSnapshot.docs);
+
+          const convertedRequestUsers = requestUsers.map(requestUserConverter);
+
+          if (mounted.current) {
+            dispatch({
+              type: SET_FOLLOW_REQUESTS,
+              payload: convertedRequestUsers,
+            });
+          }
+        }
+      } catch (error) {
+        alert(`Error fetching follow requests: ${error}`);
+      }
+    };
+
     if (isNotificationPopupScreen) {
-      let timeoutId = setTimeout(() => {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }, 1000);
+      getRequests();
 
       return () => {
-        clearTimeout(timeoutId);
         dispatch({type: ON_HIDDEN});
       };
     }
-  }, [isNotificationPopupScreen]);
+  }, [isNotificationPopupScreen, auth.user.uid, mounted]);
 
   useEffect(() => {
     if (state.checked) {
@@ -77,16 +119,6 @@ const NotificationButton = () => {
 
   const seeRequestsHandler = () => {
     dispatch({type: SET_SHOW_REQUESTS, payload: true});
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const confirmRequest = (userId) => {};
-
-  const removeRequest = (userId) => {
-    const newFollowRequests = state.followRequests.filter(
-      (user) => user.id !== userId
-    );
-    dispatch({type: SET_FOLLOW_REQUESTS, payload: newFollowRequests});
   };
 
   return (
@@ -174,8 +206,7 @@ const NotificationButton = () => {
                     optionComponent={
                       <RequestItemButtonGroup
                         userId={user.id}
-                        confirmRequest={confirmRequest}
-                        removeRequest={removeRequest}
+                        dispatchCb={dispatch}
                       />
                     }
                   />
