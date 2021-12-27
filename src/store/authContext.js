@@ -7,34 +7,30 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import {
-  setDoc,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  limit,
-} from 'firebase/firestore';
-import {useLocalStorage, useMounted} from '../hooks';
+import {setDoc, doc, getDoc} from 'firebase/firestore';
+import {useMounted} from '../hooks';
 import {auth, db} from '../firebase-config';
-import {requestReducer} from '../reducers';
-import {MAX_STORIES_NUMBER} from '../constants';
-import {SET_IS_LOADING, ON_SUCCESS, ON_ERROR} from '../actions/requestActions';
-import {getCollectionData} from '../utils/firestore';
+import {authContextReducer} from '../reducers';
+import {
+  SET_IS_LOADING,
+  ON_SUCCESS,
+  ON_ERROR,
+  SET_CURRENT_USER,
+  SIGN_OUT,
+} from '../actions/authContextActions';
+import {getDocData} from '../utils/firestore';
 
 const AuthContext = createContext({
+  currentUser: null,
   isLoading: false,
   error: null,
-  user: null,
+  getCurrentUser: () => {},
   // eslint-disable-next-line no-unused-vars
-  logIn: async (user) => {},
+  logIn: async (user) => false,
   // eslint-disable-next-line no-unused-vars
-  register: async (user) => {},
+  register: async (user) => false,
   // eslint-disable-next-line no-unused-vars
-  logOut: async () => {},
+  logOut: async () => false,
 });
 
 const findLoginError = (code) => {
@@ -69,98 +65,62 @@ const findLogOutError = (error) => {
 };
 
 const AuthContextProvider = ({children}) => {
-  const [state, dispatch] = useReducer(requestReducer, {
+  const [state, dispatch] = useReducer(authContextReducer, {
+    currentUser: null,
     isLoading: false,
     error: null,
   });
 
-  const [user, setUser] = useLocalStorage({
-    key: 'user',
-    initialValue: null,
-  });
-
   const mounted = useMounted();
 
-  onAuthStateChanged(auth, (currentUser) => {
-    // User logged out
-    if (!currentUser) {
-      setUser(null);
+  onAuthStateChanged(auth, async (user) => {
+    try {
+      if (user) {
+        // User is signed in
+        const uid = user.uid;
+        const userSnap = await getDoc(doc(db, `users/${uid}`));
+        const userData = getDocData(userSnap);
+
+        if (!userData && mounted.current) {
+          dispatch({type: ON_ERROR, payload: 'User not found'});
+        } else {
+          dispatch({type: SET_CURRENT_USER, payload: userData});
+        }
+      } else {
+        // User is signed out
+        dispatch({type: SIGN_OUT});
+      }
+    } catch (error) {
+      dispatch({type: ON_ERROR, payload: 'Something went wrong'});
     }
   });
+
+  const getCurrentUser = () => {
+    const user = auth.currentUser;
+    return user;
+  };
 
   const logIn = async (newUser) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      const {user} = await signInWithEmailAndPassword(
+      const userCredential = await signInWithEmailAndPassword(
         auth,
         newUser.email,
         newUser.password
       );
 
-      const newUserDocSnap = await getDoc(doc(db, `users/${user.uid}`));
-
-      if (!newUserDocSnap.exists()) {
-        if (mounted.current) {
-          dispatch({type: ON_ERROR, payload: 'User not found'});
-        }
-
-        return false;
-      }
-
-      const newUserData = newUserDocSnap.data();
-
-      const userStoryCateJunctions = await getDocs(
-        query(
-          collection(db, 'junction_user_story_category'),
-          where('uid', '==', newUserDocSnap.id),
-          orderBy('views', 'desc'),
-          limit(MAX_STORIES_NUMBER)
-        )
-      );
-
-      const storyCategoriesSnapshot = await Promise.all(
-        userStoryCateJunctions.docs
-          .filter((document) => document.exists())
-          .map((document) =>
-            getDoc(
-              doc(db, `story_categories/${document.data().storyCategoryId}`)
-            )
-          )
-      );
-
-      let userStoryCategories = null;
-
-      if (storyCategoriesSnapshot.length > 0) {
-        userStoryCategories = getCollectionData(storyCategoriesSnapshot);
-      }
-
-      let newUserDataToSet = null;
-
-      if (userStoryCategories) {
-        newUserDataToSet = {
-          ...newUserData,
-          uid: newUserDocSnap.id,
-          storyCategories: userStoryCategories,
-        };
-      } else {
-        newUserDataToSet = {
-          ...newUserData,
-          uid: newUserDocSnap.id,
-        };
-      }
-
       if (mounted.current) {
-        setUser(newUserDataToSet);
-
         dispatch({type: ON_SUCCESS});
       }
 
-      return true;
+      return !!userCredential;
     } catch (error) {
       const errorMessage = findLoginError(error.code);
 
-      dispatch({type: ON_ERROR, payload: errorMessage});
+      if (mounted.current) {
+        dispatch({type: ON_ERROR, payload: errorMessage});
+      }
 
       return false;
     }
@@ -170,16 +130,21 @@ const AuthContextProvider = ({children}) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      const {user} = await createUserWithEmailAndPassword(
+      const {email, password, username, name} = newUser;
+
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
-        newUser.email,
-        newUser.password
+        email,
+        password
       );
 
+      // Signed in
+      const {user} = userCredential;
+
       const newUserData = {
-        email: newUser.email,
-        name: newUser.name,
-        username: newUser.username,
+        email,
+        name,
+        username,
         // Fake data
         avatar:
           'https://user-images.githubusercontent.com/47315479/81145216-7fbd8700-8f7e-11ea-9d49-bd5fb4a888f1.png',
@@ -193,22 +158,19 @@ const AuthContextProvider = ({children}) => {
         socialLinks: ['https://dribbble.com/nkchaudhary01'],
       };
 
-      await setDoc(doc(db, 'users', user.uid), newUserData);
+      await setDoc(doc(db, `users/${user.uid}`), newUserData);
 
       if (mounted.current) {
-        setUser({
-          ...newUserData,
-          uid: user.uid,
-        });
-
         dispatch({type: ON_SUCCESS});
       }
 
-      return true;
+      return !!userCredential;
     } catch (error) {
       const errorMessage = findRegisterError(error.code);
 
-      dispatch({type: ON_ERROR, payload: errorMessage});
+      if (mounted.current) {
+        dispatch({type: ON_ERROR, payload: errorMessage});
+      }
 
       return false;
     }
@@ -228,7 +190,9 @@ const AuthContextProvider = ({children}) => {
     } catch (error) {
       const errorMessage = findLogOutError(error.code);
 
-      dispatch({type: ON_ERROR, payload: errorMessage});
+      if (mounted.current) {
+        dispatch({type: ON_ERROR, payload: errorMessage});
+      }
 
       return false;
     }
@@ -236,7 +200,7 @@ const AuthContextProvider = ({children}) => {
 
   const value = {
     ...state,
-    user,
+    getCurrentUser,
     logIn,
     register,
     logOut,

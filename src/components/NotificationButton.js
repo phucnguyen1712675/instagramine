@@ -30,8 +30,7 @@ import {
   SET_IS_LOADING,
   SET_CHECKED,
   SET_SHOW_REQUESTS,
-  SET_FOLLOW_REQUESTS,
-  ON_HIDDEN,
+  SET_FOLLOW_REQUESTS_AFTER_FETCHING,
 } from '../actions/notificationButtonActions';
 
 const requestUserConverter = (user) => {
@@ -77,7 +76,7 @@ const NotificationButton = () => {
         const requestUsersSnapshot = await getDocs(
           query(
             collection(db, 'junction_user_request_sender'),
-            where('uid', '==', auth.user.uid)
+            where('uid', '==', auth.currentUser.id)
           )
         );
 
@@ -88,12 +87,16 @@ const NotificationButton = () => {
 
           if (mounted.current) {
             dispatch({
-              type: SET_FOLLOW_REQUESTS,
+              type: SET_FOLLOW_REQUESTS_AFTER_FETCHING,
               payload: convertedRequestUsers,
             });
           }
         }
       } catch (error) {
+        if (mounted.current) {
+          dispatch({type: SET_IS_LOADING, payload: false});
+        }
+
         alert(`Error fetching follow requests: ${error}`);
       }
     };
@@ -102,10 +105,10 @@ const NotificationButton = () => {
       getRequests();
 
       return () => {
-        dispatch({type: ON_HIDDEN});
+        dispatch({type: SET_SHOW_REQUESTS, payload: false});
       };
     }
-  }, [isNotificationPopupScreen, auth.user.uid, mounted]);
+  }, [isNotificationPopupScreen, auth.currentUser.id, mounted]);
 
   useEffect(() => {
     if (state.checked) {

@@ -3,7 +3,8 @@ import {
   SET_CHECKED,
   SET_SHOW_REQUESTS,
   SET_FOLLOW_REQUESTS,
-  ON_HIDDEN,
+  SET_FOLLOW_REQUESTS_AFTER_FETCHING,
+  // ON_HIDDEN,
 } from '../actions/notificationButtonActions';
 
 export default (state, action) => {
@@ -28,12 +29,18 @@ export default (state, action) => {
         ...state,
         followRequests: action.payload,
       };
-    case ON_HIDDEN:
+    case SET_FOLLOW_REQUESTS_AFTER_FETCHING:
       return {
         ...state,
-        showRequests: false,
-        isLoading: true,
+        isLoading: false,
+        followRequests: action.payload,
       };
+    // case ON_HIDDEN:
+    //   return {
+    //     ...state,
+    //     showRequests: false,
+    //     // isLoading: true,
+    //   };
     default:
       throw new Error('invalid action');
   }

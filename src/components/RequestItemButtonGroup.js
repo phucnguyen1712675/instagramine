@@ -42,18 +42,21 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
 
       // Remove from request sender
       batch.delete(
-        doc(db, `junction_user_request_sender/${auth.user.uid}_${userId}`)
+        doc(db, `junction_user_request_sender/${auth.currentUser.id}_${userId}`)
       );
 
-      // user with userId follows user with auth.user.uid
+      // user with userId follows user with auth.currentUser.id
       const itemToAdd = {
         uid: userId,
-        followingUserId: auth.user.uid,
+        followingUserId: auth.currentUser.id,
       };
 
       // Add to following user collection
       batch.set(
-        doc(db, `junction_user_following_user/${userId}_${auth.user.uid}`),
+        doc(
+          db,
+          `junction_user_following_user/${userId}_${auth.currentUser.id}`
+        ),
         itemToAdd
       );
 
@@ -79,7 +82,7 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
       dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
 
       await deleteDoc(
-        doc(db, `junction_user_request_sender/${auth.user.uid}_${userId}`)
+        doc(db, `junction_user_request_sender/${auth.currentUser.id}_${userId}`)
       );
 
       const newFollowRequests = state.followRequests.filter(
@@ -97,7 +100,9 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
         dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
       }
     } catch (error) {
-      dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
+      if (mounted.current) {
+        dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
+      }
 
       alert(`Error removing follow request: ${error}`);
     }

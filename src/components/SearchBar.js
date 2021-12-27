@@ -136,14 +136,14 @@ const SearchBar = () => {
   const getUserSearchHistory = useCallback(async () => {
     try {
       const searchHistorySnapshot = await getDocs(
-        collection(db, `users/${auth.user.uid}/search-history`)
+        collection(db, `users/${auth.currentUser.id}/search-history`)
       );
 
       return getCollectionData(searchHistorySnapshot.docs);
     } catch (error) {
       alert(`Error fetching search history: ${error}`);
     }
-  }, [auth.user.uid]);
+  }, [auth.currentUser.id]);
 
   useEffect(() => {
     const getSearchHistory = async () => {
@@ -178,7 +178,7 @@ const SearchBar = () => {
       const userFollowingUserJunctions = await getDocs(
         query(
           collection(db, 'junction_user_following_user'),
-          where('uid', '==', auth.user.uid)
+          where('uid', '==', auth.currentUser.id)
         )
       );
 
@@ -223,7 +223,7 @@ const SearchBar = () => {
     if (values.query) {
       getFilteredUsers();
     }
-  }, [values.query, users, auth.user.uid, mounted]);
+  }, [values.query, users, auth.currentUser.id, mounted]);
 
   const onSearch = useCallback(() => {
     if (!values.query) {
@@ -267,7 +267,9 @@ const SearchBar = () => {
 
     await Promise.all(
       searchHistoryData.forEach((item) => {
-        deleteDoc(doc(db, `users/${auth.user.uid}/search-history/${item.id}`));
+        deleteDoc(
+          doc(db, `users/${auth.currentUser.id}/search-history/${item.id}`)
+        );
       })
     );
 
@@ -297,6 +299,8 @@ const SearchBar = () => {
 
     const unshiftUser = async (user) => {
       try {
+        dispatch({type: SET_IS_LOADING, payload: true});
+
         const newSearchItem = userConverter(user);
 
         const itemToAdd = {
@@ -305,7 +309,10 @@ const SearchBar = () => {
         };
 
         await setDoc(
-          doc(db, `users/${auth.user.uid}/search-history/${newSearchItem.id}`),
+          doc(
+            db,
+            `users/${auth.currentUser.id}/search-history/${newSearchItem.id}`
+          ),
           itemToAdd
         );
 
@@ -317,8 +324,13 @@ const SearchBar = () => {
               return [newSearchItem, ...prevState];
             }
           });
+          dispatch({type: SET_IS_LOADING, payload: false});
         }
       } catch (error) {
+        if (mounted.current) {
+          dispatch({type: SET_IS_LOADING, payload: false});
+        }
+
         alert(`Error adding user to search history: ${error}`);
       }
     };
@@ -341,14 +353,24 @@ const SearchBar = () => {
 
   const removeItemHandler = async (id) => {
     try {
-      await deleteDoc(doc(db, `users/${auth.user.uid}/search-history/${id}`));
+      dispatch({type: SET_IS_LOADING, payload: true});
+
+      await deleteDoc(
+        doc(db, `users/${auth.currentUser.id}/search-history/${id}`)
+      );
 
       if (mounted.current) {
         setSearchHistory((prevState) =>
           prevState.filter((user) => user.id !== id)
         );
+
+        dispatch({type: SET_IS_LOADING, payload: false});
       }
     } catch (error) {
+      if (mounted.current) {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }
+
       alert(`Error removing user from search history: ${error}`);
     }
   };

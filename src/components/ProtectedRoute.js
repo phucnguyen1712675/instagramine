@@ -7,7 +7,7 @@ const ProtectedRoute = () => {
 
   const location = useLocation();
 
-  if (auth.user) {
+  if (auth.currentUser) {
     return <Navigate to="/" state={{from: location}} />;
   }
 

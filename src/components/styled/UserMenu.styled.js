@@ -207,7 +207,7 @@ export const StoriesContentCircleImg = styled.img`
   }
 `;
 
-export const PlayButton = styled(Button)`
+export const StoriesContentButton = styled(Button)`
 	--size: 6rem;
 	width: var(--size);
 	height: var(--size);

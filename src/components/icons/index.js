@@ -26,6 +26,7 @@ import SmileIcon from './SmileIcon';
 import StreamIcon from './StreamIcon';
 import ThreeDotsIcon from './/ThreeDotsIcon';
 import UserIcon from './UserIcon';
+import PlusIcon from './PlusIcon';
 
 export {
   ActivityIcon,
@@ -56,4 +57,5 @@ export {
   StreamIcon,
   ThreeDotsIcon,
   UserIcon,
+  PlusIcon,
 };

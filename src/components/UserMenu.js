@@ -1,6 +1,16 @@
-import React from 'react';
+import {useState, useEffect, Fragment} from 'react';
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  limit,
+} from 'firebase/firestore';
 import NotificationButton from './NotificationButton';
-import {PlayIcon} from './icons';
+import {PlayIcon, PlusIcon} from './icons';
 import {
   StyledUserMenu,
   UserMenuTopContent,
@@ -29,12 +39,14 @@ import {
   StoriesContentStoryItemName,
   StoriesContentCircleImgWrapper,
   StoriesContentCircleImg,
-  PlayButton,
+  StoriesContentButton,
   CreatePostButton,
 } from './styled/UserMenu.styled';
 import {MAX_STORIES_NUMBER} from '../constants';
+import {useAuth, useMounted} from '../hooks';
+import {db} from '../firebase-config';
 import {onErrorMedia} from '../utils/media';
-import {useAuth} from '../hooks';
+import {getCollectionData} from '../utils/firestore';
 
 const kFormatter = (num) =>
   Math.abs(num) > 999
@@ -45,58 +57,63 @@ const socialLinkFormatter = (socialLink) =>
   socialLink.replace('https://', 'www.');
 
 const UserMenu = () => {
+  const [storyCategories, setStoryCategories] = useState([]);
+
   const auth = useAuth();
 
-  const socialLinksContent = auth.user.socialLinks
-    ?.slice(0, 3)
-    .map((link, index) => (
-      <BioContentSocialLink key={index} href={link}>
-        {socialLinkFormatter(link)}
-      </BioContentSocialLink>
-    ));
+  const mounted = useMounted();
 
-  const storiesContent = auth.user.storyCategories
-    ?.map((story) => (
-      <StoriesContentStoryItem key={story.id}>
-        <StoriesContentStoryItemInner>
-          <StoriesContentCircleImgWrapper>
-            <StoriesContentCircleImg
-              src={story.thumbnail}
-              alt=""
-              onError={onErrorMedia}
-            />
-          </StoriesContentCircleImgWrapper>
-          <StoriesContentStoryItemName>
-            {story.name}
-          </StoriesContentStoryItemName>
-        </StoriesContentStoryItemInner>
-      </StoriesContentStoryItem>
-    ))
-    .concat(
-      <StoriesContentStoryItem key={MAX_STORIES_NUMBER}>
-        <PlayButton
-          size="large"
-          shape="circle"
-          icon={<PlayIcon />}
-          disabledHover
-        />
-        <StoriesContentStoryItemName>Play All</StoriesContentStoryItemName>
-      </StoriesContentStoryItem>
-    );
+  useEffect(() => {
+    const getCurrentUserStoryCategories = async () => {
+      try {
+        const junctionsQuerySnap = await getDocs(
+          query(
+            collection(db, 'junction_user_story_category'),
+            where('uid', '==', auth.currentUser.id),
+            orderBy('views', 'desc'),
+            limit(MAX_STORIES_NUMBER)
+          )
+        );
+
+        if (junctionsQuerySnap.docs.length > 0) {
+          const storyCategoriesSnaps = await Promise.all(
+            junctionsQuerySnap.docs
+              .filter((document) => document.exists())
+              .map((document) =>
+                getDoc(
+                  doc(db, `story_categories/${document.data().storyCategoryId}`)
+                )
+              )
+          );
+
+          const currentUserStoryCategories =
+            getCollectionData(storyCategoriesSnaps);
+
+          if (mounted.current) {
+            setStoryCategories(currentUserStoryCategories);
+          }
+        }
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+    };
+
+    getCurrentUserStoryCategories();
+  }, [auth.currentUser.id, mounted]);
 
   return (
     <StyledUserMenu>
       <UserMenuTopContent>
         <ThumbnailContentAvatar
-          url={auth.user.avatar}
-          hasStory={auth.user.hasStory}
-          hasStoryBeenSeen={auth.user.hasStoryBeenSeen}
+          url={auth.currentUser.avatar}
+          hasStory={auth.currentUser.hasStory}
+          hasStoryBeenSeen={auth.currentUser.hasStoryBeenSeen}
         />
         <ThumbnailContentUserName>
-          {auth.user.username}
+          {auth.currentUser.username}
         </ThumbnailContentUserName>
         <ThumbnailContentJobDescription>
-          {auth.user.job}
+          {auth.currentUser.job}
         </ThumbnailContentJobDescription>
         <EditButtonWrapper content="Edit profile" position="left">
           <EditButton type="primary" size="large">
@@ -108,9 +125,9 @@ const UserMenu = () => {
         <StatisticalContent>
           <StatisticalContentInner>
             {[
-              auth.user.numberOfPosts,
-              auth.user.numberOfFollowers,
-              auth.user.numberOfFollowingUsers,
+              auth.currentUser.numberOfPosts,
+              auth.currentUser.numberOfFollowers,
+              auth.currentUser.numberOfFollowingUsers,
             ].map((field, index) => {
               if (index === 2) {
                 return (
@@ -121,34 +138,87 @@ const UserMenu = () => {
                 );
               }
               return (
-                <React.Fragment key={index}>
+                <Fragment key={index}>
                   <StatisticItem>
                     <StatisticNumber>{kFormatter(field)}</StatisticNumber>
                     <StatisticName>Posts</StatisticName>
                   </StatisticItem>
                   <StatisticalContentInnerDot />
-                </React.Fragment>
+                </Fragment>
               );
             })}
           </StatisticalContentInner>
         </StatisticalContent>
         <BioContentContainer>
-          <SectionTitle>{auth.user.name}</SectionTitle>
+          <SectionTitle>{auth.currentUser.name}</SectionTitle>
           <BioContent
             showChar={49}
             readMoreText="(Read more)"
             showLessText="(Show less)"
             readMoreLink="https://www.instagram.com/phuc7320/"
           >
-            {auth.user.bio}
+            {auth.currentUser.bio}
           </BioContent>
-          <BioContentSocialLinks>{socialLinksContent}</BioContentSocialLinks>
+          {auth.currentUser.socialLinks.length > 0 ? (
+            <BioContentSocialLinks>
+              {auth.currentUser.socialLinks.slice(0, 3).map((link, index) => (
+                <BioContentSocialLink key={index} href={link}>
+                  {socialLinkFormatter(link)}
+                </BioContentSocialLink>
+              ))}
+            </BioContentSocialLinks>
+          ) : (
+            <></>
+          )}
         </BioContentContainer>
       </UserMenuMiddleContent>
       <UserMenuBottomContent>
         <StoriesContent>
           <SectionTitle>Your Stories</SectionTitle>
-          <StoriesContentStoryList>{storiesContent}</StoriesContentStoryList>
+          {storyCategories.length > 0 ? (
+            <StoriesContentStoryList>
+              {storyCategories
+                .map((story) => (
+                  <StoriesContentStoryItem key={story.id}>
+                    <StoriesContentStoryItemInner>
+                      <StoriesContentCircleImgWrapper>
+                        <StoriesContentCircleImg
+                          src={story.thumbnail}
+                          alt=""
+                          onError={onErrorMedia}
+                        />
+                      </StoriesContentCircleImgWrapper>
+                      <StoriesContentStoryItemName>
+                        {story.name}
+                      </StoriesContentStoryItemName>
+                    </StoriesContentStoryItemInner>
+                  </StoriesContentStoryItem>
+                ))
+                .concat(
+                  <StoriesContentStoryItem key={MAX_STORIES_NUMBER}>
+                    <StoriesContentButton
+                      size="large"
+                      shape="circle"
+                      icon={<PlayIcon />}
+                      disabledHover
+                    />
+                    <StoriesContentStoryItemName>
+                      Play All
+                    </StoriesContentStoryItemName>
+                  </StoriesContentStoryItem>
+                )}
+            </StoriesContentStoryList>
+          ) : (
+            <StoriesContentStoryItem as="div">
+              <StoriesContentButton
+                size="large"
+                shape="circle"
+                icon={<PlusIcon />}
+                disabledHover
+              />
+              <StoriesContentStoryItemName>Add</StoriesContentStoryItemName>
+            </StoriesContentStoryItem>
+          )}
         </StoriesContent>
         <CreatePostButton type="primary" size="large" block>
           Create Post
