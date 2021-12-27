@@ -32,6 +32,7 @@ import {
   BioContent,
   BioContentSocialLinks,
   BioContentSocialLink,
+  BioContentNoSocialLinks,
   StoriesContent,
   StoriesContentStoryList,
   StoriesContentStoryItem,
@@ -69,7 +70,7 @@ const UserMenu = () => {
         const junctionsQuerySnap = await getDocs(
           query(
             collection(db, 'junction_user_story_category'),
-            where('uid', '==', auth.currentUser.id),
+            where('uid', '==', auth.uid),
             orderBy('views', 'desc'),
             limit(MAX_STORIES_NUMBER)
           )
@@ -99,7 +100,7 @@ const UserMenu = () => {
     };
 
     getCurrentUserStoryCategories();
-  }, [auth.currentUser.id, mounted]);
+  }, [auth.uid, mounted]);
 
   return (
     <StyledUserMenu>
@@ -168,7 +169,7 @@ const UserMenu = () => {
               ))}
             </BioContentSocialLinks>
           ) : (
-            <></>
+            <BioContentNoSocialLinks>No social links</BioContentNoSocialLinks>
           )}
         </BioContentContainer>
       </UserMenuMiddleContent>

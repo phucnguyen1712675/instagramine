@@ -1,8 +1,10 @@
-import {useEffect} from 'react';
+import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
+import {AuthErrorCodes, signInWithEmailAndPassword} from 'firebase/auth';
 import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {useAuth, useForm} from '../hooks';
+import {useAuth, useForm, useMounted} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
+import {auth} from '../firebase-config';
 import {validateEmail} from '../utils/validate';
 import {
   Logo,
@@ -13,20 +15,31 @@ import {
   SubmitButtonWrapper,
 } from '../components/styled/Lib';
 
+const findLoginError = (code) => {
+  switch (code) {
+    case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+      return 'Too many attempts. Try again later.';
+    case AuthErrorCodes.USER_DELETED:
+    case AuthErrorCodes.INVALID_EMAIL:
+    case AuthErrorCodes.INVALID_PASSWORD:
+      return 'Invalid email or password';
+    default:
+      return 'Something went wrong';
+  }
+};
+
 const LoginPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
   const from = location.state?.from?.pathname ?? '/';
 
-  const auth = useAuth();
+  const {setCurrentUserUid} = useAuth();
 
-  useEffect(() => {
-    if (!auth.isLoading && auth.error) {
-      alert(auth.error);
-    }
-  }, [auth.isLoading, auth.error]);
+  const mounted = useMounted();
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
@@ -34,13 +47,27 @@ const LoginPage = () => {
       password: '',
     },
     onSubmit: async (values) => {
-      const isSuccess = await auth.logIn({
-        email: values.email,
-        password: values.password,
-      });
+      try {
+        setIsLoading(true);
 
-      if (isSuccess) {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+
+        const {user} = userCredential;
+
+        setCurrentUserUid(user.uid);
+
         navigate(from, {replace: true});
+      } catch (error) {
+        if (mounted.current) {
+          setIsLoading(false);
+        }
+
+        const errorMessage = findLoginError(error.code);
+        alert(errorMessage);
       }
     },
     validate: (values) => {
@@ -62,8 +89,7 @@ const LoginPage = () => {
     },
   });
 
-  const disableSubmitButton =
-    auth.isLoading || !values.email || !values.password;
+  const disableSubmitButton = isLoading || !values.email || !values.password;
 
   return (
     <AuthLayout
@@ -97,7 +123,7 @@ const LoginPage = () => {
             htmlType="submit"
             type="primary"
             size="large"
-            loading={auth.isLoading}
+            loading={isLoading}
             disabled={disableSubmitButton}
           >
             Login

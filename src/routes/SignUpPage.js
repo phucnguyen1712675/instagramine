@@ -1,8 +1,11 @@
-import {useEffect} from 'react';
+import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
+import {AuthErrorCodes, createUserWithEmailAndPassword} from 'firebase/auth';
+import {setDoc, doc} from 'firebase/firestore';
 import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {useAuth, useForm} from '../hooks';
+import {useAuth, useForm, useMounted} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
+import {db, auth} from '../firebase-config';
 import {validateEmail} from '../utils/validate';
 import {
   Logo,
@@ -19,20 +22,27 @@ import {
   TextAndPolicyLink,
 } from '../components/styled/SignUpPage.styled';
 
+const findRegisterError = (error) => {
+  switch (error.code) {
+    case AuthErrorCodes.EMAIL_EXISTS:
+      return 'Email already in-use';
+    default:
+      return 'Something went wrong';
+  }
+};
+
 const SignUpPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
   const from = location.state?.from?.pathname ?? '/';
 
-  const auth = useAuth();
+  const {setCurrentUserUid} = useAuth();
 
-  useEffect(() => {
-    if (!auth.isLoading && auth.error) {
-      alert(auth.error);
-    }
-  }, [auth.isLoading, auth.error]);
+  const mounted = useMounted();
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
@@ -43,15 +53,44 @@ const SignUpPage = () => {
       confirmPassword: '',
     },
     onSubmit: async (values) => {
-      const isSuccess = await auth.register({
-        email: values.email,
-        name: values.name,
-        username: values.username,
-        password: values.password,
-      });
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
 
-      if (isSuccess) {
+        const {user} = userCredential;
+
+        const newUserData = {
+          email: values.email,
+          name: values.name,
+          username: values.username,
+          // Fake data
+          avatar:
+            'https://user-images.githubusercontent.com/47315479/81145216-7fbd8700-8f7e-11ea-9d49-bd5fb4a888f1.png',
+          profile: 'https://www.instagram.com/phuc7320/',
+          job: 'Wildlife Photographer',
+          numberOfPosts: 98,
+          numberOfFollowers: 3500,
+          numberOfFollowingUsers: 900,
+          bio: 'My specialty lies in creating colorful creations, amazing designs, and high-quality website artworks that have the potential to capture the attention while making a very positive first impression on the visitor visitor visitor visitor visitor',
+          hasStory: false,
+          socialLinks: ['https://dribbble.com/nkchaudhary01'],
+        };
+
+        await setDoc(doc(db, `users/${user.uid}`), newUserData);
+
+        setCurrentUserUid(user.uid);
+
         navigate(from, {replace: true});
+      } catch (error) {
+        if (mounted.current) {
+          setIsLoading(false);
+        }
+
+        const errorMessage = findRegisterError(error.code);
+        alert(errorMessage);
       }
     },
     validate: (values) => {
@@ -86,7 +125,7 @@ const SignUpPage = () => {
   });
 
   const disableSubmitButton =
-    auth.isLoading ||
+    isLoading ||
     !values.email ||
     !values.name ||
     !values.username ||
@@ -157,7 +196,7 @@ const SignUpPage = () => {
             htmlType="submit"
             type="primary"
             size="large"
-            loading={auth.isLoading}
+            loading={isLoading}
             disabled={disableSubmitButton}
           >
             Sign up

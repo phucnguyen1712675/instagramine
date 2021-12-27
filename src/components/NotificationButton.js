@@ -76,7 +76,7 @@ const NotificationButton = () => {
         const requestUsersSnapshot = await getDocs(
           query(
             collection(db, 'junction_user_request_sender'),
-            where('uid', '==', auth.currentUser.id)
+            where('uid', '==', auth.uid)
           )
         );
 
@@ -108,7 +108,7 @@ const NotificationButton = () => {
         dispatch({type: SET_SHOW_REQUESTS, payload: false});
       };
     }
-  }, [isNotificationPopupScreen, auth.currentUser.id, mounted]);
+  }, [isNotificationPopupScreen, auth.uid, mounted]);
 
   useEffect(() => {
     if (state.checked) {

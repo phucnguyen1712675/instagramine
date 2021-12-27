@@ -136,14 +136,14 @@ const SearchBar = () => {
   const getUserSearchHistory = useCallback(async () => {
     try {
       const searchHistorySnapshot = await getDocs(
-        collection(db, `users/${auth.currentUser.id}/search-history`)
+        collection(db, `users/${auth.uid}/search-history`)
       );
 
       return getCollectionData(searchHistorySnapshot.docs);
     } catch (error) {
       alert(`Error fetching search history: ${error}`);
     }
-  }, [auth.currentUser.id]);
+  }, [auth.uid]);
 
   useEffect(() => {
     const getSearchHistory = async () => {
@@ -178,7 +178,7 @@ const SearchBar = () => {
       const userFollowingUserJunctions = await getDocs(
         query(
           collection(db, 'junction_user_following_user'),
-          where('uid', '==', auth.currentUser.id)
+          where('uid', '==', auth.uid)
         )
       );
 
@@ -223,7 +223,7 @@ const SearchBar = () => {
     if (values.query) {
       getFilteredUsers();
     }
-  }, [values.query, users, auth.currentUser.id, mounted]);
+  }, [values.query, users, auth.uid, mounted]);
 
   const onSearch = useCallback(() => {
     if (!values.query) {
@@ -267,9 +267,7 @@ const SearchBar = () => {
 
     await Promise.all(
       searchHistoryData.forEach((item) => {
-        deleteDoc(
-          doc(db, `users/${auth.currentUser.id}/search-history/${item.id}`)
-        );
+        deleteDoc(doc(db, `users/${auth.uid}/search-history/${item.id}`));
       })
     );
 
@@ -309,10 +307,7 @@ const SearchBar = () => {
         };
 
         await setDoc(
-          doc(
-            db,
-            `users/${auth.currentUser.id}/search-history/${newSearchItem.id}`
-          ),
+          doc(db, `users/${auth.uid}/search-history/${newSearchItem.id}`),
           itemToAdd
         );
 
@@ -355,9 +350,7 @@ const SearchBar = () => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      await deleteDoc(
-        doc(db, `users/${auth.currentUser.id}/search-history/${id}`)
-      );
+      await deleteDoc(doc(db, `users/${auth.uid}/search-history/${id}`));
 
       if (mounted.current) {
         setSearchHistory((prevState) =>

@@ -9,7 +9,7 @@ const RequireAuth = ({children}) => {
 
   const location = useLocation();
 
-  if (!auth.currentUser) {
+  if (!auth.uid) {
     return <Navigate to={`/${PATHS.LOGIN}`} state={{from: location}} />;
   }
 

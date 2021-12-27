@@ -49,7 +49,7 @@ const SavedPostsContextProvider = ({children}) => {
       const userSavedPostJunction = await getDocs(
         query(
           collection(db, 'junction_user_saved_post'),
-          where('uid', '==', auth.currentUser.id)
+          where('uid', '==', auth.uid)
         )
       );
 
@@ -72,20 +72,20 @@ const SavedPostsContextProvider = ({children}) => {
 
       alert(`Error fetching saved posts: ${error}`);
     }
-  }, [auth.currentUser.id, mounted]);
+  }, [auth.uid, mounted]);
 
   const savePost = async (post) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
       const itemToAdd = {
-        uid: auth.currentUser.id,
+        uid: auth.uid,
         savedPostId: post.id,
         createdAt: FieldValue.serverTimestamp(),
       };
 
       await setDoc(
-        doc(db, `junction_user_saved_post/${auth.currentUser.id}_${post.id}`),
+        doc(db, `junction_user_saved_post/${auth.uid}_${post.id}`),
         itemToAdd
       );
 
@@ -110,9 +110,7 @@ const SavedPostsContextProvider = ({children}) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      await deleteDoc(
-        doc(db, `junction_user_saved_post/${auth.currentUser.id}_${id}`)
-      );
+      await deleteDoc(doc(db, `junction_user_saved_post/${auth.uid}_${id}`));
 
       const savedPostsPayload = state.savedPosts.filter(
         (post) => post.id !== id

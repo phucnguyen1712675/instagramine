@@ -22,9 +22,9 @@ export const StyledUserMenu = styled.div`
   `}
   display: none;
   flex-direction: column;
-	
+
   @media ${DEVICES.laptopL} {
-		grid-area: userMenu;
+    grid-area: userMenu;
     display: flex;
   }
 `;
@@ -154,6 +154,10 @@ export const BioContentSocialLink = styled.a`
   ${hoverUnderline}
 `;
 
+export const BioContentNoSocialLinks = styled.div`
+  margin-top: 8px;
+`;
+
 export const StoriesContent = styled.div`
   padding: 15px 0;
   flex-grow: 1;
@@ -208,9 +212,9 @@ export const StoriesContentCircleImg = styled.img`
 `;
 
 export const StoriesContentButton = styled(Button)`
-	--size: 6rem;
-	width: var(--size);
-	height: var(--size);
+  --size: 6rem;
+  width: var(--size);
+  height: var(--size);
   padding: 0;
   font-size: 2.4rem;
   border: 2px solid ${({theme}) => theme.colors.primary};

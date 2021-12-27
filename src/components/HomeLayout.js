@@ -1,5 +1,6 @@
 import {useReducer, useRef, useEffect, useCallback} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
+import {AuthErrorCodes, signOut} from 'firebase/auth';
 import Header from './Header';
 import UserMenu from './UserMenu';
 import Tooltip from './Tooltip';
@@ -30,17 +31,29 @@ import {
   SidebarButton,
 } from './styled/HomeLayout.styled';
 import {PATHS} from '../constants';
-import {useAuth} from '../hooks';
+import {useAuth, useMounted} from '../hooks';
 import {homeLayoutReducer} from '../reducers';
+import {auth} from '../firebase-config';
 import {SavedPostsContextProvider} from '../store/savedPostsContext';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
   SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
   SET_SHOW_TOGGLE_SIDEBAR,
+  SET_IS_LOADING,
 } from '../actions/homeLayoutActions';
+
+const findLogOutError = (error) => {
+  switch (error.code) {
+    case AuthErrorCodes.USER_SIGNED_OUT:
+      return 'User has signed out';
+    default:
+      return 'Something went wrong';
+  }
+};
 
 const HomeLayout = () => {
   const [state, dispatch] = useReducer(homeLayoutReducer, {
+    isLoading: false,
     toggleSidebarBtnChecked: false,
     toggleSettingMenuBtnChecked: false,
     showToggleSidebar: false,
@@ -66,13 +79,9 @@ const HomeLayout = () => {
 
   const navigate = useNavigate();
 
-  const auth = useAuth();
+  const {setCurrentUserUid} = useAuth();
 
-  useEffect(() => {
-    if (!auth.isLoading && auth.error) {
-      alert(auth.error);
-    }
-  }, [auth.isLoading, auth.error]);
+  const mounted = useMounted();
 
   useEffect(() => {
     if (state.toggleSettingMenuBtnChecked) {
@@ -109,12 +118,23 @@ const HomeLayout = () => {
   };
 
   const logOutHandler = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
 
-    const isSuccess = await auth.logOut();
+      dispatch({type: SET_IS_LOADING, payload: true});
 
-    if (isSuccess) {
+      await signOut(auth);
+
+      setCurrentUserUid(null);
+
       navigate(PATHS.LOGIN);
+    } catch (error) {
+      if (mounted.current) {
+        dispatch({type: SET_IS_LOADING, payload: false});
+      }
+
+      const errorMessage = findLogOutError(error.code);
+      alert(errorMessage);
     }
   };
 

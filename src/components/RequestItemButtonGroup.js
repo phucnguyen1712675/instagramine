@@ -42,21 +42,18 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
 
       // Remove from request sender
       batch.delete(
-        doc(db, `junction_user_request_sender/${auth.currentUser.id}_${userId}`)
+        doc(db, `junction_user_request_sender/${auth.uid}_${userId}`)
       );
 
-      // user with userId follows user with auth.currentUser.id
+      // user with userId follows user with auth.uid
       const itemToAdd = {
         uid: userId,
-        followingUserId: auth.currentUser.id,
+        followingUserId: auth.uid,
       };
 
       // Add to following user collection
       batch.set(
-        doc(
-          db,
-          `junction_user_following_user/${userId}_${auth.currentUser.id}`
-        ),
+        doc(db, `junction_user_following_user/${userId}_${auth.uid}`),
         itemToAdd
       );
 
@@ -82,7 +79,7 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
       dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
 
       await deleteDoc(
-        doc(db, `junction_user_request_sender/${auth.currentUser.id}_${userId}`)
+        doc(db, `junction_user_request_sender/${auth.uid}_${userId}`)
       );
 
       const newFollowRequests = state.followRequests.filter(
