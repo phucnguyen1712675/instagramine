@@ -1,6 +1,6 @@
 import React from 'react';
 import {Routes, Route} from 'react-router-dom';
-import {PATHS} from './constants';
+import {ROUTE_PATHS} from './constants';
 import {
   LoginPage,
   SignUpPage,
@@ -13,14 +13,21 @@ import {
   StreamContent,
   SavedContent,
 } from './routes';
-import {AppStyles, RequireAuth, ProtectedRoute, HomeLayout} from './components';
+import {
+  AppEntry,
+  RequireAuth,
+  ProtectedRoute,
+  HomeLayout,
+  Compose,
+} from './components';
 import {AuthContextProvider} from './store/authContext';
+import {FirebaseContextProvider} from './store/firebaseContext';
 
 const App = () => {
   return (
-    <AuthContextProvider>
+    <Compose components={[FirebaseContextProvider, AuthContextProvider]}>
       <Routes>
-        <Route path="/" element={<AppStyles />}>
+        <Route path="/" element={<AppEntry />}>
           <Route
             element={
               <RequireAuth>
@@ -29,21 +36,21 @@ const App = () => {
             }
           >
             <Route index element={<HomeContent />} />
-            <Route path={PATHS.INBOX} element={<InboxContent />} />
-            <Route path={PATHS.EXPLORE} element={<ExploreContent />} />
-            <Route path={PATHS.ACTIVITY} element={<ActivityContent />} />
-            <Route path={PATHS.REEL} element={<ReelContent />} />
-            <Route path={PATHS.STREAM} element={<StreamContent />} />
-            <Route path={PATHS.SAVED} element={<SavedContent />} />
+            <Route path={ROUTE_PATHS.INBOX} element={<InboxContent />} />
+            <Route path={ROUTE_PATHS.EXPLORE} element={<ExploreContent />} />
+            <Route path={ROUTE_PATHS.ACTIVITY} element={<ActivityContent />} />
+            <Route path={ROUTE_PATHS.REEL} element={<ReelContent />} />
+            <Route path={ROUTE_PATHS.STREAM} element={<StreamContent />} />
+            <Route path={ROUTE_PATHS.SAVED} element={<SavedContent />} />
           </Route>
           <Route element={<ProtectedRoute />}>
-            <Route path={PATHS.LOGIN} element={<LoginPage />} />
-            <Route path={PATHS.SIGNUP} element={<SignUpPage />} />
+            <Route path={ROUTE_PATHS.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTE_PATHS.SIGNUP} element={<SignUpPage />} />
           </Route>
           <Route path="*" element={<NoMatchPage />} />
         </Route>
       </Routes>
-    </AuthContextProvider>
+    </Compose>
   );
 };
 

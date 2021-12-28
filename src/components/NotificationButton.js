@@ -21,15 +21,15 @@ import {
   RequestItem,
   RequestItemContent,
 } from './styled/NotificationButton.styled';
-import {useOnScreen, useAuth, useMounted} from '../hooks';
+import {useOnScreen, useAuth, useMounted, useFirebase} from '../hooks';
 import {notificationButtonReducer} from '../reducers';
-import {db} from '../firebase-config';
 import {onErrorMedia} from '../utils/media';
 import {getCollectionData} from '../utils/firestore';
 import {
   SET_IS_LOADING,
   SET_CHECKED,
   SET_SHOW_REQUESTS,
+  SET_FOLLOW_REQUESTS,
   SET_FOLLOW_REQUESTS_AFTER_FETCHING,
 } from '../actions/notificationButtonActions';
 
@@ -68,6 +68,8 @@ const NotificationButton = () => {
 
   const mounted = useMounted();
 
+  const firebase = useFirebase();
+
   useEffect(() => {
     const getRequests = async () => {
       try {
@@ -75,8 +77,8 @@ const NotificationButton = () => {
 
         const requestUsersSnapshot = await getDocs(
           query(
-            collection(db, 'junction_user_request_sender'),
-            where('uid', '==', auth.uid)
+            collection(firebase.db, 'junction_user_request_sender'),
+            where('uid', '==', auth.authUser.id)
           )
         );
 
@@ -108,7 +110,7 @@ const NotificationButton = () => {
         dispatch({type: SET_SHOW_REQUESTS, payload: false});
       };
     }
-  }, [isNotificationPopupScreen, auth.uid, mounted]);
+  }, [isNotificationPopupScreen, auth.authUser.id, mounted, firebase.db]);
 
   useEffect(() => {
     if (state.checked) {
@@ -123,6 +125,12 @@ const NotificationButton = () => {
   const seeRequestsHandler = () => {
     dispatch({type: SET_SHOW_REQUESTS, payload: true});
   };
+
+  const setFollowRequests = (followRequests) =>
+    dispatch({
+      type: SET_FOLLOW_REQUESTS,
+      payload: followRequests,
+    });
 
   return (
     <StyledNotificationButton
@@ -209,7 +217,7 @@ const NotificationButton = () => {
                     optionComponent={
                       <RequestItemButtonGroup
                         userId={user.id}
-                        dispatchCb={dispatch}
+                        setFollowRequests={setFollowRequests}
                       />
                     }
                   />

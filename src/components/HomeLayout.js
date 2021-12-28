@@ -30,16 +30,14 @@ import {
   MainContent,
   SidebarButton,
 } from './styled/HomeLayout.styled';
-import {PATHS} from '../constants';
-import {useAuth, useMounted} from '../hooks';
+import {ROUTE_PATHS} from '../constants';
+import {useAuth, useFirebase} from '../hooks';
 import {homeLayoutReducer} from '../reducers';
-import {auth} from '../firebase-config';
 import {SavedPostsContextProvider} from '../store/savedPostsContext';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
   SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
   SET_SHOW_TOGGLE_SIDEBAR,
-  SET_IS_LOADING,
 } from '../actions/homeLayoutActions';
 
 const findLogOutError = (error) => {
@@ -53,7 +51,6 @@ const findLogOutError = (error) => {
 
 const HomeLayout = () => {
   const [state, dispatch] = useReducer(homeLayoutReducer, {
-    isLoading: false,
     toggleSidebarBtnChecked: false,
     toggleSettingMenuBtnChecked: false,
     showToggleSidebar: false,
@@ -79,9 +76,9 @@ const HomeLayout = () => {
 
   const navigate = useNavigate();
 
-  const {setCurrentUserUid} = useAuth();
+  const auth = useAuth();
 
-  const mounted = useMounted();
+  const firebase = useFirebase();
 
   useEffect(() => {
     if (state.toggleSettingMenuBtnChecked) {
@@ -121,18 +118,14 @@ const HomeLayout = () => {
     try {
       e.preventDefault();
 
-      dispatch({type: SET_IS_LOADING, payload: true});
+      auth.setIsLoading(true);
 
-      await signOut(auth);
+      await signOut(firebase.auth);
 
-      setCurrentUserUid(null);
+      auth.setAuthStatus(false);
 
-      navigate(PATHS.LOGIN);
+      navigate(ROUTE_PATHS.LOGIN);
     } catch (error) {
-      if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-
       const errorMessage = findLogOutError(error.code);
       alert(errorMessage);
     }
@@ -155,32 +148,32 @@ const HomeLayout = () => {
     {
       icon: <InboxIcon />,
       content: 'Inbox',
-      path: PATHS.INBOX,
+      path: ROUTE_PATHS.INBOX,
     },
     {
       icon: <ExploreIcon />,
       content: 'Explore',
-      path: PATHS.EXPLORE,
+      path: ROUTE_PATHS.EXPLORE,
     },
     {
       icon: <ActivityIcon />,
       content: 'Activity',
-      path: PATHS.ACTIVITY,
+      path: ROUTE_PATHS.ACTIVITY,
     },
     {
       icon: <ReelIcon />,
       content: 'Reel',
-      path: PATHS.REEL,
+      path: ROUTE_PATHS.REEL,
     },
     {
       icon: <StreamIcon />,
       content: 'Stream',
-      path: PATHS.STREAM,
+      path: ROUTE_PATHS.STREAM,
     },
     {
       icon: <SavedListIcon />,
       content: 'Saved',
-      path: PATHS.SAVED,
+      path: ROUTE_PATHS.SAVED,
     },
   ].map((item, index) => (
     <Tooltip key={index} content={item.content} position="right">
@@ -225,20 +218,20 @@ const HomeLayout = () => {
             <OverlayLabel htmlFor="checkbox_setting_menu" />
             <SettingMenu>
               <SettingMenuItem>
-                <SettingMenuItemLink to={`/${PATHS.PROFILE}`}>
+                <SettingMenuItemLink to={`/${ROUTE_PATHS.PROFILE}`}>
                   <UserIcon />
                   <SettingMenuItemText>Profile</SettingMenuItemText>
                 </SettingMenuItemLink>
               </SettingMenuItem>
               <SettingMenuItem>
-                <SettingMenuItemLink to={`/${PATHS.SETTINGS}`}>
+                <SettingMenuItemLink to={`/${ROUTE_PATHS.SETTINGS}`}>
                   <MenuSettingIcon />
                   <SettingMenuItemText>Settings</SettingMenuItemText>
                 </SettingMenuItemLink>
               </SettingMenuItem>
               <SettingMenuItem>
                 <SettingMenuItemLink
-                  to={`/${PATHS.LOGOUT}`}
+                  to={`/${ROUTE_PATHS.LOGOUT}`}
                   onClick={logOutHandler}
                 >
                   Log Out

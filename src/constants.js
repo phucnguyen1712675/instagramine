@@ -1,4 +1,4 @@
-export const PATHS = {
+export const ROUTE_PATHS = {
   INBOX: 'inbox',
   EXPLORE: 'explore',
   ACTIVITY: 'activity',

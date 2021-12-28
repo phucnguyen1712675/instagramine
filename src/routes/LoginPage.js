@@ -1,10 +1,9 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {AuthErrorCodes, signInWithEmailAndPassword} from 'firebase/auth';
-import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {useAuth, useForm, useMounted} from '../hooks';
+import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
+import {useAuth, useForm, useMounted, useFirebase} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
-import {auth} from '../firebase-config';
 import {validateEmail} from '../utils/validate';
 import {
   Logo,
@@ -37,9 +36,11 @@ const LoginPage = () => {
 
   const from = location.state?.from?.pathname ?? '/';
 
-  const {setCurrentUserUid} = useAuth();
+  const auth = useAuth();
 
   const mounted = useMounted();
+
+  const firebase = useFirebase();
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
@@ -50,15 +51,13 @@ const LoginPage = () => {
       try {
         setIsLoading(true);
 
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
+        await signInWithEmailAndPassword(
+          firebase.auth,
           values.email,
           values.password
         );
 
-        const {user} = userCredential;
-
-        setCurrentUserUid(user.uid);
+        auth.setAuthStatus(true);
 
         navigate(from, {replace: true});
       } catch (error) {
@@ -94,7 +93,7 @@ const LoginPage = () => {
   return (
     <AuthLayout
       questionText="Don't have an account? "
-      toUrl={`/${PATHS.SIGNUP}`}
+      toUrl={`/${ROUTE_PATHS.SIGNUP}`}
       toPageText="Sign up"
     >
       <Logo />

@@ -36,7 +36,6 @@ import {
   SearchHistoryUserAdditionalInfoDot,
   NoResultsText,
 } from './styled/SearchBar.styled';
-import {db} from '../firebase-config';
 import {
   useEventListener,
   useForm,
@@ -44,6 +43,7 @@ import {
   useMounted,
   useAuth,
   useFirestoreQuery,
+  useFirebase,
 } from '../hooks';
 import {searchBarReducer} from '../reducers';
 import {
@@ -119,12 +119,14 @@ const SearchBar = () => {
 
   const mounted = useMounted();
 
+  const firebase = useFirebase();
+
   const {
     data: users,
     status,
     error,
   } = useFirestoreQuery({
-    query: collection(db, 'users'),
+    query: collection(firebase.db, 'users'),
   });
 
   useEffect(() => {
@@ -136,14 +138,14 @@ const SearchBar = () => {
   const getUserSearchHistory = useCallback(async () => {
     try {
       const searchHistorySnapshot = await getDocs(
-        collection(db, `users/${auth.uid}/search-history`)
+        collection(firebase.db, `users/${auth.authUser.id}/search-history`)
       );
 
       return getCollectionData(searchHistorySnapshot.docs);
     } catch (error) {
       alert(`Error fetching search history: ${error}`);
     }
-  }, [auth.uid]);
+  }, [auth.authUser.id, firebase.db]);
 
   useEffect(() => {
     const getSearchHistory = async () => {
@@ -177,8 +179,8 @@ const SearchBar = () => {
 
       const userFollowingUserJunctions = await getDocs(
         query(
-          collection(db, 'junction_user_following_user'),
-          where('uid', '==', auth.uid)
+          collection(firebase.db, 'junction_user_following_user'),
+          where('uid', '==', auth.authUser.id)
         )
       );
 
@@ -223,7 +225,7 @@ const SearchBar = () => {
     if (values.query) {
       getFilteredUsers();
     }
-  }, [values.query, users, auth.uid, mounted]);
+  }, [values.query, users, auth.authUser.id, mounted, firebase.db]);
 
   const onSearch = useCallback(() => {
     if (!values.query) {
@@ -267,7 +269,12 @@ const SearchBar = () => {
 
     await Promise.all(
       searchHistoryData.forEach((item) => {
-        deleteDoc(doc(db, `users/${auth.uid}/search-history/${item.id}`));
+        deleteDoc(
+          doc(
+            firebase.db,
+            `users/${auth.authUser.id}/search-history/${item.id}`
+          )
+        );
       })
     );
 
@@ -307,7 +314,10 @@ const SearchBar = () => {
         };
 
         await setDoc(
-          doc(db, `users/${auth.uid}/search-history/${newSearchItem.id}`),
+          doc(
+            firebase.db,
+            `users/${auth.authUser.id}/search-history/${newSearchItem.id}`
+          ),
           itemToAdd
         );
 
@@ -350,7 +360,9 @@ const SearchBar = () => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      await deleteDoc(doc(db, `users/${auth.uid}/search-history/${id}`));
+      await deleteDoc(
+        doc(firebase.db, `users/${auth.authUser.id}/search-history/${id}`)
+      );
 
       if (mounted.current) {
         setSearchHistory((prevState) =>

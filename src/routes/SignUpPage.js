@@ -2,10 +2,9 @@ import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {AuthErrorCodes, createUserWithEmailAndPassword} from 'firebase/auth';
 import {setDoc, doc} from 'firebase/firestore';
-import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {useAuth, useForm, useMounted} from '../hooks';
+import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
+import {useAuth, useForm, useMounted, useFirebase} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
-import {db, auth} from '../firebase-config';
 import {validateEmail} from '../utils/validate';
 import {
   Logo,
@@ -40,9 +39,11 @@ const SignUpPage = () => {
 
   const from = location.state?.from?.pathname ?? '/';
 
-  const {setCurrentUserUid} = useAuth();
+  const auth = useAuth();
 
   const mounted = useMounted();
+
+  const firebase = useFirebase();
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
@@ -55,7 +56,7 @@ const SignUpPage = () => {
     onSubmit: async (values) => {
       try {
         const userCredential = await createUserWithEmailAndPassword(
-          auth,
+          firebase.auth,
           values.email,
           values.password
         );
@@ -79,9 +80,9 @@ const SignUpPage = () => {
           socialLinks: ['https://dribbble.com/nkchaudhary01'],
         };
 
-        await setDoc(doc(db, `users/${user.uid}`), newUserData);
+        await setDoc(doc(firebase.db, `users/${user.uid}`), newUserData);
 
-        setCurrentUserUid(user.uid);
+        auth.setAuthStatus(true);
 
         navigate(from, {replace: true});
       } catch (error) {
@@ -135,7 +136,7 @@ const SignUpPage = () => {
   return (
     <AuthLayout
       questionText="Have an account? "
-      toUrl={`/${PATHS.LOGIN}`}
+      toUrl={`/${ROUTE_PATHS.LOGIN}`}
       toPageText="Login"
     >
       <Logo />

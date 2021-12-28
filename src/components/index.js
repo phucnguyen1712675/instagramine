@@ -1,4 +1,4 @@
-import AppStyles from './AppStyles';
+import AppEntry from './AppEntry';
 import AuthLayout from './AuthLayout';
 import Avatar from './Avatar';
 import Button from './Button';
@@ -22,7 +22,7 @@ import UserCard from './UserCard';
 import UserMenu from './UserMenu';
 
 export {
-  AppStyles,
+  AppEntry,
   AuthLayout,
   Avatar,
   Button,

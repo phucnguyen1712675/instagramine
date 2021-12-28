@@ -9,8 +9,7 @@ import {
   RequestItemDeleteButton,
 } from './styled/RequestItemButtonGroup.styled';
 import {requestItemButtonReducer} from '../reducers';
-import {useAuth, useMounted} from '../hooks';
-import {db} from '../firebase-config';
+import {useAuth, useMounted, useFirebase} from '../hooks';
 import {
   SET_IS_CONFIRM_BUTTON_LOADING,
   SET_IS_DELETE_BUTTON_LOADING,
@@ -18,9 +17,8 @@ import {
   REQUEST_HAS_BEEN_CONFIRMED,
   USER_HAS_BEEN_FOLLOWED,
 } from '../actions/requestItemButtonGroupActions';
-import {SET_FOLLOW_REQUESTS} from '../actions/notificationButtonActions';
 
-const RequestItemButtonGroup = ({userId, dispatchCb}) => {
+const RequestItemButtonGroup = ({userId, setFollowRequests}) => {
   const [state, dispatch] = useReducer(requestItemButtonReducer, {
     isConfirmed: false,
     isFollowing: false,
@@ -33,6 +31,8 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
 
   const mounted = useMounted();
 
+  const firebase = useFirebase();
+
   const confirmRequestHandler = async () => {
     try {
       dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
@@ -42,18 +42,24 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
 
       // Remove from request sender
       batch.delete(
-        doc(db, `junction_user_request_sender/${auth.uid}_${userId}`)
+        doc(
+          firebase.db,
+          `junction_user_request_sender/${auth.authUser.id}_${userId}`
+        )
       );
 
-      // user with userId follows user with auth.uid
+      // user with userId follows user with auth.authUser.id
       const itemToAdd = {
         uid: userId,
-        followingUserId: auth.uid,
+        followingUserId: auth.authUser.id,
       };
 
       // Add to following user collection
       batch.set(
-        doc(db, `junction_user_following_user/${userId}_${auth.uid}`),
+        doc(
+          firebase.db,
+          `junction_user_following_user/${userId}_${auth.authUser.id}`
+        ),
         itemToAdd
       );
 
@@ -79,19 +85,17 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
       dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
 
       await deleteDoc(
-        doc(db, `junction_user_request_sender/${auth.uid}_${userId}`)
+        doc(
+          firebase.db,
+          `junction_user_request_sender/${auth.authUser.id}_${userId}`
+        )
       );
 
       const newFollowRequests = state.followRequests.filter(
         (user) => user.id !== userId
       );
 
-      if (mounted.current) {
-        dispatchCb({
-          type: SET_FOLLOW_REQUESTS,
-          payload: newFollowRequests,
-        });
-      }
+      setFollowRequests(newFollowRequests);
 
       if (mounted.current) {
         dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
@@ -158,7 +162,7 @@ const RequestItemButtonGroup = ({userId, dispatchCb}) => {
 
 RequestItemButtonGroup.propTypes = {
   userId: PropTypes.number.isRequired,
-  dispatchCb: PropTypes.func.isRequired,
+  setFollowRequests: PropTypes.func.isRequired,
 };
 
 export default RequestItemButtonGroup;

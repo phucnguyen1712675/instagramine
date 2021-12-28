@@ -1,44 +1,59 @@
-import {createContext, useState, useEffect} from 'react';
+import {createContext, useReducer, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {onAuthStateChanged} from 'firebase/auth';
 import {doc, getDoc} from 'firebase/firestore';
-import {useMounted, useLocalStorage} from '../hooks';
-import {auth, db} from '../firebase-config';
+import {useLocalStorage, useMounted, useFirebase} from '../hooks';
+import {authContextReducer} from '../reducers';
+import {
+  SET_IS_LOADING,
+  SET_AUTH_USER_AFTER_FETCHING,
+} from '../actions/authContextActions';
+import {getDocData} from '../utils/firestore';
+
+const initialState = {
+  isLoading: true,
+  authUser: null,
+};
 
 const AuthContext = createContext({
-  currentUser: null,
-  uid: null,
-  setCurrentUserUid: () => {},
+  ...initialState,
+  isAuth: false,
+  setAuthStatus: () => {},
+  setIsLoading: () => {},
 });
 
 const AuthContextProvider = ({children}) => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [state, dispatch] = useReducer(authContextReducer, initialState);
 
-  const [uid, setUid] = useLocalStorage({
-    key: 'uid',
-    initialValue: null,
+  const [isAuth, setIsAuth] = useLocalStorage({
+    key: 'isAuth',
+    initialValue: false,
   });
 
   const mounted = useMounted();
 
+  const firebase = useFirebase();
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(firebase.auth, async (user) => {
       try {
         if (user) {
           // User is signed in
           const uid = user.uid;
-          const userSnap = await getDoc(doc(db, `users/${uid}`));
+          const userSnap = await getDoc(doc(firebase.db, `users/${uid}`));
 
           if (userSnap.exists()) {
-            const userData = userSnap.data();
+            const userData = getDocData(userSnap);
 
             if (mounted.current) {
-              setCurrentUser(userData);
+              dispatch({type: SET_AUTH_USER_AFTER_FETCHING, payload: userData});
             }
+          } else {
+            dispatch({type: SET_IS_LOADING, payload: false});
           }
         } else {
           // User is signed out
-          setCurrentUser(null);
+          dispatch({type: SET_AUTH_USER_AFTER_FETCHING, payload: null});
         }
       } catch (error) {
         alert(error);
@@ -46,14 +61,18 @@ const AuthContextProvider = ({children}) => {
     });
 
     return () => unsubscribe();
-  }, [mounted]);
+  }, [firebase.auth, firebase.db, mounted]);
 
-  const setCurrentUserUid = (id) => setUid(id);
+  const setAuthStatus = (status) => setIsAuth(status);
+
+  const setIsLoading = (isLoading) =>
+    dispatch({type: SET_IS_LOADING, payload: isLoading});
 
   const value = {
-    currentUser,
-    uid,
-    setCurrentUserUid,
+    ...state,
+    isAuth,
+    setAuthStatus,
+    setIsLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {useLocation, Navigate} from 'react-router-dom';
-import {PATHS} from '../constants';
+import {ROUTE_PATHS} from '../constants';
 import {useAuth} from '../hooks';
 
 const RequireAuth = ({children}) => {
@@ -9,8 +9,8 @@ const RequireAuth = ({children}) => {
 
   const location = useLocation();
 
-  if (!auth.uid) {
-    return <Navigate to={`/${PATHS.LOGIN}`} state={{from: location}} />;
+  if (!auth.isAuth) {
+    return <Navigate to={`/${ROUTE_PATHS.LOGIN}`} state={{from: location}} />;
   }
 
   return children;

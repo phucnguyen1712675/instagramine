@@ -10,8 +10,7 @@ import {
   where,
   FieldValue,
 } from 'firebase/firestore';
-import {db} from '../firebase-config';
-import {useAuth, useMounted} from '../hooks';
+import {useAuth, useMounted, useFirebase} from '../hooks';
 import {savedPostsContextReducer} from '../reducers';
 import {
   SET_IS_LOADING,
@@ -42,14 +41,16 @@ const SavedPostsContextProvider = ({children}) => {
 
   const mounted = useMounted();
 
+  const firebase = useFirebase();
+
   const getSavedPosts = useCallback(async () => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
       const userSavedPostJunction = await getDocs(
         query(
-          collection(db, 'junction_user_saved_post'),
-          where('uid', '==', auth.uid)
+          collection(firebase.db, 'junction_user_saved_post'),
+          where('uid', '==', auth.authUser.id)
         )
       );
 
@@ -72,20 +73,23 @@ const SavedPostsContextProvider = ({children}) => {
 
       alert(`Error fetching saved posts: ${error}`);
     }
-  }, [auth.uid, mounted]);
+  }, [auth.authUser.id, firebase.db, mounted]);
 
   const savePost = async (post) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
       const itemToAdd = {
-        uid: auth.uid,
+        uid: auth.authUser.id,
         savedPostId: post.id,
         createdAt: FieldValue.serverTimestamp(),
       };
 
       await setDoc(
-        doc(db, `junction_user_saved_post/${auth.uid}_${post.id}`),
+        doc(
+          firebase.db,
+          `junction_user_saved_post/${auth.authUser.id}_${post.id}`
+        ),
         itemToAdd
       );
 
@@ -110,7 +114,9 @@ const SavedPostsContextProvider = ({children}) => {
     try {
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      await deleteDoc(doc(db, `junction_user_saved_post/${auth.uid}_${id}`));
+      await deleteDoc(
+        doc(firebase.db, `junction_user_saved_post/${auth.authUser.id}_${id}`)
+      );
 
       const savedPostsPayload = state.savedPosts.filter(
         (post) => post.id !== id

@@ -8,6 +8,7 @@ import useSavedPosts from './useSavedPosts';
 import useOnScreen from './useOnScreen';
 import useMounted from './useMounted';
 import useMemoCompare from './useMemoCompare';
+import useFirebase from './useFirebase';
 
 export {
   useAuth,
@@ -20,4 +21,5 @@ export {
   useOnScreen,
   useMounted,
   useMemoCompare,
+  useFirebase,
 };

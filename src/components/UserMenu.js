@@ -44,8 +44,7 @@ import {
   CreatePostButton,
 } from './styled/UserMenu.styled';
 import {MAX_STORIES_NUMBER} from '../constants';
-import {useAuth, useMounted} from '../hooks';
-import {db} from '../firebase-config';
+import {useAuth, useMounted, useFirebase} from '../hooks';
 import {onErrorMedia} from '../utils/media';
 import {getCollectionData} from '../utils/firestore';
 
@@ -64,13 +63,15 @@ const UserMenu = () => {
 
   const mounted = useMounted();
 
+  const firebase = useFirebase();
+
   useEffect(() => {
     const getCurrentUserStoryCategories = async () => {
       try {
         const junctionsQuerySnap = await getDocs(
           query(
-            collection(db, 'junction_user_story_category'),
-            where('uid', '==', auth.uid),
+            collection(firebase.db, 'junction_user_story_category'),
+            where('uid', '==', auth.authUser.id),
             orderBy('views', 'desc'),
             limit(MAX_STORIES_NUMBER)
           )
@@ -82,7 +83,10 @@ const UserMenu = () => {
               .filter((document) => document.exists())
               .map((document) =>
                 getDoc(
-                  doc(db, `story_categories/${document.data().storyCategoryId}`)
+                  doc(
+                    firebase.db,
+                    `story_categories/${document.data().storyCategoryId}`
+                  )
                 )
               )
           );
@@ -100,21 +104,21 @@ const UserMenu = () => {
     };
 
     getCurrentUserStoryCategories();
-  }, [auth.uid, mounted]);
+  }, [auth.authUser.id, firebase.db, mounted]);
 
   return (
     <StyledUserMenu>
       <UserMenuTopContent>
         <ThumbnailContentAvatar
-          url={auth.currentUser.avatar}
-          hasStory={auth.currentUser.hasStory}
-          hasStoryBeenSeen={auth.currentUser.hasStoryBeenSeen}
+          url={auth.authUser.avatar}
+          hasStory={auth.authUser.hasStory}
+          hasStoryBeenSeen={auth.authUser.hasStoryBeenSeen}
         />
         <ThumbnailContentUserName>
-          {auth.currentUser.username}
+          {auth.authUser.username}
         </ThumbnailContentUserName>
         <ThumbnailContentJobDescription>
-          {auth.currentUser.job}
+          {auth.authUser.job}
         </ThumbnailContentJobDescription>
         <EditButtonWrapper content="Edit profile" position="left">
           <EditButton type="primary" size="large">
@@ -126,9 +130,9 @@ const UserMenu = () => {
         <StatisticalContent>
           <StatisticalContentInner>
             {[
-              auth.currentUser.numberOfPosts,
-              auth.currentUser.numberOfFollowers,
-              auth.currentUser.numberOfFollowingUsers,
+              auth.authUser.numberOfPosts,
+              auth.authUser.numberOfFollowers,
+              auth.authUser.numberOfFollowingUsers,
             ].map((field, index) => {
               if (index === 2) {
                 return (
@@ -151,18 +155,18 @@ const UserMenu = () => {
           </StatisticalContentInner>
         </StatisticalContent>
         <BioContentContainer>
-          <SectionTitle>{auth.currentUser.name}</SectionTitle>
+          <SectionTitle>{auth.authUser.name}</SectionTitle>
           <BioContent
             showChar={49}
             readMoreText="(Read more)"
             showLessText="(Show less)"
             readMoreLink="https://www.instagram.com/phuc7320/"
           >
-            {auth.currentUser.bio}
+            {auth.authUser.bio}
           </BioContent>
-          {auth.currentUser.socialLinks.length > 0 ? (
+          {auth.authUser.socialLinks.length > 0 ? (
             <BioContentSocialLinks>
-              {auth.currentUser.socialLinks.slice(0, 3).map((link, index) => (
+              {auth.authUser.socialLinks.slice(0, 3).map((link, index) => (
                 <BioContentSocialLink key={index} href={link}>
                   {socialLinkFormatter(link)}
                 </BioContentSocialLink>
