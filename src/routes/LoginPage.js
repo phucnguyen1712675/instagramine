@@ -1,10 +1,11 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {AuthErrorCodes, signInWithEmailAndPassword} from 'firebase/auth';
+import {signInWithEmailAndPassword} from 'firebase/auth';
 import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
 import {useAuth, useForm, useMounted, useFirebase} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
+import {findLoginError} from '../utils/firestore';
 import {
   Logo,
   AuthForm,
@@ -13,19 +14,6 @@ import {
   ErrorText,
   SubmitButtonWrapper,
 } from '../components/styled/Lib';
-
-const findLoginError = (code) => {
-  switch (code) {
-    case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
-      return 'Too many attempts. Try again later.';
-    case AuthErrorCodes.USER_DELETED:
-    case AuthErrorCodes.INVALID_EMAIL:
-    case AuthErrorCodes.INVALID_PASSWORD:
-      return 'Invalid email or password';
-    default:
-      return 'Something went wrong';
-  }
-};
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);

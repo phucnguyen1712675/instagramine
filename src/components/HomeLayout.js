@@ -1,6 +1,6 @@
 import {useReducer, useRef, useEffect, useCallback} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
-import {AuthErrorCodes, signOut} from 'firebase/auth';
+import {signOut} from 'firebase/auth';
 import Header from './Header';
 import UserMenu from './UserMenu';
 import Tooltip from './Tooltip';
@@ -33,21 +33,13 @@ import {
 import {ROUTE_PATHS} from '../constants';
 import {useAuth, useFirebase} from '../hooks';
 import {homeLayoutReducer} from '../reducers';
+import {findLogOutError} from '../utils/firestore';
 import {SavedPostsContextProvider} from '../store/savedPostsContext';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
   SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
   SET_SHOW_TOGGLE_SIDEBAR,
 } from '../actions/homeLayoutActions';
-
-const findLogOutError = (error) => {
-  switch (error.code) {
-    case AuthErrorCodes.USER_SIGNED_OUT:
-      return 'User has signed out';
-    default:
-      return 'Something went wrong';
-  }
-};
 
 const HomeLayout = () => {
   const [state, dispatch] = useReducer(homeLayoutReducer, {

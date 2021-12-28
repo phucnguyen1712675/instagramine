@@ -1,11 +1,12 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {AuthErrorCodes, createUserWithEmailAndPassword} from 'firebase/auth';
 import {setDoc, doc} from 'firebase/firestore';
+import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
 import {useAuth, useForm, useMounted, useFirebase} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
+import {findRegisterError} from '../utils/firestore';
 import {
   Logo,
   AuthForm,
@@ -20,15 +21,6 @@ import {
   TermAndPolicyText,
   TextAndPolicyLink,
 } from '../components/styled/SignUpPage.styled';
-
-const findRegisterError = (error) => {
-  switch (error.code) {
-    case AuthErrorCodes.EMAIL_EXISTS:
-      return 'Email already in-use';
-    default:
-      return 'Something went wrong';
-  }
-};
 
 const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState(false);

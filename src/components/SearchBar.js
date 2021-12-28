@@ -53,21 +53,7 @@ import {
   OPEN_FIRST_TIME,
 } from '../actions/searchBarActions';
 import {getCollectionData} from '../utils/firestore';
-
-const move = (array, from, to) => {
-  if (to === from) return array;
-
-  var target = array[from];
-  var increment = to < from ? -1 : 1;
-
-  for (var k = from; k != to; k += increment) {
-    array[k] = array[k + increment];
-  }
-
-  array[to] = target;
-
-  return array;
-};
+import {move} from '../utils/array';
 
 const userConverter = (user) => {
   return {

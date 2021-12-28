@@ -47,14 +47,7 @@ import {MAX_STORIES_NUMBER} from '../constants';
 import {useAuth, useMounted, useFirebase} from '../hooks';
 import {onErrorMedia} from '../utils/media';
 import {getCollectionData} from '../utils/firestore';
-
-const kFormatter = (num) =>
-  Math.abs(num) > 999
-    ? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + 'K'
-    : Math.sign(num) * Math.abs(num);
-
-const socialLinkFormatter = (socialLink) =>
-  socialLink.replace('https://', 'www.');
+import {kFormatter, socialLinkFormatter} from '../utils/formatters';
 
 const UserMenu = () => {
   const [storyCategories, setStoryCategories] = useState([]);
