@@ -1,6 +1,5 @@
 import {useReducer} from 'react';
 import PropTypes from 'prop-types';
-import {writeBatch, doc, deleteDoc} from 'firebase/firestore';
 import {DisabledButtonWrapper} from './styled/Lib';
 import {
   StyledRequestItemButtonGroup,
@@ -9,16 +8,22 @@ import {
   RequestItemDeleteButton,
 } from './styled/RequestItemButtonGroup.styled';
 import {requestItemButtonReducer} from '../reducers';
-import {useAuth, useMounted, useFirebase} from '../hooks';
+import {useAuth, useMounted} from '../hooks';
+import {
+  confirmRequest,
+  removeJunctionUserRequestSender,
+  addJunctionUserFollowingUser,
+  removeJunctionUserFollowingUser,
+} from '../services/firestore';
 import {
   SET_IS_CONFIRM_BUTTON_LOADING,
   SET_IS_DELETE_BUTTON_LOADING,
   SET_IS_FOLLOW_BUTTON_LOADING,
-  REQUEST_HAS_BEEN_CONFIRMED,
-  USER_HAS_BEEN_FOLLOWED,
+  TOGGLE_IS_CONFIRMED_AFTER_LOADING,
+  TOGGLE_IS_FOLLOWING_AFTER_LOADING,
 } from '../actions/requestItemButtonGroupActions';
 
-const RequestItemButtonGroup = ({userId, setFollowRequests}) => {
+const RequestItemButtonGroup = ({userId, setRequestSendersAfterRemoving}) => {
   const [state, dispatch] = useReducer(requestItemButtonReducer, {
     isConfirmed: false,
     isFollowing: false,
@@ -31,92 +36,56 @@ const RequestItemButtonGroup = ({userId, setFollowRequests}) => {
 
   const mounted = useMounted();
 
-  const firebase = useFirebase();
-
   const confirmRequestHandler = async () => {
-    try {
-      dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
+    dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: true});
 
-      // Get a new write batch
-      const batch = writeBatch();
+    await confirmRequest({
+      uid: auth.authUser.id,
+      requestSenderId: userId,
+    });
 
-      // Remove from request sender
-      batch.delete(
-        doc(
-          firebase.db,
-          `junction_user_request_sender/${auth.authUser.id}_${userId}`
-        )
-      );
-
-      // user with userId follows user with auth.authUser.id
-      const itemToAdd = {
-        uid: userId,
-        followingUserId: auth.authUser.id,
-      };
-
-      // Add to following user collection
-      batch.set(
-        doc(
-          firebase.db,
-          `junction_user_following_user/${userId}_${auth.authUser.id}`
-        ),
-        itemToAdd
-      );
-
-      // Commit the batch
-      await batch.commit();
-
-      if (mounted.current) {
-        dispatch({
-          type: REQUEST_HAS_BEEN_CONFIRMED,
-        });
-      }
-    } catch (error) {
-      if (mounted.current) {
-        dispatch({type: SET_IS_CONFIRM_BUTTON_LOADING, payload: false});
-      }
-
-      alert(`Error confirming follow request: ${error}`);
+    if (mounted.current) {
+      dispatch({
+        type: TOGGLE_IS_CONFIRMED_AFTER_LOADING,
+      });
     }
   };
 
   const removeRequestHandler = async () => {
-    try {
-      dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
+    dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: true});
 
-      await deleteDoc(
-        doc(
-          firebase.db,
-          `junction_user_request_sender/${auth.authUser.id}_${userId}`
-        )
-      );
+    await removeJunctionUserRequestSender({
+      uid: auth.authUser.id,
+      requestSenderId: userId,
+    });
 
-      const newFollowRequests = state.followRequests.filter(
-        (user) => user.id !== userId
-      );
+    setRequestSendersAfterRemoving(userId);
 
-      setFollowRequests(newFollowRequests);
-
-      if (mounted.current) {
-        dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
-      }
-    } catch (error) {
-      if (mounted.current) {
-        dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
-      }
-
-      alert(`Error removing follow request: ${error}`);
+    if (mounted.current) {
+      dispatch({type: SET_IS_DELETE_BUTTON_LOADING, payload: false});
     }
   };
 
-  const followUserHandler = () => {
+  const followUserHandler = async () => {
     dispatch({type: SET_IS_FOLLOW_BUTTON_LOADING, payload: true});
 
-    setTimeout(() => {
-      dispatch({
-        type: USER_HAS_BEEN_FOLLOWED,
+    if (state.isFollowing) {
+      await removeJunctionUserFollowingUser({
+        uid: auth.authUser.id,
+        followingUserId: userId,
       });
-    }, 1000);
+    } else {
+      await addJunctionUserFollowingUser({
+        uid: auth.authUser.id,
+        followingUserId: userId,
+      });
+    }
+
+    if (mounted.current) {
+      dispatch({
+        type: TOGGLE_IS_FOLLOWING_AFTER_LOADING,
+      });
+    }
   };
 
   return (
@@ -162,7 +131,7 @@ const RequestItemButtonGroup = ({userId, setFollowRequests}) => {
 
 RequestItemButtonGroup.propTypes = {
   userId: PropTypes.number.isRequired,
-  setFollowRequests: PropTypes.func.isRequired,
+  setRequestSendersAfterRemoving: PropTypes.func.isRequired,
 };
 
 export default RequestItemButtonGroup;

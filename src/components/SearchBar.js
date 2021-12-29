@@ -1,14 +1,4 @@
 import {useReducer, useRef, useCallback, useEffect} from 'react';
-import {
-  collection,
-  getDocs,
-  query,
-  setDoc,
-  where,
-  doc,
-  FieldValue,
-  deleteDoc,
-} from 'firebase/firestore';
 import HideLabel from './HideLabel';
 import {FakeCheckbox} from './styled/Lib';
 import {
@@ -39,47 +29,38 @@ import {
 import {
   useEventListener,
   useForm,
-  useLocalStorage,
-  useMounted,
   useAuth,
   useFirestoreQuery,
-  useFirebase,
+  useMounted,
 } from '../hooks';
 import {searchBarReducer} from '../reducers';
+import {searchHistoryItemConverter} from '../converters';
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,
-  SET_FILTERED_USERS_AFTER_FETCHING,
+  SET_SEARCH_HISTORY_AFTER_LOADING,
+  SET_SEARCH_HISTORY_AFTER_ADDING,
+  SET_SEARCH_HISTORY_AFTER_REMOVING,
+  SET_SEARCH_HISTORY_AFTER_REMOVING_ALL,
+  SET_FILTERED_USERS,
   OPEN_FIRST_TIME,
 } from '../actions/searchBarActions';
-import {getCollectionData} from '../utils/firestore';
-import {move} from '../utils/array';
-
-const userConverter = (user) => {
-  return {
-    id: user.id,
-    username: user.username,
-    name: user.name,
-    avatar: user.avatar,
-    profile: user.profile,
-    hasStory: user.hasStory,
-    hasStoryBeenSeen: user.hasStoryBeenSeen,
-    isFollowing: user.isFollowing,
-    createdAt: user.createdAt,
-  };
-};
+import {
+  usersColRef,
+  junctionUserFollowingUserQuery,
+  getSearchHistoryByUid,
+  addJunctionUserSearchHistory,
+  removeJunctionUserSearchHistory,
+  removeAllJunctionUserSearchHistoryByUid,
+} from '../services/firestore';
 
 const SearchBar = () => {
   const [state, dispatch] = useReducer(searchBarReducer, {
     hasOpened: false,
     isOpen: false,
     isLoading: false,
+    searchHistory: [],
     filteredUsers: [],
-  });
-
-  const [searchHistory, setSearchHistory] = useLocalStorage({
-    key: 'searchHistory',
-    initialValue: null,
   });
 
   const {values, handleChange, handleSubmit, reset} = useForm({
@@ -105,113 +86,60 @@ const SearchBar = () => {
 
   const mounted = useMounted();
 
-  const firebase = useFirebase();
-
   const {
     data: users,
-    status,
-    error,
+    status: usersStatus,
+    error: usersError,
   } = useFirestoreQuery({
-    query: collection(firebase.db, 'users'),
+    query: usersColRef.withConverter(searchHistoryItemConverter),
+  });
+
+  const {
+    data: followingUserIds,
+    status: followingUserIdsStatus,
+    error: followingUserIdsError,
+  } = useFirestoreQuery({
+    query: junctionUserFollowingUserQuery(auth.authUser.id),
   });
 
   useEffect(() => {
-    if (status === 'error') {
-      alert(error.message);
-    }
-  }, [status, error]);
-
-  const getUserSearchHistory = useCallback(async () => {
-    try {
-      const searchHistorySnapshot = await getDocs(
-        collection(firebase.db, `users/${auth.authUser.id}/search-history`)
-      );
-
-      return getCollectionData(searchHistorySnapshot.docs);
-    } catch (error) {
-      alert(`Error fetching search history: ${error}`);
-    }
-  }, [auth.authUser.id, firebase.db]);
-
-  useEffect(() => {
-    const getSearchHistory = async () => {
-      dispatch({type: SET_IS_LOADING, payload: true});
-
-      const searchHistoryData = await getUserSearchHistory();
-
-      if (mounted.current) {
-        if (searchHistoryData.length > 0) {
-          setSearchHistory(searchHistoryData);
-        }
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-    };
-
     if (state.hasOpened) {
+      const getSearchHistory = async () => {
+        dispatch({type: SET_IS_LOADING, payload: true});
+
+        const searchHistoryData = await getSearchHistoryByUid(auth.authUser.id);
+
+        if (mounted.current) {
+          dispatch({
+            type: SET_SEARCH_HISTORY_AFTER_LOADING,
+            payload: searchHistoryData,
+          });
+        }
+      };
+
       getSearchHistory();
     }
-  }, [state.hasOpened, mounted, setSearchHistory, getUserSearchHistory]);
+  }, [state.hasOpened, auth.authUser.id, mounted]);
 
   useEffect(() => {
-    const getFilteredUsers = async () => {
-      const filteredUsers = users
+    if (values.query) {
+      const usersFiltered = users
         .filter((user) => {
           const username = user.username.toLowerCase();
           return username.includes(values.query);
         })
+        .map((user) => ({
+          ...user,
+          isFollowing: followingUserIds.includes(user.id),
+        }))
         .slice(0, 10);
 
-      dispatch({type: SET_IS_LOADING, payload: true});
-
-      const userFollowingUserJunctions = await getDocs(
-        query(
-          collection(firebase.db, 'junction_user_following_user'),
-          where('uid', '==', auth.authUser.id)
-        )
-      );
-
-      let filteredUsersToShow = null;
-
-      if (userFollowingUserJunctions.docs > 0) {
-        const followingUserJunctions = getCollectionData(
-          userFollowingUserJunctions.docs
-        );
-
-        const followingUserIds = followingUserJunctions.map(
-          (junction) => junction.followingUserId
-        );
-
-        filteredUsersToShow = filteredUsers.map((user) => {
-          const convertedUser = userConverter(user);
-
-          return {
-            ...convertedUser,
-            isFollowing: followingUserIds.includes(user.id),
-          };
-        });
-      } else {
-        filteredUsersToShow = filteredUsers.map((user) => {
-          const convertedUser = userConverter(user);
-
-          return {
-            ...convertedUser,
-            isFollowing: false,
-          };
-        });
-      }
-
-      if (mounted.current) {
-        dispatch({
-          type: SET_FILTERED_USERS_AFTER_FETCHING,
-          payload: filteredUsersToShow,
-        });
-      }
-    };
-
-    if (values.query) {
-      getFilteredUsers();
+      dispatch({
+        type: SET_FILTERED_USERS,
+        payload: usersFiltered,
+      });
     }
-  }, [values.query, users, auth.authUser.id, mounted, firebase.db]);
+  }, [followingUserIds, users, values.query]);
 
   const onSearch = useCallback(() => {
     if (!values.query) {
@@ -239,33 +167,28 @@ const SearchBar = () => {
     handler: resizeHandler,
   });
 
-  const showHeader = !values.query && !state.isLoading && status !== 'loading';
+  const shouldLoading =
+    state.isLoading ||
+    usersStatus === 'loading' ||
+    followingUserIdsStatus === 'loading';
 
-  const searchItemArr = values.query ? state.filteredUsers : searchHistory;
+  const showHeader = !values.query && !shouldLoading;
+
+  const searchItemArr = values.query
+    ? state.filteredUsers
+    : state.searchHistory;
 
   const hasItems = searchItemArr?.length > 0;
 
-  const shouldCenterChild =
-    state.isLoading || status === 'loading' || !hasItems;
-
-  const hasSearchHistory = () => searchHistory?.length > 0;
+  const shouldCenterChild = shouldLoading || !hasItems;
 
   const clearAllHandler = async () => {
-    const searchHistoryData = await getUserSearchHistory();
+    dispatch({type: SET_IS_LOADING, payload: true});
 
-    await Promise.all(
-      searchHistoryData.forEach((item) => {
-        deleteDoc(
-          doc(
-            firebase.db,
-            `users/${auth.authUser.id}/search-history/${item.id}`
-          )
-        );
-      })
-    );
+    await removeAllJunctionUserSearchHistoryByUid(auth.authUser.id);
 
     if (mounted.current) {
-      setSearchHistory(null);
+      dispatch({type: SET_SEARCH_HISTORY_AFTER_REMOVING_ALL});
     }
   };
 
@@ -283,88 +206,53 @@ const SearchBar = () => {
     }
   };
 
-  const clickItemHandler = (e, user) => {
+  const clickItemHandler = async (e, user) => {
     e.preventDefault();
 
-    const hasHistory = hasSearchHistory();
+    dispatch({type: SET_IS_LOADING, payload: true});
 
-    const unshiftUser = async (user) => {
-      try {
-        dispatch({type: SET_IS_LOADING, payload: true});
+    await addJunctionUserSearchHistory({
+      uid: auth.authUser.id,
+      searchUser: user,
+    });
 
-        const newSearchItem = userConverter(user);
-
-        const itemToAdd = {
-          ...newSearchItem,
-          createdAt: FieldValue.serverTimestamp(),
-        };
-
-        await setDoc(
-          doc(
-            firebase.db,
-            `users/${auth.authUser.id}/search-history/${newSearchItem.id}`
-          ),
-          itemToAdd
-        );
-
-        if (mounted.current) {
-          setSearchHistory((prevState) => {
-            if (!prevState) {
-              return [newSearchItem];
-            } else {
-              return [newSearchItem, ...prevState];
-            }
-          });
-          dispatch({type: SET_IS_LOADING, payload: false});
-        }
-      } catch (error) {
-        if (mounted.current) {
-          dispatch({type: SET_IS_LOADING, payload: false});
-        }
-
-        alert(`Error adding user to search history: ${error}`);
-      }
-    };
-
-    if (hasHistory && values.query) {
-      const foundIndex = searchHistory.findIndex((u) => u.id === user.id);
-
-      // Not the first item
-      if (![-1, 0].includes(foundIndex)) {
-        setSearchHistory((prevState) => move(prevState, foundIndex, 0));
-      } else {
-        unshiftUser(user);
-      }
-    } else if (values.query) {
-      unshiftUser(user);
+    if (mounted.current) {
+      dispatch({
+        type: SET_SEARCH_HISTORY_AFTER_ADDING,
+        payload: user,
+      });
     }
-    // Clear the query
+
     reset();
   };
 
-  const removeItemHandler = async (id) => {
-    try {
-      dispatch({type: SET_IS_LOADING, payload: true});
+  const removeItemHandler = async (userId) => {
+    dispatch({type: SET_IS_LOADING, payload: true});
 
-      await deleteDoc(
-        doc(firebase.db, `users/${auth.authUser.id}/search-history/${id}`)
-      );
+    await removeJunctionUserSearchHistory({
+      uid: auth.authUser.id,
+      searchUserId: userId,
+    });
 
-      if (mounted.current) {
-        setSearchHistory((prevState) =>
-          prevState.filter((user) => user.id !== id)
-        );
-
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-    } catch (error) {
-      if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-
-      alert(`Error removing user from search history: ${error}`);
+    if (mounted.current) {
+      dispatch({
+        type: SET_SEARCH_HISTORY_AFTER_REMOVING,
+        payload: userId,
+      });
     }
   };
+
+  if (shouldLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (usersError === 'error') {
+    return <p>{`Error: ${usersError.message}`}</p>;
+  }
+
+  if (followingUserIdsError === 'error') {
+    return <p>{`Error: ${followingUserIdsError.message}`}</p>;
+  }
 
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
@@ -390,7 +278,7 @@ const SearchBar = () => {
       <SearchHistoryOverlayLabel htmlFor="checkbox_search_history" />
       {state.isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
-          {state.isLoading || status === 'loading' ? (
+          {shouldLoading ? (
             <SearchHistorySpinner />
           ) : !hasItems ? (
             <NoResultsText>

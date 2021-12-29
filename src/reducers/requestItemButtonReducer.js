@@ -2,8 +2,8 @@ import {
   SET_IS_CONFIRM_BUTTON_LOADING,
   SET_IS_DELETE_BUTTON_LOADING,
   SET_IS_FOLLOW_BUTTON_LOADING,
-  REQUEST_HAS_BEEN_CONFIRMED,
-  USER_HAS_BEEN_FOLLOWED,
+  TOGGLE_IS_CONFIRMED_AFTER_LOADING,
+  TOGGLE_IS_FOLLOWING_AFTER_LOADING,
 } from '../actions/requestItemButtonGroupActions';
 
 export default (state, action) => {
@@ -23,16 +23,16 @@ export default (state, action) => {
         ...state,
         isFollowButtonLoading: action.payload,
       };
-    case REQUEST_HAS_BEEN_CONFIRMED:
+    case TOGGLE_IS_CONFIRMED_AFTER_LOADING:
       return {
         ...state,
         isConfirmed: !state.isConfirmed,
         isConfirmButtonLoading: false,
       };
-    case USER_HAS_BEEN_FOLLOWED:
+    case TOGGLE_IS_FOLLOWING_AFTER_LOADING:
       return {
         ...state,
-        isFollowed: !state.isFollowed,
+        isFollowing: !state.isFollowing,
         isFollowButtonLoading: false,
       };
     default:

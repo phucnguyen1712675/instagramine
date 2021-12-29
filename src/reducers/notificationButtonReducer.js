@@ -2,9 +2,9 @@ import {
   SET_IS_LOADING,
   SET_CHECKED,
   SET_SHOW_REQUESTS,
-  SET_FOLLOW_REQUESTS,
-  SET_FOLLOW_REQUESTS_AFTER_FETCHING,
-  // ON_HIDDEN,
+  SET_REQUEST_SENDERS,
+  SET_REQUEST_SENDERS_AFTER_LOADING,
+  REMOVE_REQUEST_SENDER,
 } from '../actions/notificationButtonActions';
 
 export default (state, action) => {
@@ -24,23 +24,24 @@ export default (state, action) => {
         ...state,
         showRequests: action.payload,
       };
-    case SET_FOLLOW_REQUESTS:
+    case SET_REQUEST_SENDERS:
       return {
         ...state,
-        followRequests: action.payload,
+        requestSenders: action.payload,
       };
-    case SET_FOLLOW_REQUESTS_AFTER_FETCHING:
+    case SET_REQUEST_SENDERS_AFTER_LOADING:
       return {
         ...state,
         isLoading: false,
-        followRequests: action.payload,
+        requestSenders: action.payload,
       };
-    // case ON_HIDDEN:
-    //   return {
-    //     ...state,
-    //     showRequests: false,
-    //     // isLoading: true,
-    //   };
+    case REMOVE_REQUEST_SENDER:
+      return {
+        ...state,
+        requestSenders: state.requestSenders.filter(
+          (requestSender) => requestSender.id !== action.payload
+        ),
+      };
     default:
       throw new Error('invalid action');
   }

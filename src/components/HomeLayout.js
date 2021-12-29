@@ -1,6 +1,5 @@
 import {useReducer, useRef, useEffect, useCallback} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
-import {signOut} from 'firebase/auth';
 import Header from './Header';
 import UserMenu from './UserMenu';
 import Tooltip from './Tooltip';
@@ -31,10 +30,10 @@ import {
   SidebarButton,
 } from './styled/HomeLayout.styled';
 import {ROUTE_PATHS} from '../constants';
-import {useAuth, useFirebase} from '../hooks';
+import {useAuth} from '../hooks';
 import {homeLayoutReducer} from '../reducers';
-import {findLogOutError} from '../utils/firestore';
 import {SavedPostsContextProvider} from '../store/savedPostsContext';
+import {logOut} from '../services/firestore_auth';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
   SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
@@ -70,7 +69,7 @@ const HomeLayout = () => {
 
   const auth = useAuth();
 
-  const firebase = useFirebase();
+  // const mounted = useMounted();
 
   useEffect(() => {
     if (state.toggleSettingMenuBtnChecked) {
@@ -107,20 +106,15 @@ const HomeLayout = () => {
   };
 
   const logOutHandler = async (e) => {
-    try {
-      e.preventDefault();
+    e.preventDefault();
 
-      auth.setIsLoading(true);
+    auth.setIsLoading(true);
 
-      await signOut(firebase.auth);
+    await logOut();
 
-      auth.setAuthStatus(false);
+    auth.setAuthStatus(false);
 
-      navigate(ROUTE_PATHS.LOGIN);
-    } catch (error) {
-      const errorMessage = findLogOutError(error.code);
-      alert(errorMessage);
-    }
+    navigate(ROUTE_PATHS.LOGIN);
   };
 
   const navigateHandler = (path) => {

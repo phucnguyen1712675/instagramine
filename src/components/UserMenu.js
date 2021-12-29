@@ -1,14 +1,4 @@
 import {useState, useEffect, Fragment} from 'react';
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  limit,
-} from 'firebase/firestore';
 import NotificationButton from './NotificationButton';
 import {PlayIcon, PlusIcon} from './icons';
 import {
@@ -44,10 +34,10 @@ import {
   CreatePostButton,
 } from './styled/UserMenu.styled';
 import {MAX_STORIES_NUMBER} from '../constants';
-import {useAuth, useMounted, useFirebase} from '../hooks';
+import {useAuth, useMounted} from '../hooks';
 import {onErrorMedia} from '../utils/media';
-import {getCollectionData} from '../utils/firestore';
 import {kFormatter, socialLinkFormatter} from '../utils/formatters';
+import {getStoryCategoriesByUid} from '../services/firestore';
 
 const UserMenu = () => {
   const [storyCategories, setStoryCategories] = useState([]);
@@ -56,48 +46,17 @@ const UserMenu = () => {
 
   const mounted = useMounted();
 
-  const firebase = useFirebase();
-
   useEffect(() => {
     const getCurrentUserStoryCategories = async () => {
-      try {
-        const junctionsQuerySnap = await getDocs(
-          query(
-            collection(firebase.db, 'junction_user_story_category'),
-            where('uid', '==', auth.authUser.id),
-            orderBy('views', 'desc'),
-            limit(MAX_STORIES_NUMBER)
-          )
-        );
+      const storyCategoriesData = await getStoryCategoriesByUid();
 
-        if (junctionsQuerySnap.docs.length > 0) {
-          const storyCategoriesSnaps = await Promise.all(
-            junctionsQuerySnap.docs
-              .filter((document) => document.exists())
-              .map((document) =>
-                getDoc(
-                  doc(
-                    firebase.db,
-                    `story_categories/${document.data().storyCategoryId}`
-                  )
-                )
-              )
-          );
-
-          const currentUserStoryCategories =
-            getCollectionData(storyCategoriesSnaps);
-
-          if (mounted.current) {
-            setStoryCategories(currentUserStoryCategories);
-          }
-        }
-      } catch (error) {
-        alert(`Error: ${error.message}`);
+      if (mounted.current) {
+        setStoryCategories(storyCategoriesData);
       }
     };
 
     getCurrentUserStoryCategories();
-  }, [auth.authUser.id, firebase.db, mounted]);
+  }, [auth.authUser.id, mounted]);
 
   return (
     <StyledUserMenu>

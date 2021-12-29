@@ -1,22 +1,18 @@
 import {createContext, useReducer, useCallback} from 'react';
 import PropTypes from 'prop-types';
-import {
-  collection,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  doc,
-  query,
-  where,
-  FieldValue,
-} from 'firebase/firestore';
-import {useAuth, useMounted, useFirebase} from '../hooks';
+import {useAuth, useMounted} from '../hooks';
 import {savedPostsContextReducer} from '../reducers';
 import {
   SET_IS_LOADING,
   SET_SAVED_POSTS_AFTER_LOADING,
+  SET_SAVED_POSTS_AFTER_ADDING,
+  SET_SAVED_POSTS_AFTER_REMOVING,
 } from '../actions/savedPostsContextActions';
-import {getCollectionData} from '../utils/firestore';
+import {
+  getSavedPostsByUid,
+  addJunctionUserSavedPost,
+  removeJunctionUserSavedPost,
+} from '../services/firestore';
 
 const SavedPostsContext = createContext({
   isLoading: false,
@@ -34,110 +30,59 @@ const SavedPostsContext = createContext({
 const SavedPostsContextProvider = ({children}) => {
   const [state, dispatch] = useReducer(savedPostsContextReducer, {
     isLoading: false,
-    savedPosts: null,
+    savedPosts: [],
   });
 
   const auth = useAuth();
 
   const mounted = useMounted();
 
-  const firebase = useFirebase();
-
   const getSavedPosts = useCallback(async () => {
-    try {
-      dispatch({type: SET_IS_LOADING, payload: true});
+    dispatch({type: SET_IS_LOADING, payload: true});
 
-      const userSavedPostJunction = await getDocs(
-        query(
-          collection(firebase.db, 'junction_user_saved_post'),
-          where('uid', '==', auth.authUser.id)
-        )
-      );
+    const savedPostsData = await getSavedPostsByUid(auth.authUser.id);
 
-      if (userSavedPostJunction.docs > 0) {
-        const savedPosts = getCollectionData(userSavedPostJunction.docs);
-
-        if (mounted.current) {
-          dispatch({
-            type: SET_SAVED_POSTS_AFTER_LOADING,
-            payload: savedPosts,
-          });
-        }
-      } else {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-    } catch (error) {
-      if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-
-      alert(`Error fetching saved posts: ${error}`);
+    if (mounted.current) {
+      dispatch({
+        type: SET_SAVED_POSTS_AFTER_LOADING,
+        payload: savedPostsData,
+      });
     }
-  }, [auth.authUser.id, firebase.db, mounted]);
+  }, [auth.authUser.id, mounted]);
 
   const savePost = async (post) => {
-    try {
-      dispatch({type: SET_IS_LOADING, payload: true});
+    dispatch({type: SET_IS_LOADING, payload: true});
 
-      const itemToAdd = {
-        uid: auth.authUser.id,
-        savedPostId: post.id,
-        createdAt: FieldValue.serverTimestamp(),
-      };
+    await addJunctionUserSavedPost({
+      uid: auth.authUser.id,
+      savedPost: post,
+    });
 
-      await setDoc(
-        doc(
-          firebase.db,
-          `junction_user_saved_post/${auth.authUser.id}_${post.id}`
-        ),
-        itemToAdd
-      );
-
-      const savedPostsPayload = [post, ...state.savedPosts];
-
-      if (mounted.current) {
-        dispatch({
-          type: SET_SAVED_POSTS_AFTER_LOADING,
-          payload: savedPostsPayload,
-        });
-      }
-    } catch (error) {
-      if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-
-      alert(`Error saving post: ${error}`);
+    if (mounted.current) {
+      dispatch({
+        type: SET_SAVED_POSTS_AFTER_ADDING,
+        payload: post,
+      });
     }
   };
 
   const unsavePost = async (id) => {
-    try {
-      dispatch({type: SET_IS_LOADING, payload: true});
+    dispatch({type: SET_IS_LOADING, payload: true});
 
-      await deleteDoc(
-        doc(firebase.db, `junction_user_saved_post/${auth.authUser.id}_${id}`)
-      );
+    await removeJunctionUserSavedPost({
+      uid: auth.authUser.id,
+      savedPostId: id,
+    });
 
-      const savedPostsPayload = state.savedPosts.filter(
-        (post) => post.id !== id
-      );
-
-      if (mounted.current) {
-        dispatch({
-          type: SET_SAVED_POSTS_AFTER_LOADING,
-          payload: savedPostsPayload,
-        });
-      }
-    } catch (error) {
-      if (mounted.current) {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }
-
-      alert(`Error un-saving post: ${error}`);
+    if (mounted.current) {
+      dispatch({
+        type: SET_SAVED_POSTS_AFTER_REMOVING,
+        payload: id,
+      });
     }
   };
 
-  const hasSavedPosts = () => state.savedPosts?.length > 0;
+  const hasSavedPosts = () => state.savedPosts.length > 0;
 
   const isSavedPost = (id) => {
     if (hasSavedPosts()) {
