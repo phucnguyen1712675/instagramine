@@ -229,6 +229,8 @@ const SearchBar = () => {
     if (values.query) {
       e.preventDefault();
 
+      dispatch({type: SET_IS_LOADING, payload: true});
+
       const isIncluded =
         state.searchHistory.findIndex((item) => item.id === user.id) !== -1;
 
@@ -236,8 +238,6 @@ const SearchBar = () => {
         uid: auth.authUser.id,
         searchUserId: user.id,
       };
-
-      dispatch({type: SET_IS_LOADING, payload: true});
 
       if (!isIncluded) {
         // Add new

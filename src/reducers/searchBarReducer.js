@@ -1,4 +1,3 @@
-// import {serverTimestamp} from 'firebase/firestore';
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,

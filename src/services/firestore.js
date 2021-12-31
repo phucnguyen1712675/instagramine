@@ -241,15 +241,19 @@ export const removeAllJunctionUserSearchHistoryByUid = async ({
   searchUserIds,
 }) => {
   try {
-    await Promise.all(
-      searchUserIds.map((searchUserId) => {
-        const ref = junctionUserSearchHistoryDocRef({
-          uid,
-          searchUserId,
-        });
-        deleteDoc(ref);
-      })
-    );
+    const batch = writeBatch(db);
+
+    const refs = searchUserIds.map((searchUserId) => {
+      const ref = junctionUserSearchHistoryDocRef({
+        uid,
+        searchUserId,
+      });
+      return ref;
+    });
+
+    refs.forEach((ref) => batch.delete(ref));
+
+    await batch.commit();
   } catch (error) {
     console.log(error);
   }
@@ -316,7 +320,7 @@ export const removeJunctionUserFollowingUser = async ({
 export const confirmRequest = async ({uid, requestSenderId}) => {
   try {
     // Get a new write batch
-    const batch = writeBatch();
+    const batch = writeBatch(db);
 
     const userRequestSenderDocRef = junctionUserRequestSenderDocRef({
       uid,
