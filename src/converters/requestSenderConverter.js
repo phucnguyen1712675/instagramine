@@ -12,7 +12,6 @@ class RequestSender {
 const requestSenderConverter = {
   toFirestore: (requestSender) => {
     return {
-      id: requestSender.id,
       username: requestSender.username,
       name: requestSender.name,
       avatar: requestSender.avatar,
@@ -23,7 +22,7 @@ const requestSenderConverter = {
   fromFirestore: (snapshot, options) => {
     const data = snapshot.data(options);
     return new RequestSender(
-      data.id,
+      snapshot.id,
       data.username,
       data.name,
       data.avatar,

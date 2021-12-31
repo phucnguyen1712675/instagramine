@@ -1,14 +1,14 @@
 import {createContext, useReducer, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {onAuthStateChanged} from 'firebase/auth';
-import {doc, getDoc} from 'firebase/firestore';
-import {useLocalStorage, useMounted, useFirebase} from '../hooks';
+import {useLocalStorage, useMounted} from '../hooks';
 import {authContextReducer} from '../reducers';
+import {auth} from '../firebase-config';
+import {getUserDoc} from '../services/firestore';
 import {
   SET_IS_LOADING,
   SET_AUTH_USER_AFTER_FETCHING,
 } from '../actions/authContextActions';
-import {getDocData} from '../utils/firestore';
 
 const initialState = {
   isLoading: true,
@@ -32,36 +32,28 @@ const AuthContextProvider = ({children}) => {
 
   const mounted = useMounted();
 
-  const firebase = useFirebase();
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebase.auth, async (user) => {
-      try {
-        if (user) {
-          // User is signed in
-          const uid = user.uid;
-          const userSnap = await getDoc(doc(firebase.db, `users/${uid}`));
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in
+        const uid = user.uid;
+        const userData = await getUserDoc(uid);
 
-          if (userSnap.exists()) {
-            const userData = getDocData(userSnap);
-
-            if (mounted.current) {
-              dispatch({type: SET_AUTH_USER_AFTER_FETCHING, payload: userData});
-            }
+        if (mounted.current) {
+          if (userData) {
+            dispatch({type: SET_AUTH_USER_AFTER_FETCHING, payload: userData});
           } else {
             dispatch({type: SET_IS_LOADING, payload: false});
           }
-        } else {
-          // User is signed out
-          dispatch({type: SET_AUTH_USER_AFTER_FETCHING, payload: null});
         }
-      } catch (error) {
-        alert(error);
+      } else {
+        // User is signed out
+        dispatch({type: SET_AUTH_USER_AFTER_FETCHING, payload: null});
       }
     });
 
     return () => unsubscribe();
-  }, [firebase.auth, firebase.db, mounted]);
+  }, [mounted]);
 
   const setAuthStatus = (status) => setIsAuth(status);
 

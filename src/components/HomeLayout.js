@@ -30,10 +30,10 @@ import {
   SidebarButton,
 } from './styled/HomeLayout.styled';
 import {ROUTE_PATHS} from '../constants';
-import {useAuth} from '../hooks';
+import {useAuth, useMounted} from '../hooks';
 import {homeLayoutReducer} from '../reducers';
 import {SavedPostsContextProvider} from '../store/savedPostsContext';
-import {logOut} from '../services/firestore_auth';
+import {logOut} from '../services/firestoreAuth';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
   SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
@@ -69,7 +69,7 @@ const HomeLayout = () => {
 
   const auth = useAuth();
 
-  // const mounted = useMounted();
+  const mounted = useMounted();
 
   useEffect(() => {
     if (state.toggleSettingMenuBtnChecked) {
@@ -110,11 +110,14 @@ const HomeLayout = () => {
 
     auth.setIsLoading(true);
 
-    await logOut();
+    const isSuccess = await logOut();
 
-    auth.setAuthStatus(false);
-
-    navigate(ROUTE_PATHS.LOGIN);
+    if (isSuccess) {
+      auth.setAuthStatus(false);
+      navigate(ROUTE_PATHS.LOGIN);
+    } else if (mounted.current) {
+      auth.setIsLoading(false);
+    }
   };
 
   const navigateHandler = (path) => {

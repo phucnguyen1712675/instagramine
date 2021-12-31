@@ -39,7 +39,8 @@ import {
   SET_IS_OPEN,
   SET_IS_LOADING,
   SET_SEARCH_HISTORY_AFTER_LOADING,
-  SET_SEARCH_HISTORY_AFTER_ADDING,
+  ADD_SEARCH_HISTORY_ITEM,
+  UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT,
   SET_SEARCH_HISTORY_AFTER_REMOVING,
   SET_SEARCH_HISTORY_AFTER_REMOVING_ALL,
   SET_FILTERED_USERS,
@@ -52,6 +53,7 @@ import {
   addJunctionUserSearchHistory,
   removeJunctionUserSearchHistory,
   removeAllJunctionUserSearchHistoryByUid,
+  updateJunctionUserSearchHistory,
 } from '../services/firestore';
 
 const SearchBar = () => {
@@ -95,9 +97,9 @@ const SearchBar = () => {
   });
 
   const {
-    data: followingUserIds,
-    status: followingUserIdsStatus,
-    error: followingUserIdsError,
+    data: junctionUserFollowingUsers,
+    status: junctionUserFollowingUserStatus,
+    error: junctionUserFollowingUserError,
   } = useFirestoreQuery({
     query: junctionUserFollowingUserQuery(auth.authUser.id),
   });
@@ -109,6 +111,7 @@ const SearchBar = () => {
 
         const searchHistoryData = await getSearchHistoryByUid(auth.authUser.id);
 
+        // console.log(searchHistoryData);
         if (mounted.current) {
           dispatch({
             type: SET_SEARCH_HISTORY_AFTER_LOADING,
@@ -128,10 +131,15 @@ const SearchBar = () => {
           const username = user.username.toLowerCase();
           return username.includes(values.query);
         })
-        .map((user) => ({
-          ...user,
-          isFollowing: followingUserIds.includes(user.id),
-        }))
+        .map((user) => {
+          const indexFound = junctionUserFollowingUsers.findIndex(
+            (junction) => junction.followingUserId === user.id
+          );
+          return {
+            ...user,
+            isFollowing: indexFound !== -1,
+          };
+        })
         .slice(0, 10);
 
       dispatch({
@@ -139,7 +147,7 @@ const SearchBar = () => {
         payload: usersFiltered,
       });
     }
-  }, [followingUserIds, users, values.query]);
+  }, [junctionUserFollowingUsers, users, values.query]);
 
   const onSearch = useCallback(() => {
     if (!values.query) {
@@ -170,7 +178,7 @@ const SearchBar = () => {
   const shouldLoading =
     state.isLoading ||
     usersStatus === 'loading' ||
-    followingUserIdsStatus === 'loading';
+    junctionUserFollowingUserStatus === 'loading';
 
   const showHeader = !values.query && !shouldLoading;
 
@@ -185,7 +193,12 @@ const SearchBar = () => {
   const clearAllHandler = async () => {
     dispatch({type: SET_IS_LOADING, payload: true});
 
-    await removeAllJunctionUserSearchHistoryByUid(auth.authUser.id);
+    const searchUserIds = state.searchHistory.map((item) => item.id);
+
+    await removeAllJunctionUserSearchHistoryByUid({
+      uid: auth.authUser.id,
+      searchUserIds,
+    });
 
     if (mounted.current) {
       dispatch({type: SET_SEARCH_HISTORY_AFTER_REMOVING_ALL});
@@ -206,52 +219,79 @@ const SearchBar = () => {
     }
   };
 
-  const clickItemHandler = async (e, user) => {
-    e.preventDefault();
-
-    dispatch({type: SET_IS_LOADING, payload: true});
-
-    await addJunctionUserSearchHistory({
-      uid: auth.authUser.id,
-      searchUser: user,
-    });
-
-    if (mounted.current) {
-      dispatch({
-        type: SET_SEARCH_HISTORY_AFTER_ADDING,
-        payload: user,
-      });
-    }
-
-    reset();
-  };
-
-  const removeItemHandler = async (userId) => {
-    dispatch({type: SET_IS_LOADING, payload: true});
-
-    await removeJunctionUserSearchHistory({
-      uid: auth.authUser.id,
-      searchUserId: userId,
-    });
-
-    if (mounted.current) {
-      dispatch({
-        type: SET_SEARCH_HISTORY_AFTER_REMOVING,
-        payload: userId,
-      });
+  const navigateToProfileHandler = (e) => {
+    if (!e.target.closest('a') || values.query) {
+      e.preventDefault();
     }
   };
 
-  if (shouldLoading) {
-    return <p>Loading...</p>;
-  }
+  const clickSearchHistoryItemHandler = async (e, user) => {
+    if (values.query) {
+      e.preventDefault();
+
+      const isIncluded =
+        state.searchHistory.findIndex((item) => item.id === user.id) !== -1;
+
+      const junctionObj = {
+        uid: auth.authUser.id,
+        searchUserId: user.id,
+      };
+
+      dispatch({type: SET_IS_LOADING, payload: true});
+
+      if (!isIncluded) {
+        // Add new
+        await addJunctionUserSearchHistory(junctionObj);
+
+        if (mounted.current) {
+          dispatch({
+            type: ADD_SEARCH_HISTORY_ITEM,
+            payload: user,
+          });
+        }
+      } else {
+        //Update time
+        await updateJunctionUserSearchHistory(junctionObj);
+
+        // If success
+        if (mounted.current) {
+          dispatch({
+            type: UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT,
+            payload: user.id,
+          });
+        }
+      }
+
+      reset();
+    }
+  };
+
+  const removeItemHandler = async (e, userId) => {
+    if (e.target.closest('button')) {
+      e.preventDefault();
+
+      dispatch({type: SET_IS_LOADING, payload: true});
+
+      await removeJunctionUserSearchHistory({
+        uid: auth.authUser.id,
+        searchUserId: userId,
+      });
+
+      if (mounted.current) {
+        dispatch({
+          type: SET_SEARCH_HISTORY_AFTER_REMOVING,
+          payload: userId,
+        });
+      }
+    }
+  };
 
   if (usersError === 'error') {
     return <p>{`Error: ${usersError.message}`}</p>;
   }
 
-  if (followingUserIdsError === 'error') {
-    return <p>{`Error: ${followingUserIdsError.message}`}</p>;
+  if (junctionUserFollowingUserError === 'error') {
+    return <p>{`Error: ${junctionUserFollowingUserError.message}`}</p>;
   }
 
   return (
@@ -275,7 +315,12 @@ const SearchBar = () => {
         value={state.isOpen}
         onChange={isOpenHandler}
       />
-      <SearchHistoryOverlayLabel htmlFor="checkbox_search_history" />
+      <SearchHistoryOverlayLabel
+        htmlFor="checkbox_search_history"
+        // style={{
+        //   background: 'rgba(0,0,0,0.4)',
+        // }}
+      />
       {state.isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
           {shouldLoading ? (
@@ -299,10 +344,11 @@ const SearchBar = () => {
                   <SearchHistoryItem key={user.id}>
                     <SearchHistoryItemLink
                       href={user.profile}
-                      onClick={(e) => clickItemHandler(e, user)}
-                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={(e) => navigateToProfileHandler(e)}
+                      // onMouseDown={(e) => e.preventDefault()}
                     >
                       <SearchHistoryItemContent
+                        onClick={(e) => clickSearchHistoryItemHandler(e, user)}
                         topTextAsHeading
                         avatarComponent={
                           <SearchHistoryItemAvatar
@@ -332,10 +378,10 @@ const SearchBar = () => {
                           !values.query ? (
                             <RemoveItemButton
                               type="text"
-                              onClick={() => removeItemHandler(user.id)}
+                              onClick={(e) => removeItemHandler(e, user.id)}
                               disabledHover
                             >
-                              -<RemoveHistoryItemButtonIcon />
+                              <RemoveHistoryItemButtonIcon />
                             </RemoveItemButton>
                           ) : null
                         }

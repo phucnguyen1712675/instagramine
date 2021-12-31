@@ -1,14 +1,15 @@
+// import {serverTimestamp} from 'firebase/firestore';
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,
   SET_SEARCH_HISTORY_AFTER_LOADING,
-  SET_SEARCH_HISTORY_AFTER_ADDING,
+  ADD_SEARCH_HISTORY_ITEM,
+  UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT,
   SET_SEARCH_HISTORY_AFTER_REMOVING,
   SET_SEARCH_HISTORY_AFTER_REMOVING_ALL,
   SET_FILTERED_USERS,
   OPEN_FIRST_TIME,
 } from '../actions/searchBarActions';
-import {move} from '../utils/array';
 
 export default (state, action) => {
   switch (action.type) {
@@ -34,24 +35,42 @@ export default (state, action) => {
         isLoading: false,
         searchHistory: action.payload,
       };
-    case SET_SEARCH_HISTORY_AFTER_ADDING: {
-      const {searchHistory} = state;
-      const user = action.payload;
-      const userIndex = searchHistory.findIndex((item) => item.id === user.id);
-      const hasUserIncluded = userIndex !== -1;
-
-      if (!hasUserIncluded) {
-        return {
-          ...state,
-          isLoading: false,
-          searchHistory: [user, ...searchHistory],
-        };
-      }
-      // Move to the top of the list
+    case ADD_SEARCH_HISTORY_ITEM:
       return {
         ...state,
         isLoading: false,
-        searchHistory: move(searchHistory, userIndex, 0),
+        searchHistory: [
+          {
+            ...action.payload,
+            createdAt: new Date(),
+          },
+          ...state.searchHistory,
+        ],
+      };
+    case UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT: {
+      const searchUserId = action.payload;
+      const {searchHistory} = state;
+      const indexFound = searchHistory.findIndex(
+        (item) => item.id === searchUserId
+      );
+
+      if (indexFound === -1) {
+        return {
+          ...state,
+          isLoading: false,
+        };
+      }
+
+      const itemToUpdate = searchHistory[indexFound];
+      itemToUpdate.createdAt = +new Date();
+      const sortedSearchHistory = state.searchHistory.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      return {
+        ...state,
+        isLoading: false,
+        searchHistory: sortedSearchHistory,
       };
     }
     case SET_SEARCH_HISTORY_AFTER_REMOVING:

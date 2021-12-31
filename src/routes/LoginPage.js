@@ -1,11 +1,10 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {signInWithEmailAndPassword} from 'firebase/auth';
 import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {useAuth, useForm, useMounted, useFirebase} from '../hooks';
+import {useAuth, useForm, useMounted} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
-import {findLoginError} from '../utils/firestore';
+import {logIn} from '../services/firestoreAuth';
 import {
   Logo,
   AuthForm,
@@ -28,33 +27,21 @@ const LoginPage = () => {
 
   const mounted = useMounted();
 
-  const firebase = useFirebase();
-
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
       email: '',
       password: '',
     },
     onSubmit: async (values) => {
-      try {
-        setIsLoading(true);
+      setIsLoading(true);
 
-        await signInWithEmailAndPassword(
-          firebase.auth,
-          values.email,
-          values.password
-        );
+      const userCredential = await logIn(values.email, values.password);
 
+      if (userCredential) {
         auth.setAuthStatus(true);
-
         navigate(from, {replace: true});
-      } catch (error) {
-        if (mounted.current) {
-          setIsLoading(false);
-        }
-
-        const errorMessage = findLoginError(error.code);
-        alert(errorMessage);
+      } else if (mounted.current) {
+        setIsLoading(false);
       }
     },
     validate: (values) => {

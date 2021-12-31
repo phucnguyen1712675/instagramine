@@ -13,19 +13,12 @@ import {
   StreamContent,
   SavedContent,
 } from './routes';
-import {
-  AppEntry,
-  RequireAuth,
-  ProtectedRoute,
-  HomeLayout,
-  Compose,
-} from './components';
+import {AppEntry, RequireAuth, ProtectedRoute, HomeLayout} from './components';
 import {AuthContextProvider} from './store/authContext';
-import {FirebaseContextProvider} from './store/firebaseContext';
 
 const App = () => {
   return (
-    <Compose components={[FirebaseContextProvider, AuthContextProvider]}>
+    <AuthContextProvider>
       <Routes>
         <Route path="/" element={<AppEntry />}>
           <Route
@@ -50,7 +43,7 @@ const App = () => {
           <Route path="*" element={<NoMatchPage />} />
         </Route>
       </Routes>
-    </Compose>
+    </AuthContextProvider>
   );
 };
 

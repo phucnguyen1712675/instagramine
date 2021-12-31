@@ -7,10 +7,11 @@ import {
   query,
   where,
   orderBy,
-  FieldValue,
   getDoc,
+  updateDoc,
   limit,
   writeBatch,
+  serverTimestamp,
 } from 'firebase/firestore';
 import {db} from '../firebase-config';
 import {MAX_STORIES_NUMBER} from '../constants';
@@ -18,7 +19,8 @@ import {
   searchHistoryItemConverter,
   requestSenderConverter,
 } from '../converters';
-import {getCollectionData} from '../utils/firestore';
+import {getCollectionData, getDocData} from '../utils/firestore';
+import {removeUndefinedFields} from '../utils/object';
 
 // Collection paths
 export const usersColRef = collection(db, 'users');
@@ -40,7 +42,7 @@ export const junctionUserSavedPostColRef = collection(
   db,
   'junction_user_saved_post'
 );
-export const junctionUserStoryCategory = collection(
+export const junctionUserStoryCategoryColRef = collection(
   db,
   'junction_user_story_category'
 );
@@ -78,103 +80,176 @@ export const junctionUserSavedPostQuery = (uid) =>
   );
 export const junctionUserStoryCategoryQuery = (uid) =>
   query(
-    junctionUserStoryCategory,
+    junctionUserStoryCategoryColRef,
     where('uid', '==', uid),
     orderBy('views', 'desc'),
     limit(MAX_STORIES_NUMBER)
   );
 
-// Functions
-export const getSavedPostsByUid = async (uid) => {
+// Helper Functions
+const getJunctionDocs = async (query, callbackFn) => {
   try {
-    const q = junctionUserSavedPostQuery(uid);
-    const junctions = await getDocs(q);
-
-    const savedPosts = await Promise.all(
-      junctions.docs
-        .filter((doc) => doc.exists())
-        .map((doc) => {
-          const docRef = postDocRef(doc.data().postId);
-          return getDoc(docRef);
-        })
+    const junctions = await getDocs(query);
+    const docs = await Promise.all(
+      junctions.docs.filter((doc) => doc.exists()).map(callbackFn)
     );
-
-    return savedPosts;
+    return docs;
   } catch (error) {
     console.log(error);
   }
 };
 
-export const getAllJunctionUserRequestSenderByUid = async (uid) => {
+const getAllDocsByQuery = async (query) => {
   try {
-    const q = junctionUserRequestSenderQuery(uid);
-    const snapshot = await getDocs(q);
-
+    const snapshot = await getDocs(query);
     return getCollectionData(snapshot.docs);
   } catch (error) {
     console.log(error);
   }
 };
 
-export const getRequestSendersByUid = async (uid) => {
+const addNewJunctionDoc = async (docRef, data) => {
   try {
-    const q = junctionUserRequestSenderQuery(uid);
-    const junctions = await getDocs(q);
-
-    const requestSender = await Promise.all(
-      junctions.docs
-        .filter((doc) => doc.exists())
-        .map((doc) => {
-          const docRef = userDocRef(doc.data().requestSenderId).withConverter(
-            requestSenderConverter
-          );
-          return getDoc(docRef);
-        })
-    );
-
-    return requestSender;
+    delete data.id;
+    removeUndefinedFields(data);
+    await setDoc(docRef, data);
   } catch (error) {
     console.log(error);
   }
+};
+
+// Custom Functions
+// export const getAllJunctionUserRequestSenderByUid = async (uid) => {
+//   const q = junctionUserRequestSenderQuery(uid);
+
+//   return getAllDocsByQuery(q);
+// };
+
+export const getSavedPostsByUid = async (uid) => {
+  const q = junctionUserSavedPostQuery(uid);
+
+  return getJunctionDocs(q, async (doc) => {
+    const {postId} = doc.data();
+    const docRef = postDocRef(postId);
+    const snapshot = await getDoc(docRef);
+    return getDocData(snapshot);
+  });
+};
+
+export const getRequestSendersByUid = async (uid) => {
+  const q = junctionUserRequestSenderQuery(uid);
+
+  return getJunctionDocs(q, async (doc) => {
+    const {requestSenderId} = doc.data();
+    const docRef = userDocRef(requestSenderId).withConverter(
+      requestSenderConverter
+    );
+    const snapshot = await getDoc(docRef);
+    return getDocData(snapshot);
+  });
 };
 
 export const getSearchHistoryByUid = async (uid) => {
-  try {
-    const q = junctionUserSearchHistoryQuery(uid);
-    const junctions = await getDocs(q);
+  const q = junctionUserSearchHistoryQuery(uid);
 
-    const searchHistory = await Promise.all(
-      junctions.docs
-        .filter((doc) => doc.exists())
-        .map((doc) => {
-          const docRef = userDocRef(doc.data().searchUserId).withConverter(
-            searchHistoryItemConverter
-          );
-          return getDoc(docRef);
-        })
+  return getJunctionDocs(q, async (doc) => {
+    const {searchUserId, createdAt} = doc.data();
+    const docRef = userDocRef(searchUserId).withConverter(
+      searchHistoryItemConverter
     );
+    const snapshot = await getDoc(docRef);
+    const searchHistoryUser = await getDocData(snapshot);
+    return {
+      ...searchHistoryUser,
+      createdAt: createdAt.toDate(),
+    };
+  });
+};
 
-    return searchHistory;
+export const getStoryCategoriesByUid = async (uid) => {
+  const q = junctionUserStoryCategoryQuery(uid);
+
+  return getJunctionDocs(q, async (doc) => {
+    const {storyCategoryId} = doc.data();
+    const docRef = storyCategoryDocRef(storyCategoryId);
+    const snapshot = await getDoc(docRef);
+    return getDocData(snapshot);
+  });
+};
+
+export const getAllJunctionUserSearchHistoryByUid = async (uid) => {
+  const q = junctionUserSearchHistoryQuery(uid);
+
+  return getAllDocsByQuery(q);
+};
+
+export const addNewUserDoc = async (uid, data) => {
+  try {
+    const ref = userDocRef(uid);
+    await setDoc(ref, data);
   } catch (error) {
     console.log(error);
   }
 };
 
-export const addJunctionUserSearchHistory = async ({uid, searchUser}) => {
+export const addJunctionUserSearchHistory = async ({uid, searchUserId}) => {
+  const junctionObj = {
+    uid,
+    searchUserId,
+  };
+
+  const ref = junctionUserSearchHistoryDocRef(junctionObj);
+
+  const data = {
+    ...junctionObj,
+    createdAt: serverTimestamp(),
+  };
+
+  await addNewJunctionDoc(ref, data);
+};
+
+export const addJunctionUserSavedPost = async ({uid, savedPost}) => {
+  const ref = junctionUserSavedPostDocRef({
+    uid,
+    savedPostId: savedPost.id,
+  });
+
+  const data = {
+    ...savedPost,
+    createdAt: serverTimestamp(),
+  };
+
+  await addNewJunctionDoc(ref, data);
+};
+
+export const addJunctionUserFollowingUser = async ({uid, followingUser}) => {
+  const ref = junctionUserFollowingUserDocRef({
+    uid,
+    followingUserId: followingUser.id,
+  });
+
+  const data = {
+    ...followingUser,
+    createdAt: serverTimestamp(),
+  };
+
+  await addNewJunctionDoc(ref, data);
+};
+
+export const removeAllJunctionUserSearchHistoryByUid = async ({
+  uid,
+  searchUserIds,
+}) => {
   try {
-    const ref = junctionUserSearchHistoryDocRef({
-      uid,
-      searchUserId: searchUser.id,
-    });
-
-    const data = {
-      ...searchUser,
-      createdAt: FieldValue.serverTimestamp(),
-    };
-
-    delete data.id;
-
-    await setDoc(ref, data);
+    await Promise.all(
+      searchUserIds.map((searchUserId) => {
+        const ref = junctionUserSearchHistoryDocRef({
+          uid,
+          searchUserId,
+        });
+        deleteDoc(ref);
+      })
+    );
   } catch (error) {
     console.log(error);
   }
@@ -193,52 +268,6 @@ export const removeJunctionUserSearchHistory = async ({uid, searchUserId}) => {
   }
 };
 
-export const getAllJunctionUserSearchHistoryByUid = async (uid) => {
-  try {
-    const q = junctionUserSearchHistoryQuery(uid);
-    const snapshot = await getDocs(q);
-
-    return getCollectionData(snapshot.docs);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const removeAllJunctionUserSearchHistoryByUid = async (uid) => {
-  try {
-    const junctions = await getAllJunctionUserSearchHistoryByUid(uid);
-
-    await Promise.all(
-      junctions.forEach((junction) => {
-        const ref = junctionUserSearchHistoryDocRef(uid, junction.searchUserId);
-        deleteDoc(ref);
-      })
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const addJunctionUserSavedPost = async ({uid, savedPost}) => {
-  try {
-    const ref = junctionUserSavedPostDocRef({
-      uid,
-      savedPostId: savedPost.id,
-    });
-
-    const data = {
-      ...savedPost,
-      createdAt: FieldValue.serverTimestamp(),
-    };
-
-    delete data.id;
-
-    await setDoc(ref, data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export const removeJunctionUserSavedPost = async ({uid, savedPostId}) => {
   try {
     const ref = junctionUserSavedPostDocRef({
@@ -247,41 +276,6 @@ export const removeJunctionUserSavedPost = async ({uid, savedPostId}) => {
     });
 
     await deleteDoc(ref);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const confirmRequest = async ({uid, requestSenderId}) => {
-  try {
-    // Get a new write batch
-    const batch = writeBatch();
-
-    // Remove from request sender
-    batch.delete(
-      junctionUserRequestSenderDocRef({
-        uid,
-        requestSenderId,
-      })
-    );
-
-    // user with requestSenderId follows user with auth.authUser.id
-    const itemToAdd = {
-      uid: requestSenderId,
-      followingUserId: uid,
-    };
-
-    // Add to following user collection
-    batch.set(
-      junctionUserFollowingUserDocRef({
-        uid: requestSenderId,
-        followingUserId: uid,
-      }),
-      itemToAdd
-    );
-
-    // Commit the batch
-    await batch.commit();
   } catch (error) {
     console.log(error);
   }
@@ -303,26 +297,6 @@ export const removeJunctionUserRequestSender = async ({
   }
 };
 
-export const addJunctionUserFollowingUser = async ({uid, followingUser}) => {
-  try {
-    const ref = junctionUserFollowingUserDocRef({
-      uid,
-      followingUserId: followingUser.id,
-    });
-
-    const data = {
-      ...followingUser,
-      createdAt: FieldValue.serverTimestamp(),
-    };
-
-    delete data.id;
-
-    await setDoc(ref, data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export const removeJunctionUserFollowingUser = async ({
   uid,
   followingUserId,
@@ -339,21 +313,62 @@ export const removeJunctionUserFollowingUser = async ({
   }
 };
 
-export const getStoryCategoriesByUid = async (uid) => {
+export const confirmRequest = async ({uid, requestSenderId}) => {
   try {
-    const q = junctionUserStoryCategoryQuery(uid);
-    const junctions = await getDocs(q);
+    // Get a new write batch
+    const batch = writeBatch();
 
-    const storyCategories = await Promise.all(
-      junctions.docs
-        .filter((doc) => doc.exists())
-        .map((doc) => {
-          const docRef = storyCategoryDocRef(doc.data().storyCategoryId);
-          return getDoc(docRef);
-        })
-    );
+    const userRequestSenderDocRef = junctionUserRequestSenderDocRef({
+      uid,
+      requestSenderId,
+    });
 
-    return storyCategories;
+    // Remove from request sender
+    batch.delete(userRequestSenderDocRef);
+
+    // user with requestSenderId follows user with auth.authUser.id
+    const itemToAdd = {
+      uid: requestSenderId,
+      followingUserId: uid,
+    };
+
+    const userFollowingUserDocRef = junctionUserFollowingUserDocRef({
+      uid: requestSenderId,
+      followingUserId: uid,
+    });
+
+    // Add to following user collection
+    batch.set(userFollowingUserDocRef, itemToAdd);
+
+    // Commit the batch
+    await batch.commit();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getUserDoc = async (uid) => {
+  try {
+    const ref = userDocRef(uid);
+    const doc = await getDoc(ref);
+    return getDocData(doc);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateJunctionUserSearchHistory = async ({uid, searchUserId}) => {
+  try {
+    const ref = junctionUserSearchHistoryDocRef({
+      uid,
+      searchUserId,
+    });
+
+    const data = {
+      createdAt: serverTimestamp(),
+    };
+
+    await updateDoc(ref, data);
   } catch (error) {
     console.log(error);
   }

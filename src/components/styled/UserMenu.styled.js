@@ -7,6 +7,11 @@ import Tooltip from '../Tooltip';
 import Button from '../Button';
 import {DEVICES} from '../../constants';
 
+const UserMenuStyle = ({theme}) => css`
+  background-color: ${theme.colors.bgComponentLightTheme};
+  border-left: var(--width-border) solid ${theme.colors.borderDarkBlue};
+`;
+
 export const StyledUserMenu = styled.div`
   --width-border: 1px;
   --padding-horizontal: 30px;
@@ -16,16 +21,24 @@ export const StyledUserMenu = styled.div`
   padding-right: var(--padding-horizontal);
   padding-bottom: var(--padding-vertical);
   padding-left: calc(var(--padding-horizontal) - var(--width-border));
-  ${({theme}) => css`
-    background-color: ${theme.colors.bgComponentLightTheme};
-    border-left: var(--width-border) solid ${theme.colors.borderDarkBlue};
-  `}
+  ${UserMenuStyle}
   display: none;
   flex-direction: column;
 
   @media ${DEVICES.laptopL} {
     grid-area: userMenu;
     display: flex;
+  }
+`;
+
+export const StyledUserMenuWhileLoading = styled.div`
+  --width-border: 1px;
+  @media ${DEVICES.laptopL} {
+    ${UserMenuStyle}
+    grid-area: userMenu;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 `;
 
@@ -181,6 +194,10 @@ export const StoriesContentStoryItem = styled.li`
   }
 `;
 
+export const StoriesContentAddButton = styled(StoriesContentStoryItem)`
+  margin-top: 2.4rem;
+`;
+
 export const StoriesContentStoryItemInner = styled.div`
   display: flex;
   flex-direction: column;
@@ -234,12 +251,12 @@ export const CreatePostButton = styled(Button)`
   padding: 15px 0;
   line-height: 1.3;
   position: relative;
-  z-index: 1;
+  /* z-index: 1; */
   font-weight: 800;
   border: unset;
   ${gradientBackground}
 
-  &:after {
+  /* &:after {
     --height-blur: 40px;
     content: '';
     position: absolute;
@@ -249,5 +266,5 @@ export const CreatePostButton = styled(Button)`
     filter: blur(var(--height-blur));
     ${gradientBackground}
     z-index: -1;
-  }
+  } */
 `;

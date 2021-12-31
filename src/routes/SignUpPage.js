@@ -1,12 +1,11 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {setDoc, doc} from 'firebase/firestore';
-import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {useAuth, useForm, useMounted, useFirebase} from '../hooks';
+import {useAuth, useForm, useMounted} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
-import {findRegisterError} from '../utils/firestore';
+import {addNewUserDoc} from '../services/firestore';
+import {register} from '../services/firestoreAuth';
 import {
   Logo,
   AuthForm,
@@ -35,8 +34,6 @@ const SignUpPage = () => {
 
   const mounted = useMounted();
 
-  const firebase = useFirebase();
-
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
       email: '',
@@ -46,20 +43,14 @@ const SignUpPage = () => {
       confirmPassword: '',
     },
     onSubmit: async (values) => {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(
-          firebase.auth,
-          values.email,
-          values.password
-        );
+      setIsLoading(true);
 
+      const userCredential = await register(values.email, values.password);
+
+      if (userCredential) {
         const {user} = userCredential;
 
-        const newUserData = {
-          email: values.email,
-          name: values.name,
-          username: values.username,
-          // Fake data
+        const fakeData = {
           avatar:
             'https://user-images.githubusercontent.com/47315479/81145216-7fbd8700-8f7e-11ea-9d49-bd5fb4a888f1.png',
           profile: 'https://www.instagram.com/phuc7320/',
@@ -72,18 +63,20 @@ const SignUpPage = () => {
           socialLinks: ['https://dribbble.com/nkchaudhary01'],
         };
 
-        await setDoc(doc(firebase.db, `users/${user.uid}`), newUserData);
+        const newUserData = {
+          email: values.email,
+          name: values.name,
+          username: values.username,
+          ...fakeData,
+        };
+
+        await addNewUserDoc(user.uid, newUserData);
 
         auth.setAuthStatus(true);
 
         navigate(from, {replace: true});
-      } catch (error) {
-        if (mounted.current) {
-          setIsLoading(false);
-        }
-
-        const errorMessage = findRegisterError(error.code);
-        alert(errorMessage);
+      } else if (mounted.current) {
+        setIsLoading(false);
       }
     },
     validate: (values) => {

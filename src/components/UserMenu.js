@@ -1,8 +1,9 @@
-import {useState, useEffect, Fragment} from 'react';
+import {useReducer, useEffect, Fragment} from 'react';
 import NotificationButton from './NotificationButton';
 import {PlayIcon, PlusIcon} from './icons';
 import {
   StyledUserMenu,
+  StyledUserMenuWhileLoading,
   UserMenuTopContent,
   UserMenuMiddleContent,
   UserMenuBottomContent,
@@ -26,6 +27,7 @@ import {
   StoriesContent,
   StoriesContentStoryList,
   StoriesContentStoryItem,
+  StoriesContentAddButton,
   StoriesContentStoryItemInner,
   StoriesContentStoryItemName,
   StoriesContentCircleImgWrapper,
@@ -33,14 +35,21 @@ import {
   StoriesContentButton,
   CreatePostButton,
 } from './styled/UserMenu.styled';
-import {MAX_STORIES_NUMBER} from '../constants';
 import {useAuth, useMounted} from '../hooks';
+import {userMenuReducer} from '../reducers';
 import {onErrorMedia} from '../utils/media';
 import {kFormatter, socialLinkFormatter} from '../utils/formatters';
 import {getStoryCategoriesByUid} from '../services/firestore';
+import {
+  SET_IS_LOADING,
+  SET_STORY_CATEGORIES_AFTER_LOADING,
+} from '../actions/userMenuActions';
 
 const UserMenu = () => {
-  const [storyCategories, setStoryCategories] = useState([]);
+  const [state, dispatch] = useReducer(userMenuReducer, {
+    isLoading: false,
+    storyCategories: [],
+  });
 
   const auth = useAuth();
 
@@ -48,15 +57,26 @@ const UserMenu = () => {
 
   useEffect(() => {
     const getCurrentUserStoryCategories = async () => {
-      const storyCategoriesData = await getStoryCategoriesByUid();
+      dispatch({type: SET_IS_LOADING, payload: true});
+
+      const storyCategoriesData = await getStoryCategoriesByUid(
+        auth.authUser.id
+      );
 
       if (mounted.current) {
-        setStoryCategories(storyCategoriesData);
+        dispatch({
+          type: SET_STORY_CATEGORIES_AFTER_LOADING,
+          payload: storyCategoriesData,
+        });
       }
     };
 
     getCurrentUserStoryCategories();
   }, [auth.authUser.id, mounted]);
+
+  if (state.isLoading) {
+    return <StyledUserMenuWhileLoading>...Loading</StyledUserMenuWhileLoading>;
+  }
 
   return (
     <StyledUserMenu>
@@ -132,9 +152,9 @@ const UserMenu = () => {
       <UserMenuBottomContent>
         <StoriesContent>
           <SectionTitle>Your Stories</SectionTitle>
-          {storyCategories.length > 0 ? (
+          {state.storyCategories.length > 0 ? (
             <StoriesContentStoryList>
-              {storyCategories
+              {state.storyCategories
                 .map((story) => (
                   <StoriesContentStoryItem key={story.id}>
                     <StoriesContentStoryItemInner>
@@ -152,7 +172,7 @@ const UserMenu = () => {
                   </StoriesContentStoryItem>
                 ))
                 .concat(
-                  <StoriesContentStoryItem key={MAX_STORIES_NUMBER}>
+                  <StoriesContentStoryItem key="user_menu_add_story_icon">
                     <StoriesContentButton
                       size="large"
                       shape="circle"
@@ -166,7 +186,7 @@ const UserMenu = () => {
                 )}
             </StoriesContentStoryList>
           ) : (
-            <StoriesContentStoryItem as="div">
+            <StoriesContentAddButton as="div">
               <StoriesContentButton
                 size="large"
                 shape="circle"
@@ -174,7 +194,7 @@ const UserMenu = () => {
                 disabledHover
               />
               <StoriesContentStoryItemName>Add</StoriesContentStoryItemName>
-            </StoriesContentStoryItem>
+            </StoriesContentAddButton>
           )}
         </StoriesContent>
         <CreatePostButton type="primary" size="large" block>

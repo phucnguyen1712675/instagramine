@@ -1,3 +1,5 @@
+// import {Timestamp} from 'firebase/firestore';
+
 class SearchHistoryItem {
   constructor(
     id,
@@ -23,7 +25,6 @@ class SearchHistoryItem {
 const searchHistoryItemConverter = {
   toFirestore: (searchHistoryItem) => {
     return {
-      id: searchHistoryItem.id,
       username: searchHistoryItem.username,
       name: searchHistoryItem.name,
       avatar: searchHistoryItem.avatar,
@@ -35,8 +36,9 @@ const searchHistoryItemConverter = {
   },
   fromFirestore: (snapshot, options) => {
     const data = snapshot.data(options);
+    // const convertedDate = Timestamp.fromDate(data.createdAt);
     return new SearchHistoryItem(
-      data.id,
+      snapshot.id,
       data.username,
       data.name,
       data.avatar,

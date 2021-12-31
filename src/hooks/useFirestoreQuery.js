@@ -1,5 +1,5 @@
 import {useReducer, useEffect} from 'react';
-import {onSnapshot, refEqual} from 'firebase/firestore';
+import {onSnapshot, queryEqual, refEqual} from 'firebase/firestore';
 import PropTypes from 'prop-types';
 import useMemoCompare from './useMemoCompare';
 import {useFirestoreQueryReducer} from '../reducers';
@@ -33,7 +33,11 @@ const useFirestoreQuery = ({query}) => {
     next: query,
     compare: (prevQuery) => {
       // Use built-in Firestore isEqual method to determine if "equal"
-      return prevQuery && query && refEqual(query, prevQuery);
+      return (
+        prevQuery &&
+        query &&
+        (refEqual(query, prevQuery) || queryEqual(query, prevQuery))
+      );
     },
   });
 

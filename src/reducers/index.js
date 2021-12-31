@@ -7,6 +7,7 @@ import savedPostsContextReducer from './savedPostsContextReducer';
 import searchBarReducer from './searchBarReducer';
 import useFirestoreQueryReducer from './useFirestoreQueryReducer';
 import authContextReducer from './authContextReducer';
+import userMenuReducer from './userMenuReducer';
 
 export {
   homeLayoutReducer,
@@ -18,4 +19,5 @@ export {
   searchBarReducer,
   useFirestoreQueryReducer,
   authContextReducer,
+  userMenuReducer,
 };

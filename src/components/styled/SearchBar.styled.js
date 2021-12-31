@@ -54,8 +54,8 @@ export const SearchBarSearchLabel = styled.label`
   top: 0;
   left: 18px;
   height: 100%;
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
   z-index: 2;
 
   ${SearchInput}:focus ~ & {
@@ -74,9 +74,9 @@ const flexCenter = css`
 `;
 
 export const SearchHistoryOverlayLabel = styled(OverlayLabel)`
-  @media ${DEVICES.laptop} {
+  /* @media ${DEVICES.laptop} {
     z-index: 2;
-  }
+  } */
 `;
 
 export const SearchHistory = styled.div`
