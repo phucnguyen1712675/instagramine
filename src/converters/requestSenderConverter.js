@@ -26,8 +26,7 @@ const requestSenderConverter = {
       data.username,
       data.name,
       data.avatar,
-      data.profile,
-      data.createdAt
+      data.profile
     );
   },
 };

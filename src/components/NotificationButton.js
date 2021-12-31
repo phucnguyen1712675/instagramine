@@ -50,6 +50,8 @@ const NotificationButton = () => {
 
   const mounted = useMounted();
 
+  // console.log(state);
+
   useEffect(() => {
     if (isNotificationPopupScreen) {
       const getRequests = async () => {

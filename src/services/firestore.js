@@ -63,7 +63,11 @@ export const junctionUserFollowingUserDocRef = ({uid, followingUserId}) =>
 
 // Query paths
 export const junctionUserRequestSenderQuery = (uid) =>
-  query(junctionUserRequestSenderColRef, where('uid', '==', uid));
+  query(
+    junctionUserRequestSenderColRef,
+    where('uid', '==', uid),
+    orderBy('createdAt', 'desc')
+  );
 export const junctionUserSearchHistoryQuery = (uid) =>
   query(
     junctionUserSearchHistoryColRef,
@@ -129,10 +133,15 @@ export const getSavedPostsByUid = async (uid) => {
   const q = junctionUserSavedPostQuery(uid);
 
   return getJunctionDocs(q, async (doc) => {
-    const {postId} = doc.data();
+    const {postId, createdAt} = doc.data();
     const docRef = postDocRef(postId);
     const snapshot = await getDoc(docRef);
-    return getDocData(snapshot);
+    const savedPost = await getDocData(snapshot);
+
+    return {
+      ...savedPost,
+      createdAt: createdAt.toDate(),
+    };
   });
 };
 
@@ -140,12 +149,17 @@ export const getRequestSendersByUid = async (uid) => {
   const q = junctionUserRequestSenderQuery(uid);
 
   return getJunctionDocs(q, async (doc) => {
-    const {requestSenderId} = doc.data();
+    const {requestSenderId, createdAt} = doc.data();
     const docRef = userDocRef(requestSenderId).withConverter(
       requestSenderConverter
     );
     const snapshot = await getDoc(docRef);
-    return getDocData(snapshot);
+    const requestSender = await getDocData(snapshot);
+
+    return {
+      ...requestSender,
+      createdAt: createdAt.toDate(),
+    };
   });
 };
 
@@ -159,6 +173,7 @@ export const getSearchHistoryByUid = async (uid) => {
     );
     const snapshot = await getDoc(docRef);
     const searchHistoryUser = await getDocData(snapshot);
+
     return {
       ...searchHistoryUser,
       createdAt: createdAt.toDate(),
@@ -170,10 +185,15 @@ export const getStoryCategoriesByUid = async (uid) => {
   const q = junctionUserStoryCategoryQuery(uid);
 
   return getJunctionDocs(q, async (doc) => {
-    const {storyCategoryId} = doc.data();
+    const {storyCategoryId, views} = doc.data();
     const docRef = storyCategoryDocRef(storyCategoryId);
     const snapshot = await getDoc(docRef);
-    return getDocData(snapshot);
+    const storyCategory = await getDocData(snapshot);
+
+    return {
+      ...storyCategory,
+      views,
+    };
   });
 };
 
@@ -208,28 +228,32 @@ export const addJunctionUserSearchHistory = async ({uid, searchUserId}) => {
   await addNewJunctionDoc(ref, data);
 };
 
-export const addJunctionUserSavedPost = async ({uid, savedPost}) => {
-  const ref = junctionUserSavedPostDocRef({
+export const addJunctionUserSavedPost = async ({uid, savedPostId}) => {
+  const junctionObj = {
     uid,
-    savedPostId: savedPost.id,
-  });
+    savedPostId,
+  };
+
+  const ref = junctionUserSavedPostDocRef(junctionObj);
 
   const data = {
-    ...savedPost,
+    ...junctionObj,
     createdAt: serverTimestamp(),
   };
 
   await addNewJunctionDoc(ref, data);
 };
 
-export const addJunctionUserFollowingUser = async ({uid, followingUser}) => {
-  const ref = junctionUserFollowingUserDocRef({
+export const addJunctionUserFollowingUser = async ({uid, followingUserId}) => {
+  const junctionObj = {
     uid,
-    followingUserId: followingUser.id,
-  });
+    followingUserId,
+  };
+
+  const ref = junctionUserFollowingUserDocRef(junctionObj);
 
   const data = {
-    ...followingUser,
+    ...junctionObj,
     createdAt: serverTimestamp(),
   };
 
@@ -243,13 +267,12 @@ export const removeAllJunctionUserSearchHistoryByUid = async ({
   try {
     const batch = writeBatch(db);
 
-    const refs = searchUserIds.map((searchUserId) => {
-      const ref = junctionUserSearchHistoryDocRef({
+    const refs = searchUserIds.map((searchUserId) =>
+      junctionUserSearchHistoryDocRef({
         uid,
         searchUserId,
-      });
-      return ref;
-    });
+      })
+    );
 
     refs.forEach((ref) => batch.delete(ref));
 
