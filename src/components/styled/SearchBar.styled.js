@@ -107,7 +107,6 @@ export const SearchHistory = styled.div`
       bottom: 100%;
       z-index: 1;
       right: 0;
-      background-color: red;
     }
   }
 

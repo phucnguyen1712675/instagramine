@@ -4,7 +4,13 @@ import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
 import {useAuth, useForm, useMounted} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
-import {addNewUserDoc, setFakeFollowRequests} from '../services/firestore';
+import {
+  addNewUserDoc,
+  setFakeFollowRequests,
+  setFakeJunctionUserStoryCategory,
+  setFakeJunctionUserFollowingUser,
+  setFakeJunctionUserSearchHistory,
+} from '../services/firestore';
 import {register} from '../services/firestoreAuth';
 import {
   Logo,
@@ -72,7 +78,12 @@ const SignUpPage = () => {
 
         await addNewUserDoc(user.uid, newUserData);
 
-        await setFakeFollowRequests(user.uid);
+        await Promise.all([
+          setFakeFollowRequests(user.uid),
+          setFakeJunctionUserStoryCategory(user.uid),
+          setFakeJunctionUserFollowingUser(user.uid),
+          setFakeJunctionUserSearchHistory(user.uid),
+        ]);
 
         auth.setAuthStatus(true);
 

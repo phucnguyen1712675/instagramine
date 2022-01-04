@@ -66,6 +66,8 @@ export const junctionUserRequestSenderDocRef = ({uid, requestSenderId}) =>
   doc(db, `junction_user_request_sender/${uid}_${requestSenderId}`);
 export const junctionUserFollowingUserDocRef = ({uid, followingUserId}) =>
   doc(db, `junction_user_following_user/${uid}_${followingUserId}`);
+export const junctionUserStoryCategoryDocRef = ({uid, storyCategoryId}) =>
+  doc(db, `junction_user_story_category/${uid}_${storyCategoryId}`);
 
 // Query paths
 export const junctionUserRequestSenderQuery = (uid) =>
@@ -614,6 +616,20 @@ export const getPostsAtSavedContent = async (uid) => {
   return savedPosts;
 };
 
+const setFakeDataForUi = async (refsAndData) => {
+  try {
+    const batch = writeBatch(db);
+
+    refsAndData.forEach(({ref, data}) => {
+      batch.set(ref, data);
+    });
+
+    await batch.commit();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const setFakeFollowRequests = async (uid) => {
   const fakeFollowRequests = [
     'Brf3CNmBw6gy75mbwC9PhXClh533',
@@ -640,15 +656,85 @@ export const setFakeFollowRequests = async (uid) => {
     };
   });
 
-  try {
-    const batch = writeBatch(db);
+  await setFakeDataForUi(refsAndData);
+};
 
-    refsAndData.forEach(({ref, data}) => {
-      batch.set(ref, data);
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
+export const setFakeJunctionUserStoryCategory = async (uid) => {
+  try {
+    const snapshot = await getDocs(storyCategoriesColRef);
+    const storyCategories = getCollectionData(snapshot.docs);
+
+    const refsAndData = storyCategories.map((storyCategory, index) => {
+      const junctionObj = {
+        uid,
+        storyCategoryId: storyCategory.id,
+      };
+
+      return {
+        ref: junctionUserStoryCategoryDocRef(junctionObj),
+        data: {
+          ...junctionObj,
+          views: index % 2 === 0 ? 0 : getRandomInt(10),
+          createdAt: serverTimestamp(),
+        },
+      };
     });
 
-    await batch.commit();
+    await setFakeDataForUi(refsAndData);
   } catch (error) {
     console.log(error);
   }
+};
+
+export const setFakeJunctionUserFollowingUser = async (uid) => {
+  const fakeFollowingUsers = [
+    'zcYNXUI7tXPg6d3gbNrkNDX88QG3',
+    'bCsRU6pcm2dWeDS3tXzK5QPJjUZ2',
+    'II2RXtjgVbayMBTDAgnhf76W3mr2',
+  ];
+
+  const refsAndData = fakeFollowingUsers.map((followingUserId) => {
+    const junctionObj = {
+      uid: followingUserId,
+      followingUserId: uid,
+    };
+
+    return {
+      ref: junctionUserFollowingUserDocRef(junctionObj),
+      data: {
+        ...junctionObj,
+        createdAt: serverTimestamp(),
+      },
+    };
+  });
+
+  await setFakeDataForUi(refsAndData);
+};
+
+export const setFakeJunctionUserSearchHistory = async (uid) => {
+  const fakeSearchHistory = [
+    '4BGFnMC8NUSqoOYKeYYpenMfZ6w2',
+    '9VwYBMj3awUJE3rHOEY3QFoJtnH3',
+  ];
+
+  const refsAndData = fakeSearchHistory.map((searchUserId) => {
+    const junctionObj = {
+      uid,
+      searchUserId,
+    };
+
+    return {
+      ref: junctionUserSearchHistoryDocRef(junctionObj),
+      data: {
+        ...junctionObj,
+        createdAt: serverTimestamp(),
+      },
+    };
+  });
+
+  await setFakeDataForUi(refsAndData);
 };
