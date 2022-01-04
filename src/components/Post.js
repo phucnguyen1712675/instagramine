@@ -1,4 +1,6 @@
 import {useReducer} from 'react';
+import PropTypes from 'prop-types';
+import {useLocation} from 'react-router-dom';
 import Carousel from './Carousel';
 import Avatar from './Avatar';
 import ReadMore from './ReadMore';
@@ -33,20 +35,19 @@ import {
   PostCaption,
   PostDate,
 } from './styled/Post.styled';
-import {POST_CAPTION_SHOW_CHAR} from '../constants';
-import {postPropTypes} from '../prop-types';
-import {useAuth, useMounted} from '../hooks';
+import {POST_CAPTION_SHOW_CHAR, ROUTE_PATHS} from '../constants';
+import {useAuth} from '../hooks';
 import {postReducer} from '../reducers';
 import {
-  addJunctionUserLikedPost,
-  removeJunctionUserLikedPost,
+  likePostRequest,
+  unlikePostRequest,
   addJunctionUserSavedPost,
   removeJunctionUserSavedPost,
 } from '../services/firestore';
 import {formatPostDate} from '../utils/formatters';
 import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/postActions';
 
-const Post = ({post}) => {
+const Post = ({post, removeSavedPostHandler}) => {
   const [state, dispatch] = useReducer(postReducer, {
     likeAmount: post.likeAmount,
     isLiked: post.isLiked,
@@ -55,50 +56,46 @@ const Post = ({post}) => {
 
   const auth = useAuth();
 
-  const mounted = useMounted();
+  const location = useLocation();
 
-  const likePostHandler = async () => {
+  const likePostHandler = () => {
     const junctionObj = {
       uid: auth.authUser.id,
       likedPostId: post.id,
     };
 
     if (!state.isLiked) {
-      await addJunctionUserLikedPost(junctionObj);
-
-      if (mounted.current) {
-        dispatch({
-          type: LIKE_POST,
-        });
-      }
+      likePostRequest(junctionObj);
+      dispatch({
+        type: LIKE_POST,
+      });
     } else {
-      await removeJunctionUserLikedPost(junctionObj);
-
-      if (mounted.current) {
-        dispatch({
-          type: UNLIKE_POST,
-        });
-      }
+      unlikePostRequest(junctionObj);
+      dispatch({
+        type: UNLIKE_POST,
+      });
     }
   };
 
-  const savePostHandler = async () => {
+  const savePostHandler = () => {
     const junctionObj = {
       uid: auth.authUser.id,
       savedPostId: post.id,
     };
 
     if (!state.isSaved) {
-      await addJunctionUserSavedPost(junctionObj);
+      addJunctionUserSavedPost(junctionObj);
     } else {
-      await removeJunctionUserSavedPost(junctionObj);
+      removeJunctionUserSavedPost(junctionObj);
+
+      if (location.pathname === `/${ROUTE_PATHS.SAVED}`) {
+        removeSavedPostHandler(post.id);
+      }
     }
 
-    if (mounted.current) {
-      dispatch({
-        type: TOGGLE_IS_SAVED,
-      });
-    }
+    dispatch({
+      type: TOGGLE_IS_SAVED,
+    });
   };
 
   const {owner} = post;
@@ -173,7 +170,7 @@ const Post = ({post}) => {
                   </PostLikedUsersHighlight>
                   <span> and </span>
                   <PostLikedUsersHighlight href={post.likedUsersLink}>
-                    {state.fakeLikeAmount} others
+                    {state.likeAmount} others
                   </PostLikedUsersHighlight>
                 </>
               ) : (
@@ -213,7 +210,49 @@ const Post = ({post}) => {
 };
 
 Post.propTypes = {
-  post: postPropTypes.isRequired,
+  post: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    owner: PropTypes.shape({
+      username: PropTypes.string.isRequired,
+      avatar: PropTypes.string.isRequired,
+      profile: PropTypes.string.isRequired,
+      hasStory: PropTypes.bool.isRequired,
+      hasStoryBeenSeen: function (props, propName, componentName) {
+        if (
+          props['hasStory'] &&
+          (props[propName] == undefined || typeof props[propName] != 'boolean')
+        ) {
+          return new Error(
+            `Please provide 'hasStoryBeenSeen' prop for ${componentName}!`
+          );
+        }
+      },
+      city: PropTypes.string.isRequired,
+      country: PropTypes.string.isRequired,
+    }),
+    location: PropTypes.string.isRequired,
+    media: PropTypes.arrayOf(
+      PropTypes.shape({
+        url: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        duration: PropTypes.number,
+      })
+    ).isRequired,
+    isLiked: PropTypes.bool.isRequired,
+    isSaved: PropTypes.bool.isRequired,
+    likedUsersLink: PropTypes.string.isRequired,
+    caption: PropTypes.string.isRequired,
+    createdAt: PropTypes.instanceOf(Date).isRequired,
+    likedUsers: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        avatar: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+    likeAmount: PropTypes.number.isRequired,
+    fakeLikedOtherUserAvatars: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
+  removeSavedPostHandler: PropTypes.func,
 };
 
 export default Post;

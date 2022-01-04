@@ -1,13 +1,14 @@
 import {useReducer, useEffect} from 'react';
 import {useAuth, useMounted} from '../hooks';
-import {PostList} from '../components';
 import {savedContentReducer} from '../reducers';
-import {getSavedPostsByUid} from '../services/firestore';
+import {Post} from '../components';
+import {getPostsAtSavedContent} from '../services/firestore';
 import {
   SET_IS_LOADING,
   SET_SAVED_POSTS_AFTER_LOADING,
+  UNSAVE_POST,
 } from '../actions/savedContentActions';
-import {PageContent} from '../components/styled/Lib';
+import {PageContent, PostList} from '../components/styled/Lib';
 import {SavedContentSpinner} from '../components/styled/SavedContent.styled';
 
 const SavedContent = () => {
@@ -27,7 +28,7 @@ const SavedContent = () => {
         payload: true,
       });
 
-      const savedPostsData = await getSavedPostsByUid(auth.authUser.id);
+      const savedPostsData = await getPostsAtSavedContent(auth.authUser.id);
 
       if (mounted.current) {
         dispatch({
@@ -39,6 +40,13 @@ const SavedContent = () => {
 
     getSavedPosts();
   }, [auth.authUser.id, mounted]);
+
+  const removeSavedPostHandler = (postId) => {
+    dispatch({
+      type: UNSAVE_POST,
+      payload: postId,
+    });
+  };
 
   if (state.isLoading) {
     return (
@@ -56,7 +64,17 @@ const SavedContent = () => {
     );
   }
 
-  return <PostList posts={state.savedPosts} />;
+  return (
+    <PostList $postLength={state.savedPosts.length}>
+      {state.savedPosts.map((post) => (
+        <Post
+          key={post.id}
+          post={post}
+          removeSavedPostHandler={removeSavedPostHandler}
+        />
+      ))}
+    </PostList>
+  );
 };
 
 export default SavedContent;

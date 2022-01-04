@@ -1,8 +1,7 @@
 import {
   SET_IS_LOADING,
   SET_SAVED_POSTS_AFTER_LOADING,
-  SET_SAVED_POSTS_AFTER_ADDING,
-  SET_SAVED_POSTS_AFTER_REMOVING,
+  UNSAVE_POST,
 } from '../actions/savedContentActions';
 
 export default (state, action) => {
@@ -18,16 +17,9 @@ export default (state, action) => {
         isLoading: false,
         savedPosts: action.payload,
       };
-    case SET_SAVED_POSTS_AFTER_ADDING:
+    case UNSAVE_POST:
       return {
         ...state,
-        isLoading: false,
-        savedPosts: [action.payload, ...state.savedPosts],
-      };
-    case SET_SAVED_POSTS_AFTER_REMOVING:
-      return {
-        ...state,
-        isLoading: false,
         savedPosts: state.savedPosts.filter(
           (post) => post.id !== action.payload
         ),

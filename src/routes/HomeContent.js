@@ -1,9 +1,9 @@
 import {useReducer, useEffect} from 'react';
 import {homeContentReducer} from '../reducers';
 import {useAuth, useMounted} from '../hooks';
+import {Post} from '../components';
 import {getPostsAtHomeContent} from '../services/firestore';
-import {PostList} from '../components';
-import {PageContent} from '../components/styled/Lib';
+import {PageContent, PostList} from '../components/styled/Lib';
 import {HomeContentSpinner} from '../components/styled/HomeContent.styled';
 import {
   SET_IS_LOADING,
@@ -28,8 +28,6 @@ const HomeContent = () => {
       });
 
       const postsData = await getPostsAtHomeContent(auth.authUser.id);
-
-      // Fake data
 
       if (mounted.current) {
         dispatch({
@@ -58,7 +56,13 @@ const HomeContent = () => {
     );
   }
 
-  return <PostList posts={state.posts} />;
+  return (
+    <PostList $postLength={state.posts.length}>
+      {state.posts.map((post) => (
+        <Post key={post.id} post={post} />
+      ))}
+    </PostList>
+  );
 };
 
 export default HomeContent;

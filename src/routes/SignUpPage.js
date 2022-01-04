@@ -4,7 +4,7 @@ import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
 import {useAuth, useForm, useMounted} from '../hooks';
 import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
-import {addNewUserDoc} from '../services/firestore';
+import {addNewUserDoc, setFakeFollowRequests} from '../services/firestore';
 import {register} from '../services/firestoreAuth';
 import {
   Logo,
@@ -52,7 +52,7 @@ const SignUpPage = () => {
 
         const fakeData = {
           avatar:
-            'https://user-images.githubusercontent.com/47315479/81145216-7fbd8700-8f7e-11ea-9d49-bd5fb4a888f1.png',
+            'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=387&q=80',
           profile: 'https://www.instagram.com/phuc7320/',
           job: 'Wildlife Photographer',
           numberOfPosts: 98,
@@ -64,13 +64,15 @@ const SignUpPage = () => {
         };
 
         const newUserData = {
+          ...fakeData,
           email: values.email,
           name: values.name,
           username: values.username,
-          ...fakeData,
         };
 
         await addNewUserDoc(user.uid, newUserData);
+
+        await setFakeFollowRequests(user.uid);
 
         auth.setAuthStatus(true);
 

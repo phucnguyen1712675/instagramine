@@ -49,19 +49,19 @@ export default (state, action) => {
     case UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT: {
       const searchUserId = action.payload;
       const {searchHistory} = state;
-      const indexFound = searchHistory.findIndex(
+      const itemToUpdate = searchHistory.find(
         (item) => item.id === searchUserId
       );
 
-      if (indexFound === -1) {
+      if (!itemToUpdate) {
         return {
           ...state,
           isLoading: false,
         };
       }
 
-      const itemToUpdate = searchHistory[indexFound];
       itemToUpdate.createdAt = +new Date();
+
       const sortedSearchHistory = state.searchHistory.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );

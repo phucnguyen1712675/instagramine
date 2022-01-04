@@ -12,6 +12,7 @@ import {
   limit,
   writeBatch,
   serverTimestamp,
+  runTransaction,
 } from 'firebase/firestore';
 import {db} from '../firebase-config';
 import {MAX_STORIES_NUMBER} from '../constants';
@@ -120,9 +121,9 @@ const getJunctionDocs = async (query, callbackFn) => {
 };
 
 const addNewJunctionDoc = async (docRef, data) => {
+  delete data.id;
+  removeUndefinedFields(data);
   try {
-    delete data.id;
-    removeUndefinedFields(data);
     await setDoc(docRef, data);
   } catch (error) {
     console.log(error);
@@ -139,22 +140,6 @@ export const getAllJunctionUserSavedPostByUid = async (uid) => {
     return {
       ...docData,
       createdAt: docData.createdAt.toDate(),
-    };
-  });
-};
-
-export const getSavedPostsByUid = async (uid) => {
-  const q = junctionUserSavedPostQueryByUid(uid);
-
-  return getJunctionDocs(q, async (doc) => {
-    const {postId, createdAt} = doc.data();
-    const docRef = postDocRef(postId);
-    const snapshot = await getDoc(docRef);
-    const savedPost = await getDocData(snapshot);
-
-    return {
-      ...savedPost,
-      createdAt: createdAt.toDate(),
     };
   });
 };
@@ -241,8 +226,8 @@ export const getLikedUsersByPostId = async (likedPostId) => {
 };
 
 export const addNewUserDoc = async (uid, data) => {
+  const ref = userDocRef(uid);
   try {
-    const ref = userDocRef(uid);
     await setDoc(ref, data);
   } catch (error) {
     console.log(error);
@@ -256,22 +241,6 @@ export const addJunctionUserSearchHistory = async ({uid, searchUserId}) => {
   };
 
   const ref = junctionUserSearchHistoryDocRef(junctionObj);
-
-  const data = {
-    ...junctionObj,
-    createdAt: serverTimestamp(),
-  };
-
-  await addNewJunctionDoc(ref, data);
-};
-
-export const addJunctionUserLikedPost = async ({uid, likedPostId}) => {
-  const junctionObj = {
-    uid,
-    likedPostId,
-  };
-
-  const ref = junctionUserLikedPostDocRef(junctionObj);
 
   const data = {
     ...junctionObj,
@@ -317,15 +286,15 @@ export const removeAllJunctionUserSearchHistoryByUid = async ({
   uid,
   searchUserIds,
 }) => {
+  const refs = searchUserIds.map((searchUserId) =>
+    junctionUserSearchHistoryDocRef({
+      uid,
+      searchUserId,
+    })
+  );
+
   try {
     const batch = writeBatch(db);
-
-    const refs = searchUserIds.map((searchUserId) =>
-      junctionUserSearchHistoryDocRef({
-        uid,
-        searchUserId,
-      })
-    );
 
     refs.forEach((ref) => batch.delete(ref));
 
@@ -336,25 +305,11 @@ export const removeAllJunctionUserSearchHistoryByUid = async ({
 };
 
 export const removeJunctionUserSearchHistory = async ({uid, searchUserId}) => {
+  const ref = junctionUserSearchHistoryDocRef({
+    uid,
+    searchUserId,
+  });
   try {
-    const ref = junctionUserSearchHistoryDocRef({
-      uid,
-      searchUserId,
-    });
-
-    await deleteDoc(ref);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const removeJunctionUserLikedPost = async ({uid, likedPostId}) => {
-  try {
-    const ref = junctionUserLikedPostDocRef({
-      uid,
-      likedPostId,
-    });
-
     await deleteDoc(ref);
   } catch (error) {
     console.log(error);
@@ -362,12 +317,11 @@ export const removeJunctionUserLikedPost = async ({uid, likedPostId}) => {
 };
 
 export const removeJunctionUserSavedPost = async ({uid, savedPostId}) => {
+  const ref = junctionUserSavedPostDocRef({
+    uid,
+    savedPostId,
+  });
   try {
-    const ref = junctionUserSavedPostDocRef({
-      uid,
-      savedPostId,
-    });
-
     await deleteDoc(ref);
   } catch (error) {
     console.log(error);
@@ -378,12 +332,11 @@ export const removeJunctionUserRequestSender = async ({
   uid,
   requestSenderId,
 }) => {
+  const ref = junctionUserRequestSenderDocRef({
+    uid,
+    requestSenderId,
+  });
   try {
-    const ref = junctionUserRequestSenderDocRef({
-      uid,
-      requestSenderId,
-    });
-
     await deleteDoc(ref);
   } catch (error) {
     console.log(error);
@@ -394,12 +347,11 @@ export const removeJunctionUserFollowingUser = async ({
   uid,
   followingUserId,
 }) => {
+  const ref = junctionUserFollowingUserDocRef({
+    uid,
+    followingUserId,
+  });
   try {
-    const ref = junctionUserFollowingUserDocRef({
-      uid,
-      followingUserId,
-    });
-
     await deleteDoc(ref);
   } catch (error) {
     console.log(error);
@@ -407,31 +359,33 @@ export const removeJunctionUserFollowingUser = async ({
 };
 
 export const confirmRequest = async ({uid, requestSenderId}) => {
+  const userRequestSenderDocRef = junctionUserRequestSenderDocRef({
+    uid,
+    requestSenderId,
+  });
+
+  // user with requestSenderId follows user with auth.authUser.id
+  const junctionObj = {
+    uid: requestSenderId,
+    followingUserId: uid,
+  };
+
+  const userFollowingUserDocRef = junctionUserFollowingUserDocRef(junctionObj);
+
+  const data = {
+    ...junctionObj,
+    createdAt: serverTimestamp(),
+  };
+
   try {
     // Get a new write batch
     const batch = writeBatch(db);
 
-    const userRequestSenderDocRef = junctionUserRequestSenderDocRef({
-      uid,
-      requestSenderId,
-    });
-
     // Remove from request sender
     batch.delete(userRequestSenderDocRef);
 
-    // user with requestSenderId follows user with auth.authUser.id
-    const itemToAdd = {
-      uid: requestSenderId,
-      followingUserId: uid,
-    };
-
-    const userFollowingUserDocRef = junctionUserFollowingUserDocRef({
-      uid: requestSenderId,
-      followingUserId: uid,
-    });
-
     // Add to following user collection
-    batch.set(userFollowingUserDocRef, itemToAdd);
+    batch.set(userFollowingUserDocRef, data);
 
     // Commit the batch
     await batch.commit();
@@ -440,9 +394,76 @@ export const confirmRequest = async ({uid, requestSenderId}) => {
   }
 };
 
-export const getUserDoc = async (uid) => {
+export const likePostRequest = async ({uid, likedPostId}) => {
+  const postRef = postDocRef(likedPostId);
+
+  const junctionObj = {
+    uid,
+    likedPostId,
+  };
+
+  const junctionRef = junctionUserLikedPostDocRef(junctionObj);
+
+  const junctionData = {
+    ...junctionObj,
+    createdAt: serverTimestamp(),
+  };
+
   try {
-    const ref = userDocRef(uid);
+    await runTransaction(db, async (transaction) => {
+      const postDoc = await transaction.get(postRef);
+
+      if (!postDoc.exists()) {
+        throw 'Document does not exist!';
+      }
+
+      const newLikeAmount = postDoc.data().likeAmount + 1;
+
+      // Update like amount
+      transaction.update(postRef, {likeAmount: newLikeAmount});
+
+      // Add to junction user liked post
+      transaction.set(junctionRef, junctionData);
+    });
+  } catch (error) {
+    console.log('Transaction failed: ', error);
+  }
+};
+
+export const unlikePostRequest = async ({uid, likedPostId}) => {
+  const postRef = postDocRef(likedPostId);
+
+  const junctionObj = {
+    uid,
+    likedPostId,
+  };
+
+  const junctionRef = junctionUserLikedPostDocRef(junctionObj);
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      const postDoc = await transaction.get(postRef);
+
+      if (!postDoc.exists()) {
+        throw 'Document does not exist!';
+      }
+
+      const newLikeAmount = postDoc.data().likeAmount - 1;
+
+      // Update like amount
+      transaction.update(postRef, {likeAmount: newLikeAmount});
+
+      // Remove to junction user liked post
+      transaction.delete(junctionRef);
+    });
+  } catch (error) {
+    console.log('Transaction failed: ', error);
+  }
+};
+
+export const getUserDoc = async (uid) => {
+  const ref = userDocRef(uid);
+  try {
     const doc = await getDoc(ref);
     return getDocData(doc);
   } catch (error) {
@@ -468,31 +489,41 @@ export const updateJunctionUserSearchHistory = async ({uid, searchUserId}) => {
 };
 
 export const getPostsAtHomeContent = async (uid) => {
+  const q = postsAtHomeContentQuery();
+
   try {
-    const q = postsAtHomeContentQuery();
     const snapshot = await getDocs(q);
     const postsData = await getCollectionData(snapshot.docs);
     const junctionUserLikedPosts = await getAllJunctionUserLikedPostByUid(uid);
     const junctionUserSavedPosts = await getAllJunctionUserSavedPostByUid(uid);
 
-    let posts = await Promise.all(
+    const posts = await Promise.all(
       postsData.map(async (post) => {
-        const ownerData = await getUserDoc(post.ownerId);
-        const junctionQ = junctionUserLikedPostQueryByPostId(post.id);
-
+        const postId = post.id;
+        const postOwnerId = post.ownerId;
+        const ownerData = await getUserDoc(postOwnerId);
+        const junctionQ = junctionUserLikedPostQueryByPostId(postId);
         const likedUsersData = await getJunctionDocs(junctionQ, async (doc) => {
-          const {uid, createdAt} = doc.data();
+          const {uid} = doc.data();
           const docRef = userDocRef(uid).withConverter(likedUserConverter);
           const snapshot = await getDoc(docRef);
-          const likedUser = await getDocData(snapshot);
+          const userData = await getDocData(snapshot);
 
-          return {
-            ...likedUser,
-            createdAt: createdAt.toDate(),
-          };
+          return userData;
         });
+        const isLiked = junctionUserLikedPosts.some(
+          (junctionUserLikedPost) =>
+            junctionUserLikedPost.likedPostId === postId
+        );
+        const isSaved = junctionUserSavedPosts.some(
+          (junctionUserSavedPost) =>
+            junctionUserSavedPost.savedPostId === postId
+        );
+        const fakePost = fakePostData.find(
+          (fakePost) => fakePost.ownerId === postOwnerId
+        );
 
-        return {
+        const postData = {
           ...post,
           createdAt: post.createdAt.toDate(),
           owner: {
@@ -505,47 +536,118 @@ export const getPostsAtHomeContent = async (uid) => {
             country: ownerData.country,
           },
           likedUsers: likedUsersData,
+          isLiked,
+          isSaved,
+          // Fake data
+          fakeLikedOtherUserAvatars: fakePost?.fakeLikedOtherUserAvatars ?? [],
         };
+
+        return postData;
       })
     );
 
-    posts = posts.map((post) => {
-      const postId = post.id;
-      const isLiked = junctionUserLikedPosts.some(
-        (junctionUserLikedPost) => junctionUserLikedPost.likedPostId === postId
-      );
-      const isSaved = junctionUserSavedPosts.some(
-        (junctionUserSavedPost) => junctionUserSavedPost.savedPostId === postId
-      );
-
-      return {
-        ...post,
-        isLiked,
-        isSaved,
-      };
-    });
-
-    // Fake data
-    posts = posts.map((post) => {
-      const postOwnerId = post.ownerId;
-      const indexOfPostByOwnerId = fakePostData.findIndex(
-        (post) => post.ownerId === postOwnerId
-      );
-
-      if (indexOfPostByOwnerId === -1) {
-        return post;
-      }
-
-      const fakePost = fakePostData[indexOfPostByOwnerId];
-
-      return {
-        ...post,
-        fakeLikedOtherUserAvatars: fakePost.fakeLikedOtherUserAvatars,
-        fakeLikeAmount: fakePost.fakeLikeAmount,
-      };
-    });
-
     return posts;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getPostsAtSavedContent = async (uid) => {
+  const q = junctionUserSavedPostQueryByUid(uid);
+
+  const savedPosts = await getJunctionDocs(
+    q,
+    async (junctionUserSavedPostDoc) => {
+      const {savedPostId} = junctionUserSavedPostDoc.data();
+      const docRef = postDocRef(savedPostId);
+      const snapshot = await getDoc(docRef);
+      let postData = await getDocData(snapshot);
+      const postOwnerId = postData.ownerId;
+      const ownerData = await getUserDoc(postOwnerId);
+      const junctionQ = junctionUserLikedPostQueryByPostId(savedPostId);
+
+      const likedUsersData = await getJunctionDocs(
+        junctionQ,
+        async (junctionUserLikedPostDoc) => {
+          const {uid} = junctionUserLikedPostDoc.data();
+          const docRef = userDocRef(uid).withConverter(likedUserConverter);
+          const snapshot = await getDoc(docRef);
+          const user = await getDocData(snapshot);
+
+          return user;
+        }
+      );
+      const junctionUserLikedPosts = await getAllJunctionUserLikedPostByUid(
+        uid
+      );
+      const isLiked = junctionUserLikedPosts.some(
+        (junctionUserLikedPost) =>
+          junctionUserLikedPost.likedPostId === savedPostId
+      );
+      const fakePost = fakePostData.find(
+        (fakePost) => fakePost.ownerId === postOwnerId
+      );
+
+      postData = {
+        ...postData,
+        createdAt: postData.createdAt.toDate(),
+        owner: {
+          username: ownerData.username,
+          avatar: ownerData.avatar,
+          profile: ownerData.profile,
+          hasStory: ownerData.hasStory,
+          hasStoryBeenSeen: ownerData.hasStoryBeenSeen ?? false,
+          city: ownerData.city,
+          country: ownerData.country,
+        },
+        likedUsers: likedUsersData,
+        isLiked,
+        isSaved: true,
+        // Fake data
+        fakeLikedOtherUserAvatars: fakePost?.fakeLikedOtherUserAvatars ?? [],
+      };
+
+      return postData;
+    }
+  );
+
+  return savedPosts;
+};
+
+export const setFakeFollowRequests = async (uid) => {
+  const fakeFollowRequests = [
+    'Brf3CNmBw6gy75mbwC9PhXClh533',
+    '9VwYBMj3awUJE3rHOEY3QFoJtnH3',
+    'RYTw194dNVRVIkcfX3r7SEEFr7p2',
+    '4BGFnMC8NUSqoOYKeYYpenMfZ6w2',
+    'yrzhh64fMFhheeHH7DQyyotvR3y1',
+    'HorzlcMahcNAxfBSixYFg1uVvcR2',
+    'DfWnNmOFNHTwBcIbCI8Gp9zX22c2',
+  ];
+
+  const refsAndData = fakeFollowRequests.map((requestSenderId) => {
+    const junctionObj = {
+      uid,
+      requestSenderId,
+    };
+
+    return {
+      ref: junctionUserRequestSenderDocRef(junctionObj),
+      data: {
+        ...junctionObj,
+        createdAt: serverTimestamp(),
+      },
+    };
+  });
+
+  try {
+    const batch = writeBatch(db);
+
+    refsAndData.forEach(({ref, data}) => {
+      batch.set(ref, data);
+    });
+
+    await batch.commit();
   } catch (error) {
     console.log(error);
   }

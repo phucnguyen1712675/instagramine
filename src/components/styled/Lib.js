@@ -148,3 +148,58 @@ export const PageContent = styled.div`
     height: 100%;
   }
 `;
+
+const GridLayout = css`
+  display: grid;
+  grid-gap: 25px;
+`;
+
+export const PostList = styled.div`
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+
+  ${({$postLength}) => {
+    switch ($postLength) {
+      case 1:
+        return css`
+          @media ${DEVICES.tablet} {
+            --col-config: 2;
+
+            ${GridLayout}
+            grid-template-columns: repeat(var(--col-config), minmax(300px, 1fr));
+          }
+
+          @media ${DEVICES.laptop} {
+            --col-config: 3;
+          }
+        `;
+      case 2:
+        return css`
+          @media ${DEVICES.tablet} {
+            --col-config: auto-fit;
+
+            ${GridLayout}
+            grid-template-columns: repeat(var(--col-config), minmax(300px, 1fr));
+          }
+
+          @media ${DEVICES.laptop} {
+            --col-config: 3;
+          }
+        `;
+      default:
+        return css`
+          @media ${DEVICES.tablet} {
+            ${GridLayout}
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          }
+        `;
+    }
+  }}
+`;
+
+export const UserMenuSectionTitle = styled.div`
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 2.2rem;
+`;

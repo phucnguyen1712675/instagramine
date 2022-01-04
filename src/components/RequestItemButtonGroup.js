@@ -70,13 +70,11 @@ const RequestItemButtonGroup = ({userId, setRequestSendersAfterRemoving}) => {
     dispatch({type: SET_IS_FOLLOW_BUTTON_LOADING, payload: true});
 
     if (state.isFollowing) {
-      console.log('delete');
       await removeJunctionUserFollowingUser({
         uid: auth.authUser.id,
         followingUserId: userId,
       });
     } else {
-      console.log('add');
       await addJunctionUserFollowingUser({
         uid: auth.authUser.id,
         followingUserId: userId,

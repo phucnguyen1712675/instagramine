@@ -1,8 +1,9 @@
-import {useReducer, useRef, useEffect, useCallback} from 'react';
+import {useReducer, useRef, useEffect, useCallback, Fragment} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
 import Header from './Header';
-import UserMenu from './UserMenu';
 import Tooltip from './Tooltip';
+import NotificationButton from './NotificationButton';
+import StoryCategories from './StoryCategories';
 import {
   SettingIcon,
   UserIcon,
@@ -15,7 +16,12 @@ import {
   SavedListIcon,
   MenuSettingIcon,
 } from './icons';
-import {FakeCheckbox, FakeButtonLabel, OverlayLabel} from './styled/Lib';
+import {
+  FakeCheckbox,
+  FakeButtonLabel,
+  OverlayLabel,
+  UserMenuSectionTitle,
+} from './styled/Lib';
 import {
   StyledHomeLayout,
   SidebarOverlay,
@@ -28,11 +34,33 @@ import {
   SettingMenuItemText,
   MainContent,
   SidebarButton,
+  UserMenu,
+  UserMenuTopContent,
+  UserMenuMiddleContent,
+  UserMenuBottomContent,
+  ThumbnailContentAvatar,
+  ThumbnailContentUserName,
+  ThumbnailContentJobDescription,
+  EditButtonWrapper,
+  EditButton,
+  StatisticalContent,
+  StatisticalContentInner,
+  StatisticalContentInnerDot,
+  StatisticItem,
+  StatisticNumber,
+  StatisticName,
+  BioContentContainer,
+  BioContent,
+  BioContentSocialLinks,
+  BioContentSocialLink,
+  BioContentNoSocialLinks,
+  CreatePostButton,
 } from './styled/HomeLayout.styled';
 import {ROUTE_PATHS} from '../constants';
 import {useAuth, useMounted} from '../hooks';
 import {homeLayoutReducer} from '../reducers';
 import {logOut} from '../services/firestoreAuth';
+import {kFormatter, socialLinkFormatter} from '../utils/formatters';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
   SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
@@ -62,7 +90,7 @@ const HomeLayout = () => {
     [state.showToggleSidebar]
   );
 
-  const {pathname} = useLocation();
+  const location = useLocation();
 
   const navigate = useNavigate();
 
@@ -169,7 +197,7 @@ const HomeLayout = () => {
         type="text"
         onClick={() => navigateHandler(item.path)}
         disabledHover
-        $isActive={`/${item.path}` === pathname}
+        $isActive={`/${item.path}` === location.pathname}
       >
         {item.icon}
       </SidebarButton>
@@ -232,7 +260,84 @@ const HomeLayout = () => {
       <MainContent>
         <Outlet />
       </MainContent>
-      <UserMenu />
+      <UserMenu>
+        <UserMenuTopContent>
+          <ThumbnailContentAvatar
+            url={auth.authUser.avatar}
+            hasStory={auth.authUser.hasStory}
+            hasStoryBeenSeen={auth.authUser.hasStoryBeenSeen}
+          />
+          <ThumbnailContentUserName>
+            {auth.authUser.username}
+          </ThumbnailContentUserName>
+          <ThumbnailContentJobDescription>
+            {auth.authUser.job}
+          </ThumbnailContentJobDescription>
+          <EditButtonWrapper content="Edit profile" position="left">
+            <EditButton type="primary" size="large">
+              Edit
+            </EditButton>
+          </EditButtonWrapper>
+        </UserMenuTopContent>
+        <UserMenuMiddleContent>
+          <StatisticalContent>
+            <StatisticalContentInner>
+              {[
+                auth.authUser.numberOfPosts,
+                auth.authUser.numberOfFollowers,
+                auth.authUser.numberOfFollowingUsers,
+              ].map((field, index) => {
+                if (index === 2) {
+                  return (
+                    <StatisticItem key={index}>
+                      <StatisticNumber>{kFormatter(field)}</StatisticNumber>
+                      <StatisticName>Posts</StatisticName>
+                    </StatisticItem>
+                  );
+                }
+                return (
+                  <Fragment key={index}>
+                    <StatisticItem>
+                      <StatisticNumber>{kFormatter(field)}</StatisticNumber>
+                      <StatisticName>Posts</StatisticName>
+                    </StatisticItem>
+                    <StatisticalContentInnerDot />
+                  </Fragment>
+                );
+              })}
+            </StatisticalContentInner>
+          </StatisticalContent>
+          <BioContentContainer>
+            <UserMenuSectionTitle>{auth.authUser.name}</UserMenuSectionTitle>
+            <BioContent
+              showChar={49}
+              readMoreText="(Read more)"
+              showLessText="(Show less)"
+              readMoreLink="https://www.instagram.com/phuc7320/"
+            >
+              {auth.authUser.bio}
+            </BioContent>
+            {auth.authUser.socialLinks.length > 0 ? (
+              <BioContentSocialLinks>
+                {auth.authUser.socialLinks.slice(0, 3).map((link, index) => (
+                  <BioContentSocialLink key={index} href={link}>
+                    {socialLinkFormatter(link)}
+                  </BioContentSocialLink>
+                ))}
+              </BioContentSocialLinks>
+            ) : (
+              <BioContentNoSocialLinks>No social links</BioContentNoSocialLinks>
+            )}
+          </BioContentContainer>
+        </UserMenuMiddleContent>
+        <UserMenuBottomContent>
+          <StoryCategories />
+          <CreatePostButton type="primary" size="large" block>
+            Create Post
+          </CreatePostButton>
+        </UserMenuBottomContent>
+        <NotificationButton />
+      </UserMenu>
     </StyledHomeLayout>
   );
 };

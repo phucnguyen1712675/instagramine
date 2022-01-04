@@ -138,8 +138,7 @@ const SearchBar = () => {
             ...user,
             isFollowing,
           };
-        })
-        .slice(0, 10);
+        });
 
       dispatch({
         type: SET_FILTERED_USERS,
@@ -173,21 +172,6 @@ const SearchBar = () => {
     eventName: 'resize',
     handler: resizeHandler,
   });
-
-  const shouldLoading =
-    state.isLoading ||
-    usersStatus === 'loading' ||
-    junctionUserFollowingUserStatus === 'loading';
-
-  const showHeader = !values.query && !shouldLoading;
-
-  const searchItemArr = values.query
-    ? state.filteredUsers
-    : state.searchHistory;
-
-  const hasItems = searchItemArr?.length > 0;
-
-  const shouldCenterChild = shouldLoading || !hasItems;
 
   const clearAllHandler = async () => {
     dispatch({type: SET_IS_LOADING, payload: true});
@@ -230,14 +214,14 @@ const SearchBar = () => {
 
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      const isIncluded = state.searchHistory.some(
-        (item) => item.id === user.id
-      );
-
       const junctionObj = {
         uid: auth.authUser.id,
         searchUserId: user.id,
       };
+
+      const isIncluded = state.searchHistory.some(
+        (item) => item.id === user.id
+      );
 
       if (!isIncluded) {
         // Add new
@@ -253,7 +237,6 @@ const SearchBar = () => {
         //Update time
         await updateJunctionUserSearchHistory(junctionObj);
 
-        // If success
         if (mounted.current) {
           dispatch({
             type: UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT,
@@ -294,6 +277,21 @@ const SearchBar = () => {
     return <p>{`Error: ${junctionUserFollowingUserError.message}`}</p>;
   }
 
+  const shouldLoading =
+    state.isLoading ||
+    usersStatus === 'loading' ||
+    junctionUserFollowingUserStatus === 'loading';
+
+  const showHeader = !values.query && !shouldLoading;
+
+  const searchItemArr = values.query
+    ? state.filteredUsers
+    : state.searchHistory;
+
+  const hasItems = searchItemArr.length > 0;
+
+  const shouldCenterChild = shouldLoading || !hasItems;
+
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
       <HideLabel htmlFor="search_input">Search users</HideLabel>
@@ -315,12 +313,7 @@ const SearchBar = () => {
         value={state.isOpen}
         onChange={isOpenHandler}
       />
-      <SearchHistoryOverlayLabel
-        htmlFor="checkbox_search_history"
-        // style={{
-        //   background: 'rgba(0,0,0,0.4)',
-        // }}
-      />
+      <SearchHistoryOverlayLabel htmlFor="checkbox_search_history" />
       {state.isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
           {shouldLoading ? (

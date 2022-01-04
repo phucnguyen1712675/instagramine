@@ -22,7 +22,6 @@ export const StyledSearchBar = styled.form`
 
   @media ${DEVICES.tablet} {
     flex-grow: unset;
-    width: var(--width-search-bar);
   }
 `;
 
@@ -95,20 +94,21 @@ export const SearchHistory = styled.div`
   flex-direction: column;
   ${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
 
-  &::before {
-    content: '';
-    height: var(--space);
-    position: absolute;
-    right: 0;
-    bottom: 100%;
-    left: 0;
-    z-index: 1;
-  }
-
   @media ${DEVICES.tablet} {
     left: unset;
     top: calc(100% + var(--space));
-    width: calc(var(--width-search-bar) + var(--width-search-history-diff));
+    width: calc(var(--width-search-bar) + 75px);
+
+    &::before {
+      content: '';
+      width: var(--width-search-bar);
+      height: var(--space);
+      position: absolute;
+      bottom: 100%;
+      z-index: 1;
+      right: 0;
+      background-color: red;
+    }
   }
 
   @media ${DEVICES.laptop} {
@@ -118,6 +118,12 @@ export const SearchHistory = styled.div`
   @media ${DEVICES.laptopL} {
     right: 50%;
     transform: translateX(50%);
+
+    &::before {
+      right: unset;
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 `;
 
