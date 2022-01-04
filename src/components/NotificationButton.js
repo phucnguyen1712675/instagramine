@@ -1,7 +1,6 @@
 import {useReducer, useRef, useEffect} from 'react';
 import RequestItemButtonGroup from './RequestItemButtonGroup';
-import BellIcon from './icons/BellIcon';
-import RightChevron from './icons/RightChevron';
+import {BellIcon, RightChevronIcon} from './icons';
 import {FakeCheckbox, FakeButtonLabel} from './styled/Lib';
 import {
   StyledNotificationButton,
@@ -21,22 +20,22 @@ import {
   RequestItem,
   RequestItemContent,
 } from './styled/NotificationButton.styled';
+import {useOnScreen, useAuth, useMounted} from '../hooks';
+import {notificationButtonReducer} from '../reducers';
 import {onErrorMedia} from '../utils/media';
-import {useOnScreen} from '../hooks/useOnScreen';
-import followRequestsData from '../data/follow-requests.json';
-import NotificationButtonReducer from '../reducers/notification-button-reducer';
+import {getRequestSendersByUid} from '../services/firestore';
 import {
   SET_IS_LOADING,
   SET_CHECKED,
   SET_SHOW_REQUESTS,
-  SET_FOLLOW_REQUESTS,
-  ON_HIDDEN,
-} from '../actions/notification-button-actions';
+  SET_REQUEST_SENDERS_AFTER_LOADING,
+  REMOVE_REQUEST_SENDER,
+} from '../actions/notificationButtonActions';
 
 const NotificationButton = () => {
-  const [state, dispatch] = useReducer(NotificationButtonReducer, {
-    followRequests: followRequestsData,
-    isLoading: true,
+  const [state, dispatch] = useReducer(notificationButtonReducer, {
+    requestSenders: [],
+    isLoading: false,
     showRequests: false,
     checked: false,
   });
@@ -47,32 +46,46 @@ const NotificationButton = () => {
 
   const isNotificationPopupScreen = useOnScreen({ref: notificationPopupRef});
 
-  const {followRequests, isLoading, showRequests, checked} = state;
+  const auth = useAuth();
 
-  const followRequestsLength = followRequests.length;
-
-  const hasNotifications = followRequestsLength > 0;
-
-  const shouldCenterChild = isLoading || !hasNotifications;
+  const mounted = useMounted();
 
   useEffect(() => {
     if (isNotificationPopupScreen) {
-      let timeoutId = setTimeout(() => {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }, 1000);
+      const getRequests = async () => {
+        dispatch({type: SET_IS_LOADING, payload: true});
+
+        const requestSendersData = await getRequestSendersByUid(
+          auth.authUser.id
+        );
+
+        if (mounted.current) {
+          dispatch({
+            type: SET_REQUEST_SENDERS_AFTER_LOADING,
+            payload: requestSendersData,
+          });
+        }
+      };
+
+      getRequests();
 
       return () => {
-        clearTimeout(timeoutId);
-        dispatch({type: ON_HIDDEN});
+        dispatch({type: SET_SHOW_REQUESTS, payload: false});
       };
     }
-  }, [isNotificationPopupScreen]);
+  }, [isNotificationPopupScreen, auth.authUser.id, mounted]);
 
   useEffect(() => {
-    if (checked) {
+    if (state.checked) {
       tooltipRef.current.setShowState(false);
     }
-  }, [checked]);
+  }, [state.checked]);
+
+  const requestSendersLength = state.requestSenders.length;
+
+  const hasNotifications = requestSendersLength > 0;
+
+  const shouldCenterChild = state.isLoading || !hasNotifications;
 
   const checkHandler = (e) => {
     dispatch({type: SET_CHECKED, payload: e.target.checked});
@@ -82,20 +95,16 @@ const NotificationButton = () => {
     dispatch({type: SET_SHOW_REQUESTS, payload: true});
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const confirmRequest = (userId) => {};
-
-  const removeRequest = (userId) => {
-    const newFollowRequests = followRequests.filter(
-      (user) => user.id !== userId
-    );
-    dispatch({type: SET_FOLLOW_REQUESTS, payload: newFollowRequests});
-  };
+  const setRequestSendersAfterRemoving = (id) =>
+    dispatch({
+      type: REMOVE_REQUEST_SENDER,
+      payload: id,
+    });
 
   return (
     <StyledNotificationButton
       ref={tooltipRef}
-      trigger={checked ? 'none' : 'hover'}
+      trigger={state.checked ? 'none' : 'hover'}
       content="Notifications"
       position="left"
     >
@@ -108,20 +117,20 @@ const NotificationButton = () => {
         ref={notificationPopupRef}
         $shouldCenterChild={shouldCenterChild}
       >
-        {isLoading ? (
+        {state.isLoading ? (
           <NotificationMenuSpinner />
         ) : !hasNotifications ? (
           <NoNotificationsText>No notifications</NoNotificationsText>
         ) : (
           <NotificationMenu>
-            {!showRequests && hasNotifications ? (
+            {!state.showRequests && hasNotifications ? (
               <AllRequestsItem onClick={seeRequestsHandler}>
                 <AllRequestsItemContent
                   topTextAsHeading
                   avatarComponent={
-                    followRequestsLength > 1 ? (
+                    requestSendersLength > 1 ? (
                       <NotificationMenuItemAvatarGroup>
-                        {followRequests.slice(0, 2).map((user, index) => (
+                        {state.requestSenders.slice(0, 2).map((user, index) => (
                           <NotificationMenuItemAvatarGroupWrapper key={index}>
                             <img
                               src={user.avatar}
@@ -134,7 +143,7 @@ const NotificationButton = () => {
                     ) : (
                       <NotificationMenuItemAvatarWrapper>
                         <img
-                          src={followRequests[0].avatar}
+                          src={state.requestSenders[0].avatar}
                           alt=""
                           onError={onErrorMedia}
                         />
@@ -144,20 +153,20 @@ const NotificationButton = () => {
                   topText="Follow Requests"
                   bottomTextComponent={
                     <NotificationMenuItemBottomText>
-                      {followRequests[0].username} and{' '}
-                      {followRequestsLength - 1} others
+                      {state.requestSenders[0].username} and{' '}
+                      {requestSendersLength - 1} others
                     </NotificationMenuItemBottomText>
                   }
                   optionComponent={
                     <NotificationMenuItemOption>
                       <NotificationMenuItemDot />
-                      <RightChevron />
+                      <RightChevronIcon />
                     </NotificationMenuItemOption>
                   }
                 />
               </AllRequestsItem>
             ) : (
-              followRequests.map((user) => (
+              state.requestSenders.map((user) => (
                 <RequestItem key={user.id}>
                   <RequestItemContent
                     avatarComponent={
@@ -177,8 +186,9 @@ const NotificationButton = () => {
                     optionComponent={
                       <RequestItemButtonGroup
                         userId={user.id}
-                        confirmRequest={confirmRequest}
-                        removeRequest={removeRequest}
+                        setRequestSendersAfterRemoving={
+                          setRequestSendersAfterRemoving
+                        }
                       />
                     }
                   />

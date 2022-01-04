@@ -1,7 +1,6 @@
 import {useState} from 'react';
 import PropTypes from 'prop-types';
-import LeftChevron from './icons/LeftChevron';
-import RightChevron from './icons/RightChevron';
+import {LeftChevronIcon, RightChevronIcon} from './icons';
 import PostMedia from './PostMedia';
 import {
   StyledCarousel,
@@ -23,6 +22,7 @@ const Carousel = ({media}) => {
   ));
 
   const mediaLength = media.length;
+
   const carouselIndicators = [];
 
   for (let i = 0; i < mediaLength; i++) {
@@ -45,14 +45,14 @@ const Carousel = ({media}) => {
       {currentSlide > 0 && (
         <CarouselLeftButtonWrapper onClick={prevItemHandler}>
           <CarouselButton shape="circle" disabledHover>
-            <LeftChevron />
+            <LeftChevronIcon />
           </CarouselButton>
         </CarouselLeftButtonWrapper>
       )}
       {currentSlide < mediaLength - 1 && (
         <CarouselRightButtonWrapper onClick={nextItemHandler}>
           <CarouselButton shape="circle" disabledHover>
-            <RightChevron />
+            <RightChevronIcon />
           </CarouselButton>
         </CarouselRightButtonWrapper>
       )}

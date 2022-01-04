@@ -1,14 +1,17 @@
 import {useReducer} from 'react';
-import dateFormat from 'dateformat';
-import moment from 'moment';
+import PropTypes from 'prop-types';
+import {useLocation} from 'react-router-dom';
 import Carousel from './Carousel';
 import Avatar from './Avatar';
 import ReadMore from './ReadMore';
-import CommentIcon from './icons/CommentIcon';
-import ShareIcon from './icons/ShareIcon';
-import ThreeDotsIcon from './icons/ThreeDotsIcon';
-import HeartICon from './icons/HeartIcon';
-import SavedIcon from './icons/SavedIcon';
+import PostMedia from './PostMedia';
+import {
+  CommentIcon,
+  ShareIcon,
+  ThreeDotsIcon,
+  HeartIcon,
+  SavedIcon,
+} from './icons';
 import {PostMediaWrapper} from './styled/Lib';
 import {
   StyledPost,
@@ -32,58 +35,70 @@ import {
   PostCaption,
   PostDate,
 } from './styled/Post.styled';
-import PostMedia from './PostMedia';
-import {POST_CAPTION_SHOW_CHAR} from '../constants';
-import PostReducer from '../reducers/post-reducer';
-import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/post-actions';
-import {useSavedPosts} from '../hooks/useSavedPosts';
-import PostPropTypes from '../prop-types/post.propTypes';
+import {POST_CAPTION_SHOW_CHAR, ROUTE_PATHS} from '../constants';
+import {useAuth} from '../hooks';
+import {postReducer} from '../reducers';
+import {
+  likePostRequest,
+  unlikePostRequest,
+  addJunctionUserSavedPost,
+  removeJunctionUserSavedPost,
+} from '../services/firestore';
+import {formatPostDate} from '../utils/formatters';
+import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/postActions';
 
-const Post = ({post}) => {
-  const {savePost, unsavePost, isSavedPost} = useSavedPosts();
-
-  const [state, dispatch] = useReducer(PostReducer, {
+const Post = ({post, removeSavedPostHandler}) => {
+  const [state, dispatch] = useReducer(postReducer, {
     likeAmount: post.likeAmount,
     isLiked: post.isLiked,
-    isSaved: isSavedPost(post.id),
+    isSaved: post.isSaved,
   });
 
-  const {likeAmount, isLiked, isSaved} = state;
+  const auth = useAuth();
 
-  const getDiffDays = (date1, date2 = Date.now()) => {
-    const diffTime = Math.abs(date2 - date1);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
+  const location = useLocation();
 
-  const formatPostDate = (timestamp) => {
-    const convertedDate = new Date(timestamp * 1000);
-    const diffDays = getDiffDays(convertedDate);
+  const likePostHandler = () => {
+    const junctionObj = {
+      uid: auth.authUser.id,
+      likedPostId: post.id,
+    };
 
-    if (diffDays > 7) {
-      const formattedDate = dateFormat(convertedDate, 'ddd, dd mmmm yyyy');
-      return formattedDate;
+    if (!state.isLiked) {
+      likePostRequest(junctionObj);
+      dispatch({
+        type: LIKE_POST,
+      });
+    } else {
+      unlikePostRequest(junctionObj);
+      dispatch({
+        type: UNLIKE_POST,
+      });
     }
-
-    const timeAgo = moment(convertedDate).fromNow();
-    return timeAgo;
-  };
-
-  const formattedPostDate = formatPostDate(post.date);
-
-  const likeButtonHandler = () => {
-    dispatch({type: !isLiked ? LIKE_POST : UNLIKE_POST});
   };
 
   const savePostHandler = () => {
-    if (isSaved) {
-      unsavePost(post.id);
+    const junctionObj = {
+      uid: auth.authUser.id,
+      savedPostId: post.id,
+    };
+
+    if (!state.isSaved) {
+      addJunctionUserSavedPost(junctionObj);
     } else {
-      savePost(post);
+      removeJunctionUserSavedPost(junctionObj);
+
+      if (location.pathname === `/${ROUTE_PATHS.SAVED}`) {
+        removeSavedPostHandler(post.id);
+      }
     }
 
-    dispatch({type: TOGGLE_IS_SAVED});
+    dispatch({
+      type: TOGGLE_IS_SAVED,
+    });
   };
+
+  const {owner} = post;
 
   const hasOneItem = post.media.length === 1;
 
@@ -92,18 +107,18 @@ const Post = ({post}) => {
       <PostHeader
         avatarComponent={
           <Avatar
-            url={post.avatar}
-            hasStory={post.hasStory}
-            hasStoryBeenSeen={post.hasStoryBeenSeen}
-            asLink={!post.hasStory}
-            profile={post.profile}
+            url={owner.avatar}
+            hasStory={owner.hasStory}
+            hasStoryBeenSeen={owner.hasStoryBeenSeen}
+            asLink={!owner.hasStory}
+            profile={owner.profile}
           />
         }
-        topText={post.username}
-        profile={post.profile}
+        topText={owner.username}
+        profile={owner.profile}
         bottomTextComponent={
           <a href={location}>
-            {post.city}, {post.country}
+            {owner.city}, {owner.country}
           </a>
         }
         optionComponent={
@@ -126,10 +141,10 @@ const Post = ({post}) => {
           <PostActions mediaLength={post.media.length}>
             <LikedButton
               type="text"
-              onClick={likeButtonHandler}
-              $isLiked={isLiked}
+              onClick={likePostHandler}
+              $isLiked={state.isLiked}
             >
-              <HeartICon />
+              <HeartIcon />
             </LikedButton>
             <PostActionButton type="text">
               <CommentIcon />
@@ -140,27 +155,37 @@ const Post = ({post}) => {
             <SavedButton
               type="text"
               onClick={savePostHandler}
-              $isSaved={isSaved}
+              $isSaved={state.isSaved}
             >
               <SavedIcon />
             </SavedButton>
           </PostActions>
           <PostLikedUsersInfo>
             <PostLikedUsersStatement>
-              <span>Liked by </span>
-              <PostLikedUsersHighlight href={post.likedUsersLink}>
-                {post.likedUser}
-              </PostLikedUsersHighlight>
-              <span> and </span>
-              <PostLikedUsersHighlight href={post.likedUsersLink}>
-                {likeAmount} others
-              </PostLikedUsersHighlight>
+              {post.likedUsers.length > 0 ? (
+                <>
+                  <span>Liked by </span>
+                  <PostLikedUsersHighlight href={post.likedUsersLink}>
+                    {post.likedUsers[0].name}
+                  </PostLikedUsersHighlight>
+                  <span> and </span>
+                  <PostLikedUsersHighlight href={post.likedUsersLink}>
+                    {state.likeAmount} others
+                  </PostLikedUsersHighlight>
+                </>
+              ) : (
+                <></>
+              )}
             </PostLikedUsersStatement>
-            <PostLikedUsersAvatarGroup href={post.likedUsersLink}>
-              {post.likedOtherUser.map((url, index) => (
-                <PostLikedUsersAvatar key={index} url={url} />
-              ))}
-            </PostLikedUsersAvatarGroup>
+            {post.likedUsers.length > 0 ? (
+              <PostLikedUsersAvatarGroup href={post.likedUsersLink}>
+                {post.fakeLikedOtherUserAvatars.map((url, index) => (
+                  <PostLikedUsersAvatar key={index} url={url} />
+                ))}
+              </PostLikedUsersAvatarGroup>
+            ) : (
+              <></>
+            )}
           </PostLikedUsersInfo>
           <PostCaptionContainer>
             <PostCaptionWrapper>
@@ -176,7 +201,7 @@ const Post = ({post}) => {
                 <PostCaption>{post.caption}</PostCaption>
               )}
             </PostCaptionWrapper>
-            <PostDate>{formattedPostDate}</PostDate>
+            <PostDate>{formatPostDate(post.createdAt)}</PostDate>
           </PostCaptionContainer>
         </PostBottomContent>
       </PostContent>
@@ -185,7 +210,49 @@ const Post = ({post}) => {
 };
 
 Post.propTypes = {
-  post: PostPropTypes.isRequired,
+  post: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    owner: PropTypes.shape({
+      username: PropTypes.string.isRequired,
+      avatar: PropTypes.string.isRequired,
+      profile: PropTypes.string.isRequired,
+      hasStory: PropTypes.bool.isRequired,
+      hasStoryBeenSeen: function (props, propName, componentName) {
+        if (
+          props['hasStory'] &&
+          (props[propName] == undefined || typeof props[propName] != 'boolean')
+        ) {
+          return new Error(
+            `Please provide 'hasStoryBeenSeen' prop for ${componentName}!`
+          );
+        }
+      },
+      city: PropTypes.string.isRequired,
+      country: PropTypes.string.isRequired,
+    }),
+    location: PropTypes.string.isRequired,
+    media: PropTypes.arrayOf(
+      PropTypes.shape({
+        url: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        duration: PropTypes.number,
+      })
+    ).isRequired,
+    isLiked: PropTypes.bool.isRequired,
+    isSaved: PropTypes.bool.isRequired,
+    likedUsersLink: PropTypes.string.isRequired,
+    caption: PropTypes.string.isRequired,
+    createdAt: PropTypes.instanceOf(Date).isRequired,
+    likedUsers: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        avatar: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+    likeAmount: PropTypes.number.isRequired,
+    fakeLikedOtherUserAvatars: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
+  removeSavedPostHandler: PropTypes.func,
 };
 
 export default Post;

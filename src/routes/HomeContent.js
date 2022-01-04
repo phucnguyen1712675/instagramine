@@ -1,27 +1,46 @@
-import {useState, useEffect} from 'react';
-import PostList from '../components/PostList';
-import {PageContent} from '../components/styled/Lib';
+import {useReducer, useEffect} from 'react';
+import {homeContentReducer} from '../reducers';
+import {useAuth, useMounted} from '../hooks';
+import {Post} from '../components';
+import {getPostsAtHomeContent} from '../services/firestore';
+import {PageContent, PostList} from '../components/styled/Lib';
 import {HomeContentSpinner} from '../components/styled/HomeContent.styled';
-import postsData from '../data/posts.json';
+import {
+  SET_IS_LOADING,
+  SET_POSTS_AFTER_LOADING,
+} from '../actions/homeContentActions';
 
 const HomeContent = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [state, dispatch] = useReducer(homeContentReducer, {
+    isLoading: false,
+    posts: [],
+  });
 
-  const posts = postsData;
+  const auth = useAuth();
 
-  const hasPosts = posts.length > 0;
+  const mounted = useMounted();
 
   useEffect(() => {
-    let timeoutId = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    const getPosts = async () => {
+      dispatch({
+        type: SET_IS_LOADING,
+        payload: true,
+      });
 
-    return () => {
-      clearTimeout(timeoutId);
+      const postsData = await getPostsAtHomeContent(auth.authUser.id);
+
+      if (mounted.current) {
+        dispatch({
+          type: SET_POSTS_AFTER_LOADING,
+          payload: postsData,
+        });
+      }
     };
-  }, []);
 
-  if (isLoading) {
+    getPosts();
+  }, [auth.authUser.id, mounted]);
+
+  if (state.isLoading) {
     return (
       <PageContent>
         <HomeContentSpinner />
@@ -29,13 +48,21 @@ const HomeContent = () => {
     );
   }
 
-  if (!hasPosts) {
-    <PageContent>
-      <p>No Posts.</p>
-    </PageContent>;
+  if (state.posts.length <= 0) {
+    return (
+      <PageContent>
+        <p>No Posts.</p>
+      </PageContent>
+    );
   }
 
-  return <PostList posts={postsData} />;
+  return (
+    <PostList $postLength={state.posts.length}>
+      {state.posts.map((post) => (
+        <Post key={post.id} post={post} />
+      ))}
+    </PostList>
+  );
 };
 
 export default HomeContent;

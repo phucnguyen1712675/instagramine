@@ -1,11 +1,10 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
-import {useAuth} from '../hooks/useAuth';
-import {useForm} from '../hooks/useForm';
-import AuthLayout from '../components/AuthLayout';
-import HideLabel from '../components/HideLabel';
-import Button from '../components/Button';
+import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
+import {useAuth, useForm, useMounted} from '../hooks';
+import {AuthLayout, HideLabel, Button} from '../components';
+import {validateEmail} from '../utils/validate';
+import {logIn} from '../services/firestoreAuth';
 import {
   Logo,
   AuthForm,
@@ -16,47 +15,47 @@ import {
 } from '../components/styled/Lib';
 
 const LoginPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
+  const from = location.state?.from?.pathname ?? '/';
+
   const auth = useAuth();
 
-  const from = location.state?.from?.pathname || '/';
-
-  const [isLoading, setIsLoading] = useState(false);
+  const mounted = useMounted();
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
-      username: '',
+      email: '',
       password: '',
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setIsLoading(true);
 
-      setTimeout(() => {
-        auth.signIn(
-          {
-            username: values.username,
-          },
-          () => {
-            navigate(from, {replace: true});
-          }
-        );
+      const userCredential = await logIn(values.email, values.password);
 
+      if (userCredential) {
+        auth.setAuthStatus(true);
+        navigate(from, {replace: true});
+      } else if (mounted.current) {
         setIsLoading(false);
-      }, 1000);
+      }
     },
     validate: (values) => {
       const errors = {};
 
-      if (!values.username) {
-        errors.username = 'Please enter username';
+      if (!values.email) {
+        errors.email = 'Please enter email';
+      } else if (!validateEmail(values.email)) {
+        errors.email = 'Please enter valid email';
       }
 
       if (!values.password) {
         errors.password = 'Please enter password';
-      } else if (password.length < MAX_LENGTH_PASSWORD) {
+      } else if (values.password.length < MAX_LENGTH_PASSWORD) {
         errors.password = `Password must be at least ${MAX_LENGTH_PASSWORD} characters`;
       }
 
@@ -64,33 +63,31 @@ const LoginPage = () => {
     },
   });
 
-  const {username, password} = values;
-
-  const disableSubmitButton = isLoading || !username || !password;
+  const disableSubmitButton = isLoading || !values.email || !values.password;
 
   return (
     <AuthLayout
       questionText="Don't have an account? "
-      toUrl={`/${PATHS.SIGNUP}`}
+      toUrl={`/${ROUTE_PATHS.SIGNUP}`}
       toPageText="Sign up"
     >
       <Logo />
       <AuthForm onSubmit={handleSubmit}>
-        <HideLabel htmlFor="login_username">Username</HideLabel>
+        <HideLabel htmlFor="login_email">Email</HideLabel>
         <AuthInput
-          id="login_username"
-          name="username"
-          placeholder="Username"
-          value={username}
+          id="login_email"
+          name="email"
+          placeholder="Email"
+          value={values.email}
           onChange={handleChange}
         />
-        {errors.username && <ErrorText>{errors.username}</ErrorText>}
+        {errors.email && <ErrorText>{errors.email}</ErrorText>}
         <HideLabel htmlFor="login_password">Password</HideLabel>
         <PasswordAuthInput
           id="login_password"
           name="password"
           placeholder="Password"
-          value={password}
+          value={values.password}
           onChange={handleChange}
         />
         {errors.password && <ErrorText>{errors.password}</ErrorText>}

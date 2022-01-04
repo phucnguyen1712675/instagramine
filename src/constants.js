@@ -1,4 +1,4 @@
-export const PATHS = {
+export const ROUTE_PATHS = {
   INBOX: 'inbox',
   EXPLORE: 'explore',
   ACTIVITY: 'activity',
@@ -40,7 +40,6 @@ export const ONERROR_VIDEO_PLACEHOLDER =
   'https://cdn.dribbble.com/users/17914/screenshots/4902225/media/76e60c9102f45d6a6a858f3d8edc2aff.png';
 
 export const POST_CAPTION_SHOW_CHAR = 40;
-
 
 export const MAX_STORIES_NUMBER = 3;
 

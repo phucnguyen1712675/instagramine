@@ -6,10 +6,7 @@ import {
   useEffect,
 } from 'react';
 import SearchBar from './SearchBar';
-import MenuIcon from './icons/MenuIcon';
-import SearchIcon from './icons/SearchIcon';
-import LeftArrow from './icons/LeftArrow';
-import AudioIcon from './icons/AudioIcon';
+import {MenuIcon, SearchIcon, LeftArrowIcon, AudioIcon} from './icons';
 import {
   StyledHeader,
   HeaderLeftItem,
@@ -21,8 +18,7 @@ import {
   SearchHeaderButton,
 } from './styled/Header.styled';
 import {SIZES} from '../constants';
-import {useWindowSize} from '../hooks/useWindowSize';
-import {useOnScreen} from '../hooks/useOnScreen';
+import {useWindowSize, useOnScreen} from '../hooks';
 
 const Header = forwardRef((props, ref) => {
   const [isSearching, setIsSearching] = useState(false);
@@ -48,8 +44,6 @@ const Header = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     isMenuBtnOnScreen,
   }));
-
- 
 
   const toggleToSearchHeader = () => {
     setIsSearching(true);
@@ -84,7 +78,7 @@ const Header = forwardRef((props, ref) => {
             onClick={toggleToMainHeader}
             disabledHover
           >
-            <LeftArrow />
+            <LeftArrowIcon />
           </SearchHeaderButton>
           <SearchBar />
           <SearchHeaderButton type="text" disabledHover>

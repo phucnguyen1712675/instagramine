@@ -41,4 +41,4 @@ useLocalStorage.propTypes = {
   initialValue: PropTypes.any,
 };
 
-export {useLocalStorage};
+export default useLocalStorage;

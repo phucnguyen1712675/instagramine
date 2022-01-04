@@ -17,6 +17,7 @@ const UserCard = ({
   bottomTextComponent,
   optionComponent,
   avatarComponent,
+  onClick,
 }) => {
   const topTextContent = topTextAsHeading ? (
     <TopText as="h4">{topText}</TopText>
@@ -25,7 +26,7 @@ const UserCard = ({
   );
 
   return (
-    <StyledUserCard className={className}>
+    <StyledUserCard className={className} onClick={onClick}>
       {avatarComponent}
       <TextContentWrapper>
         <TextContent>
@@ -46,6 +47,7 @@ UserCard.propTypes = {
   optionComponent: PropTypes.element,
   topTextAsHeading: PropTypes.bool,
   avatarComponent: PropTypes.element.isRequired,
+  onClick: PropTypes.func,
 };
 
 export default UserCard;

@@ -9,8 +9,8 @@ export const StyledRequestItemButtonGroup = styled.div`
 `;
 
 const requestItemButtonStyle = css`
-	padding: 0;
-	height: 30px;
+  padding: 0;
+  height: 30px;
 `;
 
 export const RequestItemConfirmButton = styled(Button)`
@@ -20,7 +20,7 @@ export const RequestItemConfirmButton = styled(Button)`
 
 export const RequestItemFollowButton = styled(Button)`
   ${requestItemButtonStyle}
-  width: ${({$isFollowed}) => ($isFollowed ? '82px' : '63px')};
+  width: ${({$isFollowing}) => ($isFollowing ? '82px' : '63px')};
 `;
 
 export const RequestItemDeleteButton = styled(Button)`

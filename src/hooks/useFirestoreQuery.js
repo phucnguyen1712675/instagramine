@@ -1,22 +1,15 @@
 import {useReducer, useEffect} from 'react';
+import {onSnapshot, queryEqual, refEqual} from 'firebase/firestore';
 import PropTypes from 'prop-types';
-import {useMemoCompare} from './useMemoCompare';
-import useFirestoreQueryReducer from '../reducers/use-firestore-query-reducer';
+import useMemoCompare from './useMemoCompare';
+import {useFirestoreQueryReducer} from '../reducers';
 import {
   IDLE,
   LOADING,
   SUCCESS,
   ERROR,
-} from '../actions/use-firestore-query-actions';
-
-// Get doc data and merge doc.id
-function getDocData(doc) {
-  return doc.exists ? {id: doc.id, ...doc.data()} : null;
-}
-// Get array of doc data from collection
-function getCollectionData(collection) {
-  return collection.docs.map(getDocData);
-}
+} from '../actions/useFirestoreQueryActions';
+import {getDocData, getCollectionData} from '../utils/firestore';
 
 const useFirestoreQuery = ({query}) => {
   // Our initial state
@@ -40,7 +33,11 @@ const useFirestoreQuery = ({query}) => {
     next: query,
     compare: (prevQuery) => {
       // Use built-in Firestore isEqual method to determine if "equal"
-      return prevQuery && query && query.isEqual(prevQuery);
+      return (
+        prevQuery &&
+        query &&
+        (refEqual(query, prevQuery) || queryEqual(query, prevQuery))
+      );
     },
   });
 
@@ -56,12 +53,14 @@ const useFirestoreQuery = ({query}) => {
 
     // Subscribe to query with onSnapshot
     // Will unsubscribe on cleanup since this returns an unsubscribe function
-    return queryCached.onSnapshot(
-      (response) => {
+    return onSnapshot(
+      queryCached,
+      (snapshot) => {
         // Get data for collection or doc
-        const data = response.docs
-          ? getCollectionData(response)
-          : getDocData(response);
+        const data = snapshot.docs
+          ? getCollectionData(snapshot.docs)
+          : getDocData(snapshot);
+
         dispatch({type: SUCCESS, payload: data});
       },
       (error) => {
@@ -77,23 +76,4 @@ useFirestoreQuery.propTypes = {
   query: PropTypes.object.isRequired,
 };
 
-export {useFirestoreQuery};
-
-// function ProfilePage({ uid }) {
-//   // Subscribe to Firestore document
-//   const { data, status, error } = useFirestoreQuery(
-//     firestore.collection("profiles").doc(uid)
-//   );
-//   if (status === "loading") {
-//     return "Loading...";
-//   }
-//   if (status === "error") {
-//     return `Error: ${error.message}`;
-//   }
-//   return (
-//     <div>
-//       <ProfileHeader avatar={data.avatar} name={data.name} />
-//       <Posts posts={data.posts} />
-//     </div>
-//   );
-// }
+export default useFirestoreQuery;

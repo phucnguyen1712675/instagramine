@@ -2,8 +2,7 @@ import styled, {css} from 'styled-components';
 import {Link} from 'react-router-dom';
 import {buttonColorHover} from './Mixins';
 import Button from '../Button';
-import LogoIcon from '../icons/LogoIcon';
-import LogoTextIcon from '../icons/LogoTextIcon';
+import {LogoIcon, LogoTextIcon} from '../icons';
 import {DEVICES} from '../../constants';
 
 export const StyledHeader = styled.header`

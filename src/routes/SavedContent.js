@@ -1,27 +1,54 @@
-import {useState, useEffect} from 'react';
-import PostList from '../components/PostList';
-import {useSavedPosts} from '../hooks/useSavedPosts';
-import {PageContent} from '../components/styled/Lib';
+import {useReducer, useEffect} from 'react';
+import {useAuth, useMounted} from '../hooks';
+import {savedContentReducer} from '../reducers';
+import {Post} from '../components';
+import {getPostsAtSavedContent} from '../services/firestore';
+import {
+  SET_IS_LOADING,
+  SET_SAVED_POSTS_AFTER_LOADING,
+  UNSAVE_POST,
+} from '../actions/savedContentActions';
+import {PageContent, PostList} from '../components/styled/Lib';
 import {SavedContentSpinner} from '../components/styled/SavedContent.styled';
 
 const SavedContent = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [state, dispatch] = useReducer(savedContentReducer, {
+    isLoading: false,
+    savedPosts: [],
+  });
 
-  const {savedPosts} = useSavedPosts();
+  const auth = useAuth();
 
-  const hasPosts = savedPosts.length > 0;
+  const mounted = useMounted();
 
   useEffect(() => {
-    let timeoutId = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    const getSavedPosts = async () => {
+      dispatch({
+        type: SET_IS_LOADING,
+        payload: true,
+      });
 
-    return () => {
-      clearTimeout(timeoutId);
+      const savedPostsData = await getPostsAtSavedContent(auth.authUser.id);
+
+      if (mounted.current) {
+        dispatch({
+          type: SET_SAVED_POSTS_AFTER_LOADING,
+          payload: savedPostsData,
+        });
+      }
     };
-  }, []);
 
-  if (isLoading) {
+    getSavedPosts();
+  }, [auth.authUser.id, mounted]);
+
+  const removeSavedPostHandler = (postId) => {
+    dispatch({
+      type: UNSAVE_POST,
+      payload: postId,
+    });
+  };
+
+  if (state.isLoading) {
     return (
       <PageContent>
         <SavedContentSpinner />
@@ -29,13 +56,25 @@ const SavedContent = () => {
     );
   }
 
-  if (!hasPosts) {
-    <PageContent>
-      <p>No Saved Posts.</p>
-    </PageContent>;
+  if (state.savedPosts.length <= 0) {
+    return (
+      <PageContent>
+        <p>No Saved Posts.</p>
+      </PageContent>
+    );
   }
 
-  return <PostList posts={savedPosts} />;
+  return (
+    <PostList $postLength={state.savedPosts.length}>
+      {state.savedPosts.map((post) => (
+        <Post
+          key={post.id}
+          post={post}
+          removeSavedPostHandler={removeSavedPostHandler}
+        />
+      ))}
+    </PostList>
+  );
 };
 
 export default SavedContent;

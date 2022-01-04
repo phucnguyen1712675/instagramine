@@ -1,22 +1,27 @@
-import {useState, useRef, useEffect, useCallback} from 'react';
+import {useReducer, useRef, useEffect, useCallback, Fragment} from 'react';
 import {useNavigate, Outlet, useLocation} from 'react-router-dom';
 import Header from './Header';
-import {PATHS} from '../constants';
-import {useAuth} from '../hooks/useAuth';
-import {SavedPostsContextProvider} from '../store/saved-posts-context';
-import UserMenu from './UserMenu';
 import Tooltip from './Tooltip';
-import SettingIcon from './icons/SettingIcon';
-import UserIcon from './icons/UserIcon';
-import HomeIcon from './icons/HomeIcon';
-import InboxIcon from './icons/InboxIcon';
-import ExploreIcon from './icons/ExploreIcon';
-import ActivityIcon from './icons/ActivityIcon';
-import ReelIcon from './icons/ReelIcon';
-import StreamIcon from './icons/StreamIcon';
-import SavedListIcon from './icons/SavedListIcon';
-import MenuSettingIcon from './icons/MenuSettingIcon';
-import {FakeCheckbox, FakeButtonLabel, OverlayLabel} from './styled/Lib';
+import NotificationButton from './NotificationButton';
+import StoryCategories from './StoryCategories';
+import {
+  SettingIcon,
+  UserIcon,
+  HomeIcon,
+  InboxIcon,
+  ExploreIcon,
+  ActivityIcon,
+  ReelIcon,
+  StreamIcon,
+  SavedListIcon,
+  MenuSettingIcon,
+} from './icons';
+import {
+  FakeCheckbox,
+  FakeButtonLabel,
+  OverlayLabel,
+  UserMenuSectionTitle,
+} from './styled/Lib';
 import {
   StyledHomeLayout,
   SidebarOverlay,
@@ -29,15 +34,45 @@ import {
   SettingMenuItemText,
   MainContent,
   SidebarButton,
+  UserMenu,
+  UserMenuTopContent,
+  UserMenuMiddleContent,
+  UserMenuBottomContent,
+  ThumbnailContentAvatar,
+  ThumbnailContentUserName,
+  ThumbnailContentJobDescription,
+  EditButtonWrapper,
+  EditButton,
+  StatisticalContent,
+  StatisticalContentInner,
+  StatisticalContentInnerDot,
+  StatisticItem,
+  StatisticNumber,
+  StatisticName,
+  BioContentContainer,
+  BioContent,
+  BioContentSocialLinks,
+  BioContentSocialLink,
+  BioContentNoSocialLinks,
+  CreatePostButton,
 } from './styled/HomeLayout.styled';
+import {ROUTE_PATHS} from '../constants';
+import {useAuth, useMounted} from '../hooks';
+import {homeLayoutReducer} from '../reducers';
+import {logOut} from '../services/firestoreAuth';
+import {kFormatter, socialLinkFormatter} from '../utils/formatters';
+import {
+  SET_TOGGLE_SIDEBAR_BTN_CHECKED,
+  SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
+  SET_SHOW_TOGGLE_SIDEBAR,
+} from '../actions/homeLayoutActions';
 
 const HomeLayout = () => {
-  const [toggleSidebarBtnChecked, setToggleSidebarBtnChecked] = useState(false);
-
-  const [toggleSettingMenuBtnChecked, setToggleSettingMenuBtnChecked] =
-    useState(false);
-
-  const [showToggleSidebar, setShowToggleSidebar] = useState(false);
+  const [state, dispatch] = useReducer(homeLayoutReducer, {
+    toggleSidebarBtnChecked: false,
+    toggleSettingMenuBtnChecked: false,
+    showToggleSidebar: false,
+  });
 
   const tooltipRef = useRef(null);
 
@@ -45,56 +80,77 @@ const HomeLayout = () => {
 
   const menuBtnRef = useCallback(
     (node) => {
-      if (node !== null && showToggleSidebar !== node.isMenuBtnOnScreen) {
-        setShowToggleSidebar(node.isMenuBtnOnScreen);
+      if (node !== null && state.showToggleSidebar !== node.isMenuBtnOnScreen) {
+        dispatch({
+          type: SET_SHOW_TOGGLE_SIDEBAR,
+          payload: node.isMenuBtnOnScreen,
+        });
       }
     },
-    [showToggleSidebar]
+    [state.showToggleSidebar]
   );
 
-  const {pathname} = useLocation();
+  const location = useLocation();
 
   const navigate = useNavigate();
 
   const auth = useAuth();
 
+  const mounted = useMounted();
+
   useEffect(() => {
-    if (toggleSettingMenuBtnChecked) {
+    if (state.toggleSettingMenuBtnChecked) {
       tooltipRef.current.setShowState(false);
     }
-  }, [toggleSettingMenuBtnChecked]);
+  }, [state.toggleSettingMenuBtnChecked]);
 
   const uncheckSidebarBtn = () => {
     menuBtnCheckbox.current.checked = false;
   };
 
   useEffect(() => {
-    if (toggleSidebarBtnChecked && !showToggleSidebar) {
-      setToggleSidebarBtnChecked(false);
+    if (state.toggleSidebarBtnChecked && !state.showToggleSidebar) {
+      dispatch({
+        type: SET_TOGGLE_SIDEBAR_BTN_CHECKED,
+        payload: false,
+      });
       uncheckSidebarBtn();
     }
-  }, [toggleSidebarBtnChecked, showToggleSidebar]);
+  }, [state.toggleSidebarBtnChecked, state.showToggleSidebar]);
 
   const checkToggleSidebarBtnHandler = (e) => {
-    setToggleSidebarBtnChecked(e.target.checked);
+    dispatch({
+      type: SET_TOGGLE_SIDEBAR_BTN_CHECKED,
+      payload: e.target.checked,
+    });
   };
 
   const checkToggleSettingMenuBtnHandler = (e) => {
-    setToggleSettingMenuBtnChecked(e.target.checked);
+    dispatch({
+      type: SET_TOGGLE_SETTING_MENU_BTN_CHECKED,
+      payload: e.target.checked,
+    });
   };
 
-  const signOutHandler = (e) => {
+  const logOutHandler = async (e) => {
     e.preventDefault();
 
-    auth.signOut(() => {
-      navigate(PATHS.LOGIN);
-    });
+    auth.setIsLoading(true);
+
+    const isSuccess = await logOut();
+
+    if (isSuccess) {
+      auth.setAuthStatus(false);
+      navigate(ROUTE_PATHS.LOGIN);
+    } else if (mounted.current) {
+      auth.setIsLoading(false);
+    }
   };
 
   const navigateHandler = (path) => {
     navigate(path);
 
-    if (showToggleSidebar) {
+    if (state.showToggleSidebar) {
       uncheckSidebarBtn();
     }
   };
@@ -108,32 +164,32 @@ const HomeLayout = () => {
     {
       icon: <InboxIcon />,
       content: 'Inbox',
-      path: PATHS.INBOX,
+      path: ROUTE_PATHS.INBOX,
     },
     {
       icon: <ExploreIcon />,
       content: 'Explore',
-      path: PATHS.EXPLORE,
+      path: ROUTE_PATHS.EXPLORE,
     },
     {
       icon: <ActivityIcon />,
       content: 'Activity',
-      path: PATHS.ACTIVITY,
+      path: ROUTE_PATHS.ACTIVITY,
     },
     {
       icon: <ReelIcon />,
       content: 'Reel',
-      path: PATHS.REEL,
+      path: ROUTE_PATHS.REEL,
     },
     {
       icon: <StreamIcon />,
       content: 'Stream',
-      path: PATHS.STREAM,
+      path: ROUTE_PATHS.STREAM,
     },
     {
       icon: <SavedListIcon />,
       content: 'Saved',
-      path: PATHS.SAVED,
+      path: ROUTE_PATHS.SAVED,
     },
   ].map((item, index) => (
     <Tooltip key={index} content={item.content} position="right">
@@ -141,7 +197,7 @@ const HomeLayout = () => {
         type="text"
         onClick={() => navigateHandler(item.path)}
         disabledHover
-        $isActive={`/${item.path}` === pathname}
+        $isActive={`/${item.path}` === location.pathname}
       >
         {item.icon}
       </SidebarButton>
@@ -154,22 +210,22 @@ const HomeLayout = () => {
       <FakeCheckbox
         ref={menuBtnCheckbox}
         id="toggle_sidebar_button"
-        value={toggleSidebarBtnChecked}
+        value={state.toggleSidebarBtnChecked}
         onChange={checkToggleSidebarBtnHandler}
       />
       <SidebarOverlay htmlFor="toggle_sidebar_button" />
-      <Sidebar $showToggleSidebar={showToggleSidebar}>
+      <Sidebar $showToggleSidebar={state.showToggleSidebar}>
         <Nav>
           {navigationContent}
           <SettingButton
             ref={tooltipRef}
             content="Settings"
             position="right"
-            trigger={toggleSettingMenuBtnChecked ? 'none' : 'hover'}
+            trigger={state.toggleSettingMenuBtnChecked ? 'none' : 'hover'}
           >
             <FakeCheckbox
               id="checkbox_setting_menu"
-              value={toggleSettingMenuBtnChecked}
+              value={state.toggleSettingMenuBtnChecked}
               onChange={checkToggleSettingMenuBtnHandler}
             />
             <FakeButtonLabel htmlFor="checkbox_setting_menu">
@@ -178,21 +234,21 @@ const HomeLayout = () => {
             <OverlayLabel htmlFor="checkbox_setting_menu" />
             <SettingMenu>
               <SettingMenuItem>
-                <SettingMenuItemLink to={`/${PATHS.PROFILE}`}>
+                <SettingMenuItemLink to={`/${ROUTE_PATHS.PROFILE}`}>
                   <UserIcon />
                   <SettingMenuItemText>Profile</SettingMenuItemText>
                 </SettingMenuItemLink>
               </SettingMenuItem>
               <SettingMenuItem>
-                <SettingMenuItemLink to={`/${PATHS.SETTINGS}`}>
+                <SettingMenuItemLink to={`/${ROUTE_PATHS.SETTINGS}`}>
                   <MenuSettingIcon />
                   <SettingMenuItemText>Settings</SettingMenuItemText>
                 </SettingMenuItemLink>
               </SettingMenuItem>
               <SettingMenuItem>
                 <SettingMenuItemLink
-                  to={`/${PATHS.LOGOUT}`}
-                  onClick={signOutHandler}
+                  to={`/${ROUTE_PATHS.LOGOUT}`}
+                  onClick={logOutHandler}
                 >
                   Log Out
                 </SettingMenuItemLink>
@@ -202,11 +258,86 @@ const HomeLayout = () => {
         </Nav>
       </Sidebar>
       <MainContent>
-        <SavedPostsContextProvider>
-          <Outlet />
-        </SavedPostsContextProvider>
+        <Outlet />
       </MainContent>
-      <UserMenu />
+      <UserMenu>
+        <UserMenuTopContent>
+          <ThumbnailContentAvatar
+            url={auth.authUser.avatar}
+            hasStory={auth.authUser.hasStory}
+            hasStoryBeenSeen={auth.authUser.hasStoryBeenSeen}
+          />
+          <ThumbnailContentUserName>
+            {auth.authUser.username}
+          </ThumbnailContentUserName>
+          <ThumbnailContentJobDescription>
+            {auth.authUser.job}
+          </ThumbnailContentJobDescription>
+          <EditButtonWrapper content="Edit profile" position="left">
+            <EditButton type="primary" size="large">
+              Edit
+            </EditButton>
+          </EditButtonWrapper>
+        </UserMenuTopContent>
+        <UserMenuMiddleContent>
+          <StatisticalContent>
+            <StatisticalContentInner>
+              {[
+                auth.authUser.numberOfPosts,
+                auth.authUser.numberOfFollowers,
+                auth.authUser.numberOfFollowingUsers,
+              ].map((field, index) => {
+                if (index === 2) {
+                  return (
+                    <StatisticItem key={index}>
+                      <StatisticNumber>{kFormatter(field)}</StatisticNumber>
+                      <StatisticName>Posts</StatisticName>
+                    </StatisticItem>
+                  );
+                }
+                return (
+                  <Fragment key={index}>
+                    <StatisticItem>
+                      <StatisticNumber>{kFormatter(field)}</StatisticNumber>
+                      <StatisticName>Posts</StatisticName>
+                    </StatisticItem>
+                    <StatisticalContentInnerDot />
+                  </Fragment>
+                );
+              })}
+            </StatisticalContentInner>
+          </StatisticalContent>
+          <BioContentContainer>
+            <UserMenuSectionTitle>{auth.authUser.name}</UserMenuSectionTitle>
+            <BioContent
+              showChar={49}
+              readMoreText="(Read more)"
+              showLessText="(Show less)"
+              readMoreLink="https://www.instagram.com/phuc7320/"
+            >
+              {auth.authUser.bio}
+            </BioContent>
+            {auth.authUser.socialLinks.length > 0 ? (
+              <BioContentSocialLinks>
+                {auth.authUser.socialLinks.slice(0, 3).map((link, index) => (
+                  <BioContentSocialLink key={index} href={link}>
+                    {socialLinkFormatter(link)}
+                  </BioContentSocialLink>
+                ))}
+              </BioContentSocialLinks>
+            ) : (
+              <BioContentNoSocialLinks>No social links</BioContentNoSocialLinks>
+            )}
+          </BioContentContainer>
+        </UserMenuMiddleContent>
+        <UserMenuBottomContent>
+          <StoryCategories />
+          <CreatePostButton type="primary" size="large" block>
+            Create Post
+          </CreatePostButton>
+        </UserMenuBottomContent>
+        <NotificationButton />
+      </UserMenu>
     </StyledHomeLayout>
   );
 };

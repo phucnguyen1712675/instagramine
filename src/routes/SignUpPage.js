@@ -1,12 +1,17 @@
 import {useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
-import {PATHS, MAX_LENGTH_PASSWORD} from '../constants';
+import {ROUTE_PATHS, MAX_LENGTH_PASSWORD} from '../constants';
+import {useAuth, useForm, useMounted} from '../hooks';
+import {AuthLayout, HideLabel, Button} from '../components';
 import {validateEmail} from '../utils/validate';
-import {useAuth} from '../hooks/useAuth';
-import {useForm} from '../hooks/useForm';
-import AuthLayout from '../components/AuthLayout';
-import HideLabel from '../components/HideLabel';
-import Button from '../components/Button';
+import {
+  addNewUserDoc,
+  setFakeFollowRequests,
+  setFakeJunctionUserStoryCategory,
+  setFakeJunctionUserFollowingUser,
+  setFakeJunctionUserSearchHistory,
+} from '../services/firestore';
+import {register} from '../services/firestoreAuth';
 import {
   Logo,
   AuthForm,
@@ -23,53 +28,81 @@ import {
 } from '../components/styled/SignUpPage.styled';
 
 const SignUpPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
+  const from = location.state?.from?.pathname ?? '/';
+
   const auth = useAuth();
 
-  const from = location.state?.from?.pathname || '/';
-
-  const [isLoading, setIsLoading] = useState(false);
+  const mounted = useMounted();
 
   const {values, errors, handleChange, handleSubmit} = useForm({
     initialValues: {
       email: '',
-      fullName: '',
+      name: '',
       username: '',
       password: '',
       confirmPassword: '',
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setIsLoading(true);
 
-      setTimeout(() => {
-        auth.signUp(
-          {
-            email: values.email,
-            fullName: values.fullName,
-            username: values.username,
-          },
-          () => {
-            navigate(from, {replace: true});
-          }
-        );
+      const userCredential = await register(values.email, values.password);
 
+      if (userCredential) {
+        const {user} = userCredential;
+
+        const fakeData = {
+          avatar:
+            'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=387&q=80',
+          profile: 'https://www.instagram.com/phuc7320/',
+          job: 'Wildlife Photographer',
+          numberOfPosts: 98,
+          numberOfFollowers: 3500,
+          numberOfFollowingUsers: 900,
+          bio: 'My specialty lies in creating colorful creations, amazing designs, and high-quality website artworks that have the potential to capture the attention while making a very positive first impression on the visitor visitor visitor visitor visitor',
+          hasStory: false,
+          socialLinks: ['https://dribbble.com/nkchaudhary01'],
+        };
+
+        const newUserData = {
+          ...fakeData,
+          email: values.email,
+          name: values.name,
+          username: values.username,
+        };
+
+        await addNewUserDoc(user.uid, newUserData);
+
+        await Promise.all([
+          setFakeFollowRequests(user.uid),
+          setFakeJunctionUserStoryCategory(user.uid),
+          setFakeJunctionUserFollowingUser(user.uid),
+          setFakeJunctionUserSearchHistory(user.uid),
+        ]);
+
+        auth.setAuthStatus(true);
+
+        navigate(from, {replace: true});
+      } else if (mounted.current) {
         setIsLoading(false);
-      }, 1000);
+      }
     },
     validate: (values) => {
       const errors = {};
 
       if (!values.email) {
         errors.email = 'Please enter email';
-      } else if (!validateEmail(email)) {
+      } else if (!validateEmail(values.email)) {
         errors.email = 'Please enter valid email';
       }
 
-      if (!values.fullName) {
-        errors.fullName = 'Please enter fullName';
+      if (!values.name) {
+        errors.name = 'Please enter name';
       }
 
       if (!values.username) {
@@ -78,7 +111,7 @@ const SignUpPage = () => {
 
       if (!values.password) {
         errors.password = 'Please enter password';
-      } else if (password.length < MAX_LENGTH_PASSWORD) {
+      } else if (values.password.length < MAX_LENGTH_PASSWORD) {
         errors.password = `Password must be at least ${MAX_LENGTH_PASSWORD} characters`;
       }
 
@@ -90,20 +123,18 @@ const SignUpPage = () => {
     },
   });
 
-  const {email, fullName, username, password, confirmPassword} = values;
-
   const disableSubmitButton =
     isLoading ||
-    !email ||
-    !fullName ||
-    !username ||
-    !password ||
-    !confirmPassword;
+    !values.email ||
+    !values.name ||
+    !values.username ||
+    !values.password ||
+    !values.confirmPassword;
 
   return (
     <AuthLayout
       questionText="Have an account? "
-      toUrl={`/${PATHS.LOGIN}`}
+      toUrl={`/${ROUTE_PATHS.LOGIN}`}
       toPageText="Login"
     >
       <Logo />
@@ -114,25 +145,25 @@ const SignUpPage = () => {
           id="signup_email"
           name="email"
           placeholder="Email"
-          value={email}
+          value={values.email}
           onChange={handleChange}
         />
         {errors.email && <ErrorText>{errors.email}</ErrorText>}
-        <HideLabel htmlFor="signup_full_name">Full name</HideLabel>
+        <HideLabel htmlFor="signup_name">Name</HideLabel>
         <AuthInput
-          id="signup_full_name"
-          name="fullName"
-          placeholder="Full Name"
-          value={fullName}
+          id="signup_name"
+          name="name"
+          placeholder="Name"
+          value={values.name}
           onChange={handleChange}
         />
-        {errors.fullName && <ErrorText>{errors.fullName}</ErrorText>}
+        {errors.name && <ErrorText>{errors.name}</ErrorText>}
         <HideLabel htmlFor="signup_username">Username</HideLabel>
         <AuthInput
           id="signup_username"
           name="username"
           placeholder="Username"
-          value={username}
+          value={values.username}
           onChange={handleChange}
         />
         {errors.username && <ErrorText>{errors.username}</ErrorText>}
@@ -141,7 +172,7 @@ const SignUpPage = () => {
           id="signup_password"
           name="password"
           placeholder="Password"
-          value={password}
+          value={values.password}
           onChange={handleChange}
         />
         {errors.password && <ErrorText>{errors.password}</ErrorText>}
@@ -152,7 +183,7 @@ const SignUpPage = () => {
           id="signup_confirm_password"
           name="confirmPassword"
           placeholder="Confirm Password"
-          value={confirmPassword}
+          value={values.confirmPassword}
           onChange={handleChange}
         />
         {errors.confirmPassword && (

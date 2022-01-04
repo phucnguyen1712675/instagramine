@@ -1,13 +1,16 @@
 import styled, {css} from 'styled-components';
 import {hideScrollBarScrolling} from './Mixins';
-import {SearchInput, Dot, MenuItem} from './Lib';
-import {TextContentWrapper, TextContent, OptionWrapper} from './UserCard.styled';
+import {SearchInput, Dot, MenuItem, OverlayLabel} from './Lib';
+import {
+  TextContentWrapper,
+  TextContent,
+  OptionWrapper,
+} from './UserCard.styled';
 import Button from '../Button';
 import Spinner from '../Spinner';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
-import SearchIcon from '../icons/SearchIcon';
-import MultiplyIcon from '../icons/MultiplyIcon';
+import {SearchIcon, MultiplyIcon} from '../icons';
 import {DEVICES} from '../../constants';
 
 export const StyledSearchBar = styled.form`
@@ -19,7 +22,6 @@ export const StyledSearchBar = styled.form`
 
   @media ${DEVICES.tablet} {
     flex-grow: unset;
-    width: var(--width-search-bar);
   }
 `;
 
@@ -46,23 +48,34 @@ export const SearchBarInput = styled(SearchInput)`
   }
 `;
 
-export const SearchBarInputSearchIcon = styled(SearchIcon)`
+export const SearchBarSearchLabel = styled.label`
   position: absolute;
   top: 0;
   left: 18px;
   height: 100%;
+  display: flex;
+  align-items: center;
   z-index: 2;
-  color: ${({theme}) => theme.colors.blueAlpha};
-  font-size: 1.8rem;
 
   ${SearchInput}:focus ~ & {
     display: none;
   }
 `;
 
+export const SearchBarInputSearchIcon = styled(SearchIcon)`
+  color: ${({theme}) => theme.colors.blueAlpha};
+  font-size: 1.8rem;
+`;
+
 const flexCenter = css`
   justify-content: center;
   align-items: center;
+`;
+
+export const SearchHistoryOverlayLabel = styled(OverlayLabel)`
+  /* @media ${DEVICES.laptop} {
+    z-index: 2;
+  } */
 `;
 
 export const SearchHistory = styled.div`
@@ -81,25 +94,35 @@ export const SearchHistory = styled.div`
   flex-direction: column;
   ${({$shouldCenterChild}) => $shouldCenterChild && flexCenter}
 
-  &::before {
-    content: '';
-    height: var(--space);
-    position: absolute;
-    right: 0;
-    bottom: 100%;
-    left: 0;
-    z-index: 1;
-  }
-
   @media ${DEVICES.tablet} {
     left: unset;
     top: calc(100% + var(--space));
-    width: calc(var(--width-search-bar) + var(--width-search-history-diff));
+    width: calc(var(--width-search-bar) + 75px);
+
+    &::before {
+      content: '';
+      width: var(--width-search-bar);
+      height: var(--space);
+      position: absolute;
+      bottom: 100%;
+      z-index: 1;
+      right: 0;
+    }
+  }
+
+  @media ${DEVICES.laptop} {
+    z-index: 2;
   }
 
   @media ${DEVICES.laptopL} {
     right: 50%;
     transform: translateX(50%);
+
+    &::before {
+      right: unset;
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 `;
 
@@ -147,7 +170,7 @@ export const SearchHistoryItemContent = styled(UserCard)`
   padding: 8px 16px;
   cursor: pointer;
   flex-direction: column;
-	position: relative;
+  position: relative;
 
   @media ${DEVICES.mobileM} {
     flex-direction: row;
@@ -174,12 +197,12 @@ export const SearchHistoryItemContent = styled(UserCard)`
     }
   }
 
-	${OptionWrapper} {
-		position: absolute;
-		top: 50%;
-		right: 0.8rem;
-		transform: translateY(-50%); 
-	}
+  ${OptionWrapper} {
+    position: absolute;
+    top: 50%;
+    right: 0.8rem;
+    transform: translateY(-50%);
+  }
 `;
 
 export const SearchHistoryItemAvatar = styled(Avatar)`

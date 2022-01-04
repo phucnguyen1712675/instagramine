@@ -4,7 +4,7 @@ import {TopText} from './UserCard.styled';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
 import Button from '../Button';
-import QuotationMarkIcon from '../icons/QuotationMarkIcon';
+import {QuotationMarkIcon} from '../icons';
 
 export const StyledPost = styled.div`
   display: flex;

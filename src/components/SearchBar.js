@@ -1,10 +1,12 @@
 import {useReducer, useRef, useCallback, useEffect} from 'react';
 import HideLabel from './HideLabel';
-import {FakeCheckbox, OverlayLabel} from './styled/Lib';
+import {FakeCheckbox} from './styled/Lib';
 import {
   StyledSearchBar,
   SearchBarInput,
+  SearchBarSearchLabel,
   SearchBarInputSearchIcon,
+  SearchHistoryOverlayLabel,
   SearchHistory,
   SearchHistoryInner,
   SearchHistorySpinner,
@@ -24,28 +26,43 @@ import {
   SearchHistoryUserAdditionalInfoDot,
   NoResultsText,
 } from './styled/SearchBar.styled';
-import {useEventListener} from '../hooks/useEventListener';
-import {useForm} from '../hooks/useForm';
-import {useLocalStorage} from '../hooks/useLocalStorage';
-import SearchBarReducer from '../reducers/search-bar-reducer';
+import {
+  useEventListener,
+  useForm,
+  useAuth,
+  useFirestoreQuery,
+  useMounted,
+} from '../hooks';
+import {searchBarReducer} from '../reducers';
+import {searchHistoryItemConverter} from '../converters';
 import {
   SET_IS_OPEN,
   SET_IS_LOADING,
+  SET_SEARCH_HISTORY_AFTER_LOADING,
+  ADD_SEARCH_HISTORY_ITEM,
+  UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT,
+  SET_SEARCH_HISTORY_AFTER_REMOVING,
+  SET_SEARCH_HISTORY_AFTER_REMOVING_ALL,
+  SET_FILTERED_USERS,
   OPEN_FIRST_TIME,
-  FILTER_USERS,
-} from '../actions/search-bar-actions';
+} from '../actions/searchBarActions';
+import {
+  usersColRef,
+  junctionUserFollowingUserQuery,
+  getSearchHistoryByUid,
+  addJunctionUserSearchHistory,
+  removeJunctionUserSearchHistory,
+  removeAllJunctionUserSearchHistoryByUid,
+  updateJunctionUserSearchHistory,
+} from '../services/firestore';
 
 const SearchBar = () => {
-  const [state, dispatch] = useReducer(SearchBarReducer, {
+  const [state, dispatch] = useReducer(searchBarReducer, {
     hasOpened: false,
     isOpen: false,
-    isLoading: true,
+    isLoading: false,
+    searchHistory: [],
     filteredUsers: [],
-  });
-
-  const [searchHistory, setSearchHistory] = useLocalStorage({
-    key: 'searchHistory',
-    initialValue: [],
   });
 
   const {values, handleChange, handleSubmit, reset} = useForm({
@@ -60,33 +77,82 @@ const SearchBar = () => {
       }
 
       return errors;
-    }
+    },
   });
-
-  const {query} = values;
-
-  const {hasOpened, isOpen, isLoading, filteredUsers} = state;
 
   const inputRef = useRef(null);
 
   const searchHistoryFakeCheckboxRef = useRef(null);
 
-  useEffect(() => {
-    if (query) {
-      dispatch({type: FILTER_USERS, payload: query});
+  const auth = useAuth();
 
-      setTimeout(() => {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }, 1000);
+  const mounted = useMounted();
+
+  const {
+    data: users,
+    status: usersStatus,
+    error: usersError,
+  } = useFirestoreQuery({
+    query: usersColRef.withConverter(searchHistoryItemConverter),
+  });
+
+  const {
+    data: junctionUserFollowingUsers,
+    status: junctionUserFollowingUserStatus,
+    error: junctionUserFollowingUserError,
+  } = useFirestoreQuery({
+    query: junctionUserFollowingUserQuery(auth.authUser.id),
+  });
+
+  useEffect(() => {
+    if (state.hasOpened) {
+      const getSearchHistory = async () => {
+        dispatch({type: SET_IS_LOADING, payload: true});
+
+        const searchHistoryData = await getSearchHistoryByUid(auth.authUser.id);
+
+        if (mounted.current) {
+          dispatch({
+            type: SET_SEARCH_HISTORY_AFTER_LOADING,
+            payload: searchHistoryData,
+          });
+        }
+      };
+
+      getSearchHistory();
     }
-  }, [query]);
+  }, [state.hasOpened, auth.authUser.id, mounted]);
+
+  useEffect(() => {
+    if (values.query) {
+      const usersFiltered = users
+        .filter((user) => {
+          const username = user.username.toLowerCase();
+          return username.includes(values.query);
+        })
+        .map((user) => {
+          const isFollowing = junctionUserFollowingUsers.some(
+            (junction) => junction.followingUserId === user.id
+          );
+          return {
+            ...user,
+            isFollowing,
+          };
+        });
+
+      dispatch({
+        type: SET_FILTERED_USERS,
+        payload: usersFiltered,
+      });
+    }
+  }, [junctionUserFollowingUsers, users, values.query]);
 
   const onSearch = useCallback(() => {
-    if (!query) {
+    if (!values.query) {
       inputRef.current.blur();
       dispatch({type: SET_IS_OPEN, isOpen: false});
     }
-  }, [query]);
+  }, [values.query]);
 
   useEventListener({
     eventName: 'search',
@@ -95,26 +161,31 @@ const SearchBar = () => {
   });
 
   const resizeHandler = useCallback(() => {
-    if (isOpen) {
+    if (state.isOpen) {
+      searchHistoryFakeCheckboxRef.current.checked = false;
+      inputRef.current.blur();
       dispatch({type: SET_IS_OPEN, isOpen: false});
     }
-  }, [isOpen]);
+  }, [state.isOpen]);
 
   useEventListener({
     eventName: 'resize',
     handler: resizeHandler,
   });
 
-  const showHeader = !query && !isLoading;
+  const clearAllHandler = async () => {
+    dispatch({type: SET_IS_LOADING, payload: true});
 
-  const searchItemArr = query ? filteredUsers : searchHistory;
+    const searchUserIds = state.searchHistory.map((item) => item.id);
 
-  const hasItems = searchItemArr.length > 0;
+    await removeAllJunctionUserSearchHistoryByUid({
+      uid: auth.authUser.id,
+      searchUserIds,
+    });
 
-  const shouldCenterChild = isLoading || !hasItems;
-
-  const clearAllHandler = () => {
-    setSearchHistory([]);
+    if (mounted.current) {
+      dispatch({type: SET_SEARCH_HISTORY_AFTER_REMOVING_ALL});
+    }
   };
 
   const isOpenHandler = (e) => {
@@ -124,62 +195,102 @@ const SearchBar = () => {
   const focusInputHandler = () => {
     searchHistoryFakeCheckboxRef.current.checked = true;
 
-    if (hasOpened) {
+    if (state.hasOpened) {
       dispatch({type: SET_IS_OPEN, payload: true});
     } else {
       dispatch({type: OPEN_FIRST_TIME});
-
-      setTimeout(() => {
-        dispatch({type: SET_IS_LOADING, payload: false});
-      }, 1000);
     }
   };
 
-  const clickItemHandler = (e, user) => {
-    e.preventDefault();
-    const foundIndex = searchHistory.findIndex((u) => u.id === user.id);
+  const navigateToProfileHandler = (e) => {
+    if (!e.target.closest('a') || values.query) {
+      e.preventDefault();
+    }
+  };
 
-    if (foundIndex !== -1) {
-      // Not the first item
-      if (foundIndex !== 0) {
-        const move = (array, from, to) => {
-          if (to === from) return array;
+  const clickSearchHistoryItemHandler = async (e, user) => {
+    if (values.query) {
+      e.preventDefault();
 
-          var target = array[from];
-          var increment = to < from ? -1 : 1;
+      dispatch({type: SET_IS_LOADING, payload: true});
 
-          for (var k = from; k != to; k += increment) {
-            array[k] = array[k + increment];
-          }
-
-          array[to] = target;
-
-          return array;
-        };
-        setSearchHistory((prevState) => move(prevState, foundIndex, 0));
-      }
-    } else if (query) {
-      const newSearchItem = {
-        id: user.id,
-        username: user.username,
-        name: user.name,
-        avatar: user.avatar,
-        profile: user.profile,
-        isFollowed: user.isFollowed,
-        hasStory: user.hasStory,
-        hasStoryBeenSeen: user.hasStoryBeenSeen,
+      const junctionObj = {
+        uid: auth.authUser.id,
+        searchUserId: user.id,
       };
-      // Add new item to the beginning of the array
-      setSearchHistory((prevState) => [newSearchItem, ...prevState]);
+
+      const isIncluded = state.searchHistory.some(
+        (item) => item.id === user.id
+      );
+
+      if (!isIncluded) {
+        // Add new
+        await addJunctionUserSearchHistory(junctionObj);
+
+        if (mounted.current) {
+          dispatch({
+            type: ADD_SEARCH_HISTORY_ITEM,
+            payload: user,
+          });
+        }
+      } else {
+        //Update time
+        await updateJunctionUserSearchHistory(junctionObj);
+
+        if (mounted.current) {
+          dispatch({
+            type: UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT,
+            payload: user.id,
+          });
+        }
+      }
+
+      reset();
     }
-    // Clear the query
-    reset();
   };
 
-  const removeItemHandler = (e, id) => {
-    e.preventDefault();
-    setSearchHistory((prevState) => prevState.filter((user) => user.id !== id));
+  const removeItemHandler = async (e, userId) => {
+    if (e.target.closest('button')) {
+      e.preventDefault();
+
+      dispatch({type: SET_IS_LOADING, payload: true});
+
+      await removeJunctionUserSearchHistory({
+        uid: auth.authUser.id,
+        searchUserId: userId,
+      });
+
+      if (mounted.current) {
+        dispatch({
+          type: SET_SEARCH_HISTORY_AFTER_REMOVING,
+          payload: userId,
+        });
+      }
+    }
   };
+
+  if (usersError === 'error') {
+    return <p>{`Error: ${usersError.message}`}</p>;
+  }
+
+  if (junctionUserFollowingUserError === 'error') {
+    return <p>{`Error: ${junctionUserFollowingUserError.message}`}</p>;
+  }
+
+  const shouldLoading =
+    state.isLoading ||
+    usersStatus === 'loading' ||
+    junctionUserFollowingUserStatus === 'loading';
+
+  const showHeader = !values.query && !shouldLoading;
+
+  const searchItemArr = values.query
+    ? state.filteredUsers
+    : state.searchHistory;
+
+  const hasItems = searchItemArr.length > 0;
+
+  const shouldCenterChild = shouldLoading || !hasItems;
 
   return (
     <StyledSearchBar onSubmit={handleSubmit}>
@@ -189,25 +300,27 @@ const SearchBar = () => {
         id="search_input"
         name="query"
         placeholder="Search"
-        value={query}
+        value={values.query}
         onChange={handleChange}
         onFocus={focusInputHandler}
       />
-      <SearchBarInputSearchIcon />
+      <SearchBarSearchLabel htmlFor="search_input">
+        <SearchBarInputSearchIcon />
+      </SearchBarSearchLabel>
       <FakeCheckbox
         ref={searchHistoryFakeCheckboxRef}
         id="checkbox_search_history"
-        value={isOpen}
+        value={state.isOpen}
         onChange={isOpenHandler}
       />
-      <OverlayLabel htmlFor="checkbox_search_history" />
-      {isOpen && (
+      <SearchHistoryOverlayLabel htmlFor="checkbox_search_history" />
+      {state.isOpen && (
         <SearchHistory $shouldCenterChild={shouldCenterChild}>
-          {isLoading ? (
+          {shouldLoading ? (
             <SearchHistorySpinner />
           ) : !hasItems ? (
             <NoResultsText>
-              {query ? 'No results found.' : 'No recent searches.'}
+              {values.query ? 'No results found.' : 'No recent searches.'}
             </NoResultsText>
           ) : (
             <SearchHistoryInner>
@@ -224,10 +337,11 @@ const SearchBar = () => {
                   <SearchHistoryItem key={user.id}>
                     <SearchHistoryItemLink
                       href={user.profile}
-                      onClick={(e) => clickItemHandler(e, user)}
-                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={(e) => navigateToProfileHandler(e)}
+                      // onMouseDown={(e) => e.preventDefault()}
                     >
                       <SearchHistoryItemContent
+                        onClick={(e) => clickSearchHistoryItemHandler(e, user)}
                         topTextAsHeading
                         avatarComponent={
                           <SearchHistoryItemAvatar
@@ -243,7 +357,7 @@ const SearchBar = () => {
                             <SearchHistoryUsernameText>
                               {user.name}
                             </SearchHistoryUsernameText>
-                            {user.isFollowed && (
+                            {user.isFollowing && (
                               <>
                                 <SearchHistoryUserAdditionalInfoDot />
                                 <SearchHistoryFollowingText>
@@ -254,7 +368,7 @@ const SearchBar = () => {
                           </SearchHistoryUserAdditionalInfo>
                         }
                         optionComponent={
-                          !query ? (
+                          !values.query ? (
                             <RemoveItemButton
                               type="text"
                               onClick={(e) => removeItemHandler(e, user.id)}
