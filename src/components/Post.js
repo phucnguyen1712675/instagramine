@@ -2,6 +2,7 @@ import {useReducer} from 'react';
 import Carousel from './Carousel';
 import Avatar from './Avatar';
 import ReadMore from './ReadMore';
+import PostMedia from './PostMedia';
 import {
   CommentIcon,
   ShareIcon,
@@ -32,36 +33,75 @@ import {
   PostCaption,
   PostDate,
 } from './styled/Post.styled';
-import PostMedia from './PostMedia';
 import {POST_CAPTION_SHOW_CHAR} from '../constants';
-import {useSavedPosts} from '../hooks';
 import {postPropTypes} from '../prop-types';
+import {useAuth, useMounted} from '../hooks';
 import {postReducer} from '../reducers';
+import {
+  addJunctionUserLikedPost,
+  removeJunctionUserLikedPost,
+  addJunctionUserSavedPost,
+  removeJunctionUserSavedPost,
+} from '../services/firestore';
 import {formatPostDate} from '../utils/formatters';
 import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/postActions';
 
 const Post = ({post}) => {
-  const {savePost, unsavePost, isSavedPost} = useSavedPosts();
-
   const [state, dispatch] = useReducer(postReducer, {
     likeAmount: post.likeAmount,
     isLiked: post.isLiked,
-    isSaved: isSavedPost(post.id),
+    isSaved: post.isSaved,
   });
 
-  const likeButtonHandler = () => {
-    dispatch({type: !state.isLiked ? LIKE_POST : UNLIKE_POST});
+  const auth = useAuth();
+
+  const mounted = useMounted();
+
+  const likePostHandler = async () => {
+    const junctionObj = {
+      uid: auth.authUser.id,
+      likedPostId: post.id,
+    };
+
+    if (!state.isLiked) {
+      await addJunctionUserLikedPost(junctionObj);
+
+      if (mounted.current) {
+        dispatch({
+          type: LIKE_POST,
+        });
+      }
+    } else {
+      await removeJunctionUserLikedPost(junctionObj);
+
+      if (mounted.current) {
+        dispatch({
+          type: UNLIKE_POST,
+        });
+      }
+    }
   };
 
-  const savePostHandler = () => {
-    if (state.isSaved) {
-      unsavePost(post.id);
+  const savePostHandler = async () => {
+    const junctionObj = {
+      uid: auth.authUser.id,
+      savedPostId: post.id,
+    };
+
+    if (!state.isSaved) {
+      await addJunctionUserSavedPost(junctionObj);
     } else {
-      savePost(post);
+      await removeJunctionUserSavedPost(junctionObj);
     }
 
-    dispatch({type: TOGGLE_IS_SAVED});
+    if (mounted.current) {
+      dispatch({
+        type: TOGGLE_IS_SAVED,
+      });
+    }
   };
+
+  const {owner} = post;
 
   const hasOneItem = post.media.length === 1;
 
@@ -70,18 +110,18 @@ const Post = ({post}) => {
       <PostHeader
         avatarComponent={
           <Avatar
-            url={post.avatar}
-            hasStory={post.hasStory}
-            hasStoryBeenSeen={post.hasStoryBeenSeen}
-            asLink={!post.hasStory}
-            profile={post.profile}
+            url={owner.avatar}
+            hasStory={owner.hasStory}
+            hasStoryBeenSeen={owner.hasStoryBeenSeen}
+            asLink={!owner.hasStory}
+            profile={owner.profile}
           />
         }
-        topText={post.username}
-        profile={post.profile}
+        topText={owner.username}
+        profile={owner.profile}
         bottomTextComponent={
           <a href={location}>
-            {post.city}, {post.country}
+            {owner.city}, {owner.country}
           </a>
         }
         optionComponent={
@@ -104,7 +144,7 @@ const Post = ({post}) => {
           <PostActions mediaLength={post.media.length}>
             <LikedButton
               type="text"
-              onClick={likeButtonHandler}
+              onClick={likePostHandler}
               $isLiked={state.isLiked}
             >
               <HeartIcon />
@@ -125,20 +165,30 @@ const Post = ({post}) => {
           </PostActions>
           <PostLikedUsersInfo>
             <PostLikedUsersStatement>
-              <span>Liked by </span>
-              <PostLikedUsersHighlight href={post.likedUsersLink}>
-                {post.likedUser}
-              </PostLikedUsersHighlight>
-              <span> and </span>
-              <PostLikedUsersHighlight href={post.likedUsersLink}>
-                {state.likeAmount} others
-              </PostLikedUsersHighlight>
+              {post.likedUsers.length > 0 ? (
+                <>
+                  <span>Liked by </span>
+                  <PostLikedUsersHighlight href={post.likedUsersLink}>
+                    {post.likedUsers[0].name}
+                  </PostLikedUsersHighlight>
+                  <span> and </span>
+                  <PostLikedUsersHighlight href={post.likedUsersLink}>
+                    {state.fakeLikeAmount} others
+                  </PostLikedUsersHighlight>
+                </>
+              ) : (
+                <></>
+              )}
             </PostLikedUsersStatement>
-            <PostLikedUsersAvatarGroup href={post.likedUsersLink}>
-              {post.likedOtherUser.map((url, index) => (
-                <PostLikedUsersAvatar key={index} url={url} />
-              ))}
-            </PostLikedUsersAvatarGroup>
+            {post.likedUsers.length > 0 ? (
+              <PostLikedUsersAvatarGroup href={post.likedUsersLink}>
+                {post.fakeLikedOtherUserAvatars.map((url, index) => (
+                  <PostLikedUsersAvatar key={index} url={url} />
+                ))}
+              </PostLikedUsersAvatarGroup>
+            ) : (
+              <></>
+            )}
           </PostLikedUsersInfo>
           <PostCaptionContainer>
             <PostCaptionWrapper>
@@ -154,7 +204,7 @@ const Post = ({post}) => {
                 <PostCaption>{post.caption}</PostCaption>
               )}
             </PostCaptionWrapper>
-            <PostDate>{formatPostDate(post.date)}</PostDate>
+            <PostDate>{formatPostDate(post.createdAt)}</PostDate>
           </PostCaptionContainer>
         </PostBottomContent>
       </PostContent>

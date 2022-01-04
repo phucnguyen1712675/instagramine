@@ -111,7 +111,6 @@ const SearchBar = () => {
 
         const searchHistoryData = await getSearchHistoryByUid(auth.authUser.id);
 
-        // console.log(searchHistoryData);
         if (mounted.current) {
           dispatch({
             type: SET_SEARCH_HISTORY_AFTER_LOADING,
@@ -132,12 +131,12 @@ const SearchBar = () => {
           return username.includes(values.query);
         })
         .map((user) => {
-          const indexFound = junctionUserFollowingUsers.findIndex(
+          const isFollowing = junctionUserFollowingUsers.some(
             (junction) => junction.followingUserId === user.id
           );
           return {
             ...user,
-            isFollowing: indexFound !== -1,
+            isFollowing,
           };
         })
         .slice(0, 10);
@@ -231,8 +230,9 @@ const SearchBar = () => {
 
       dispatch({type: SET_IS_LOADING, payload: true});
 
-      const isIncluded =
-        state.searchHistory.findIndex((item) => item.id === user.id) !== -1;
+      const isIncluded = state.searchHistory.some(
+        (item) => item.id === user.id
+      );
 
       const junctionObj = {
         uid: auth.authUser.id,

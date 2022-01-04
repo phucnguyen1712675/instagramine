@@ -18,14 +18,16 @@ import {MAX_STORIES_NUMBER} from '../constants';
 import {
   searchHistoryItemConverter,
   requestSenderConverter,
+  likedUserConverter,
 } from '../converters';
+import fakePostData from '../data/posts.json';
 import {getCollectionData, getDocData} from '../utils/firestore';
 import {removeUndefinedFields} from '../utils/object';
 
 // Collection paths
 export const usersColRef = collection(db, 'users');
 export const postsColRef = collection(db, 'posts');
-export const storyCategories = collection(db, 'story_categories');
+export const storyCategoriesColRef = collection(db, 'story_categories');
 export const junctionUserRequestSenderColRef = collection(
   db,
   'junction_user_request_sender'
@@ -46,6 +48,7 @@ export const junctionUserStoryCategoryColRef = collection(
   db,
   'junction_user_story_category'
 );
+export const junctionUserLikedPost = collection(db, 'junction_user_liked_post');
 
 // Document paths
 export const userDocRef = (uid) => doc(db, `users/${uid}`);
@@ -54,6 +57,8 @@ export const storyCategoryDocRef = (storyCategoryId) =>
   doc(db, `story_categories/${storyCategoryId}`);
 export const junctionUserSearchHistoryDocRef = ({uid, searchUserId}) =>
   doc(db, `junction_user_search_history/${uid}_${searchUserId}`);
+export const junctionUserLikedPostDocRef = ({uid, likedPostId}) =>
+  doc(db, `junction_user_liked_post/${uid}_${likedPostId}`);
 export const junctionUserSavedPostDocRef = ({uid, savedPostId}) =>
   doc(db, `junction_user_saved_post/${uid}_${savedPostId}`);
 export const junctionUserRequestSenderDocRef = ({uid, requestSenderId}) =>
@@ -76,7 +81,7 @@ export const junctionUserSearchHistoryQuery = (uid) =>
   );
 export const junctionUserFollowingUserQuery = (uid) =>
   query(junctionUserFollowingUserColRef, where('uid', '==', uid));
-export const junctionUserSavedPostQuery = (uid) =>
+export const junctionUserSavedPostQueryByUid = (uid) =>
   query(
     junctionUserSavedPostColRef,
     where('uid', '==', uid),
@@ -89,6 +94,17 @@ export const junctionUserStoryCategoryQuery = (uid) =>
     orderBy('views', 'desc'),
     limit(MAX_STORIES_NUMBER)
   );
+export const postsAtHomeContentQuery = () =>
+  query(postsColRef, orderBy('createdAt', 'desc'), limit(20));
+export const junctionUserLikedPostQueryByUid = (uid) =>
+  query(junctionUserLikedPost, where('uid', '==', uid));
+export const junctionUserLikedPostQueryByPostId = (likedPostId) =>
+  query(
+    junctionUserLikedPost,
+    where('likedPostId', '==', likedPostId),
+    orderBy('createdAt', 'desc'),
+    limit(20)
+  );
 
 // Helper Functions
 const getJunctionDocs = async (query, callbackFn) => {
@@ -98,15 +114,6 @@ const getJunctionDocs = async (query, callbackFn) => {
       junctions.docs.filter((doc) => doc.exists()).map(callbackFn)
     );
     return docs;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const getAllDocsByQuery = async (query) => {
-  try {
-    const snapshot = await getDocs(query);
-    return getCollectionData(snapshot.docs);
   } catch (error) {
     console.log(error);
   }
@@ -123,14 +130,21 @@ const addNewJunctionDoc = async (docRef, data) => {
 };
 
 // Custom Functions
-// export const getAllJunctionUserRequestSenderByUid = async (uid) => {
-//   const q = junctionUserRequestSenderQuery(uid);
+export const getAllJunctionUserSavedPostByUid = async (uid) => {
+  const q = junctionUserSavedPostQueryByUid(uid);
 
-//   return getAllDocsByQuery(q);
-// };
+  return getJunctionDocs(q, async (doc) => {
+    const docData = doc.data();
+
+    return {
+      ...docData,
+      createdAt: docData.createdAt.toDate(),
+    };
+  });
+};
 
 export const getSavedPostsByUid = async (uid) => {
-  const q = junctionUserSavedPostQuery(uid);
+  const q = junctionUserSavedPostQueryByUid(uid);
 
   return getJunctionDocs(q, async (doc) => {
     const {postId, createdAt} = doc.data();
@@ -197,10 +211,33 @@ export const getStoryCategoriesByUid = async (uid) => {
   });
 };
 
-export const getAllJunctionUserSearchHistoryByUid = async (uid) => {
-  const q = junctionUserSearchHistoryQuery(uid);
+export const getAllJunctionUserLikedPostByUid = async (uid) => {
+  const q = junctionUserLikedPostQueryByUid(uid);
 
-  return getAllDocsByQuery(q);
+  return getJunctionDocs(q, async (doc) => {
+    const docData = doc.data();
+
+    return {
+      ...docData,
+      createdAt: docData.createdAt.toDate(),
+    };
+  });
+};
+
+export const getLikedUsersByPostId = async (likedPostId) => {
+  const q = junctionUserLikedPostQueryByPostId(likedPostId);
+
+  return getJunctionDocs(q, async (doc) => {
+    const {uid, createdAt} = doc.data();
+    const docRef = userDocRef(uid).withConverter(likedUserConverter);
+    const snapshot = await getDoc(docRef);
+    const likedUser = await getDocData(snapshot);
+
+    return {
+      ...likedUser,
+      createdAt: createdAt.toDate(),
+    };
+  });
 };
 
 export const addNewUserDoc = async (uid, data) => {
@@ -219,6 +256,22 @@ export const addJunctionUserSearchHistory = async ({uid, searchUserId}) => {
   };
 
   const ref = junctionUserSearchHistoryDocRef(junctionObj);
+
+  const data = {
+    ...junctionObj,
+    createdAt: serverTimestamp(),
+  };
+
+  await addNewJunctionDoc(ref, data);
+};
+
+export const addJunctionUserLikedPost = async ({uid, likedPostId}) => {
+  const junctionObj = {
+    uid,
+    likedPostId,
+  };
+
+  const ref = junctionUserLikedPostDocRef(junctionObj);
 
   const data = {
     ...junctionObj,
@@ -287,6 +340,19 @@ export const removeJunctionUserSearchHistory = async ({uid, searchUserId}) => {
     const ref = junctionUserSearchHistoryDocRef({
       uid,
       searchUserId,
+    });
+
+    await deleteDoc(ref);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const removeJunctionUserLikedPost = async ({uid, likedPostId}) => {
+  try {
+    const ref = junctionUserLikedPostDocRef({
+      uid,
+      likedPostId,
     });
 
     await deleteDoc(ref);
@@ -396,6 +462,90 @@ export const updateJunctionUserSearchHistory = async ({uid, searchUserId}) => {
     };
 
     await updateDoc(ref, data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getPostsAtHomeContent = async (uid) => {
+  try {
+    const q = postsAtHomeContentQuery();
+    const snapshot = await getDocs(q);
+    const postsData = await getCollectionData(snapshot.docs);
+    const junctionUserLikedPosts = await getAllJunctionUserLikedPostByUid(uid);
+    const junctionUserSavedPosts = await getAllJunctionUserSavedPostByUid(uid);
+
+    let posts = await Promise.all(
+      postsData.map(async (post) => {
+        const ownerData = await getUserDoc(post.ownerId);
+        const junctionQ = junctionUserLikedPostQueryByPostId(post.id);
+
+        const likedUsersData = await getJunctionDocs(junctionQ, async (doc) => {
+          const {uid, createdAt} = doc.data();
+          const docRef = userDocRef(uid).withConverter(likedUserConverter);
+          const snapshot = await getDoc(docRef);
+          const likedUser = await getDocData(snapshot);
+
+          return {
+            ...likedUser,
+            createdAt: createdAt.toDate(),
+          };
+        });
+
+        return {
+          ...post,
+          createdAt: post.createdAt.toDate(),
+          owner: {
+            username: ownerData.username,
+            avatar: ownerData.avatar,
+            profile: ownerData.profile,
+            hasStory: ownerData.hasStory,
+            hasStoryBeenSeen: ownerData.hasStoryBeenSeen ?? false,
+            city: ownerData.city,
+            country: ownerData.country,
+          },
+          likedUsers: likedUsersData,
+        };
+      })
+    );
+
+    posts = posts.map((post) => {
+      const postId = post.id;
+      const isLiked = junctionUserLikedPosts.some(
+        (junctionUserLikedPost) => junctionUserLikedPost.likedPostId === postId
+      );
+      const isSaved = junctionUserSavedPosts.some(
+        (junctionUserSavedPost) => junctionUserSavedPost.savedPostId === postId
+      );
+
+      return {
+        ...post,
+        isLiked,
+        isSaved,
+      };
+    });
+
+    // Fake data
+    posts = posts.map((post) => {
+      const postOwnerId = post.ownerId;
+      const indexOfPostByOwnerId = fakePostData.findIndex(
+        (post) => post.ownerId === postOwnerId
+      );
+
+      if (indexOfPostByOwnerId === -1) {
+        return post;
+      }
+
+      const fakePost = fakePostData[indexOfPostByOwnerId];
+
+      return {
+        ...post,
+        fakeLikedOtherUserAvatars: fakePost.fakeLikedOtherUserAvatars,
+        fakeLikeAmount: fakePost.fakeLikeAmount,
+      };
+    });
+
+    return posts;
   } catch (error) {
     console.log(error);
   }

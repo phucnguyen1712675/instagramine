@@ -7,16 +7,16 @@ const getDiffDays = (date1, date2 = Date.now()) => {
   return diffDays;
 };
 
-export const formatPostDate = (timestamp) => {
-  const convertedDate = new Date(timestamp * 1000);
-  const diffDays = getDiffDays(convertedDate);
+export const formatPostDate = (date) => {
+  // const convertedDate = new Date(timestamp * 1000);
+  const diffDays = getDiffDays(date);
 
   if (diffDays > 7) {
-    const formattedDate = dateFormat(convertedDate, 'ddd, dd mmmm yyyy');
+    const formattedDate = dateFormat(date, 'ddd, dd mmmm yyyy');
     return formattedDate;
   }
 
-  const timeAgo = moment(convertedDate).fromNow();
+  const timeAgo = moment(date).fromNow();
   return timeAgo;
 };
 

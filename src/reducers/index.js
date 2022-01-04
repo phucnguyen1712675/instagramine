@@ -3,11 +3,12 @@ import requestReducer from './requestReducer';
 import notificationButtonReducer from './notificationButtonReducer';
 import postReducer from './postReducer';
 import requestItemButtonReducer from './requestItemButtonReducer';
-import savedPostsContextReducer from './savedPostsContextReducer';
+import savedContentReducer from './savedContentReducer';
 import searchBarReducer from './searchBarReducer';
 import useFirestoreQueryReducer from './useFirestoreQueryReducer';
 import authContextReducer from './authContextReducer';
 import userMenuReducer from './userMenuReducer';
+import homeContentReducer from './homeContentReducer';
 
 export {
   homeLayoutReducer,
@@ -15,9 +16,10 @@ export {
   notificationButtonReducer,
   postReducer,
   requestItemButtonReducer,
-  savedPostsContextReducer,
+  savedContentReducer,
   searchBarReducer,
   useFirestoreQueryReducer,
   authContextReducer,
   userMenuReducer,
+  homeContentReducer,
 };

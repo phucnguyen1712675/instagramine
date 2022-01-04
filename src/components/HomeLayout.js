@@ -32,7 +32,6 @@ import {
 import {ROUTE_PATHS} from '../constants';
 import {useAuth, useMounted} from '../hooks';
 import {homeLayoutReducer} from '../reducers';
-import {SavedPostsContextProvider} from '../store/savedPostsContext';
 import {logOut} from '../services/firestoreAuth';
 import {
   SET_TOGGLE_SIDEBAR_BTN_CHECKED,
@@ -231,9 +230,7 @@ const HomeLayout = () => {
         </Nav>
       </Sidebar>
       <MainContent>
-        <SavedPostsContextProvider>
-          <Outlet />
-        </SavedPostsContextProvider>
+        <Outlet />
       </MainContent>
       <UserMenu />
     </StyledHomeLayout>

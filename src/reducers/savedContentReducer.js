@@ -3,7 +3,7 @@ import {
   SET_SAVED_POSTS_AFTER_LOADING,
   SET_SAVED_POSTS_AFTER_ADDING,
   SET_SAVED_POSTS_AFTER_REMOVING,
-} from '../actions/savedPostsContextActions';
+} from '../actions/savedContentActions';
 
 export default (state, action) => {
   switch (action.type) {
