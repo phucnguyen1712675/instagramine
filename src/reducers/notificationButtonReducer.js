@@ -43,6 +43,6 @@ export default (state, action) => {
         ),
       };
     default:
-      throw new Error('invalid action');
+      return state;
   }
 };

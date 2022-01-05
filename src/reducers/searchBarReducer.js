@@ -48,7 +48,7 @@ export default (state, action) => {
       };
     case UPDATE_SEARCH_HISTORY_ITEM_CREATED_AT: {
       const searchUserId = action.payload;
-      const {searchHistory} = state;
+      const { searchHistory } = state;
       const itemToUpdate = searchHistory.find(
         (item) => item.id === searchUserId
       );
@@ -93,6 +93,6 @@ export default (state, action) => {
       };
 
     default:
-      throw new Error('invalid action');
+      return state;
   }
 };

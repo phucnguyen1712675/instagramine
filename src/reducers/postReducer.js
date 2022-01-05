@@ -39,6 +39,6 @@ export default (state, action) => {
         isLikeButtonLoading: false,
       };
     default:
-      throw new Error('invalid action');
+      return state;
   }
 };

@@ -24,6 +24,6 @@ export default (state, action) => {
         error: action.payload,
       };
     default:
-      throw new Error('invalid action');
+      return state;
   }
 };
