@@ -17,6 +17,6 @@ export default (state, action) => {
         posts: action.payload,
       };
     default:
-      throw new Error('invalid action');
+      return state;
   }
 };

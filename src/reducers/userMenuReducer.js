@@ -17,6 +17,6 @@ export default (state, action) => {
         storyCategories: action.payload,
       };
     default:
-      throw new Error('invalid action');
+      return state;
   }
 };

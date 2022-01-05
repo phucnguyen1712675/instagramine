@@ -22,6 +22,6 @@ export default (state, action) => {
         showToggleSidebar: action.payload,
       };
     default:
-      throw new Error('invalid action');
+      return state;
   }
 };
