@@ -16,7 +16,7 @@ const Avatar = ({
     hasStory && hasStoryBeenSeen
   );
 
-  const onClickStoryHandler = () => {
+  const seenStoryHandler = () => {
     setHasStoryBeenSeenState(true);
   };
 
@@ -39,7 +39,7 @@ const Avatar = ({
       className={className}
       onClick={
         !disableOnClickHandler && !hasStoryBeenSeenState
-          ? onClickStoryHandler
+          ? seenStoryHandler
           : null
       }
       $hasStory={hasStory}

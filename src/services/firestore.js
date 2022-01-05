@@ -27,56 +27,55 @@ import {removeUndefinedFields} from '../utils/object';
 
 // Collection paths
 export const usersColRef = collection(db, 'users');
-export const postsColRef = collection(db, 'posts');
-export const storyCategoriesColRef = collection(db, 'story_categories');
-export const junctionUserRequestSenderColRef = collection(
+const postsColRef = collection(db, 'posts');
+const storyCategoriesColRef = collection(db, 'story_categories');
+const junctionUserRequestSenderColRef = collection(
   db,
   'junction_user_request_sender'
 );
-export const junctionUserSearchHistoryColRef = collection(
+const junctionUserSearchHistoryColRef = collection(
   db,
   'junction_user_search_history'
 );
-export const junctionUserFollowingUserColRef = collection(
+const junctionUserFollowingUserColRef = collection(
   db,
   'junction_user_following_user'
 );
-export const junctionUserSavedPostColRef = collection(
-  db,
-  'junction_user_saved_post'
-);
-export const junctionUserStoryCategoryColRef = collection(
+const junctionUserSavedPostColRef = collection(db, 'junction_user_saved_post');
+const junctionUserStoryCategoryColRef = collection(
   db,
   'junction_user_story_category'
 );
-export const junctionUserLikedPost = collection(db, 'junction_user_liked_post');
+const junctionUserLikedPost = collection(db, 'junction_user_liked_post');
 
 // Document paths
-export const userDocRef = (uid) => doc(db, `users/${uid}`);
-export const postDocRef = (id) => doc(db, `posts/${id}`);
-export const storyCategoryDocRef = (storyCategoryId) =>
+const userDocRef = (uid) => doc(db, `users/${uid}`);
+const postDocRef = (id) => doc(db, `posts/${id}`);
+const storyCategoryDocRef = (storyCategoryId) =>
   doc(db, `story_categories/${storyCategoryId}`);
-export const junctionUserSearchHistoryDocRef = ({uid, searchUserId}) =>
+const junctionUserSearchHistoryDocRef = ({uid, searchUserId}) =>
   doc(db, `junction_user_search_history/${uid}_${searchUserId}`);
-export const junctionUserLikedPostDocRef = ({uid, likedPostId}) =>
+const junctionUserLikedPostDocRef = ({uid, likedPostId}) =>
   doc(db, `junction_user_liked_post/${uid}_${likedPostId}`);
-export const junctionUserSavedPostDocRef = ({uid, savedPostId}) =>
+const junctionUserSavedPostDocRef = ({uid, savedPostId}) =>
   doc(db, `junction_user_saved_post/${uid}_${savedPostId}`);
-export const junctionUserRequestSenderDocRef = ({uid, requestSenderId}) =>
+const junctionUserRequestSenderDocRef = ({uid, requestSenderId}) =>
   doc(db, `junction_user_request_sender/${uid}_${requestSenderId}`);
-export const junctionUserFollowingUserDocRef = ({uid, followingUserId}) =>
+const junctionUserFollowingUserDocRef = ({uid, followingUserId}) =>
   doc(db, `junction_user_following_user/${uid}_${followingUserId}`);
-export const junctionUserStoryCategoryDocRef = ({uid, storyCategoryId}) =>
+const junctionUserStoryCategoryDocRef = ({uid, storyCategoryId}) =>
   doc(db, `junction_user_story_category/${uid}_${storyCategoryId}`);
 
 // Query paths
-export const junctionUserRequestSenderQuery = (uid) =>
+const postsAtHomeContentQuery = () =>
+  query(postsColRef, orderBy('createdAt', 'desc'), limit(20));
+const junctionUserRequestSenderQuery = (uid) =>
   query(
     junctionUserRequestSenderColRef,
     where('uid', '==', uid),
     orderBy('createdAt', 'desc')
   );
-export const junctionUserSearchHistoryQuery = (uid) =>
+const junctionUserSearchHistoryQuery = (uid) =>
   query(
     junctionUserSearchHistoryColRef,
     where('uid', '==', uid),
@@ -84,29 +83,28 @@ export const junctionUserSearchHistoryQuery = (uid) =>
   );
 export const junctionUserFollowingUserQuery = (uid) =>
   query(junctionUserFollowingUserColRef, where('uid', '==', uid));
-export const junctionUserSavedPostQueryByUid = (uid) =>
+const junctionUserSavedPostQueryByUid = (uid) =>
   query(
     junctionUserSavedPostColRef,
     where('uid', '==', uid),
     orderBy('createdAt', 'desc')
   );
-export const junctionUserStoryCategoryQuery = (uid) =>
+const junctionUserStoryCategoryQuery = (uid) =>
   query(
     junctionUserStoryCategoryColRef,
     where('uid', '==', uid),
     orderBy('views', 'desc'),
     limit(MAX_STORIES_NUMBER)
   );
-export const postsAtHomeContentQuery = () =>
-  query(postsColRef, orderBy('createdAt', 'desc'), limit(20));
-export const junctionUserLikedPostQueryByUid = (uid) =>
+
+const junctionUserLikedPostQueryByUid = (uid) =>
   query(junctionUserLikedPost, where('uid', '==', uid));
-export const junctionUserLikedPostQueryByPostId = (likedPostId) =>
+const junctionUserLikedPostQueryByPostId = ({likedPostId, excludedUid}) =>
   query(
     junctionUserLikedPost,
     where('likedPostId', '==', likedPostId),
-    orderBy('createdAt', 'desc'),
-    limit(20)
+    where('uid', '!=', excludedUid),
+    limit(1)
   );
 
 // Helper Functions
@@ -133,7 +131,7 @@ const addNewJunctionDoc = async (docRef, data) => {
 };
 
 // Custom Functions
-export const getAllJunctionUserSavedPostByUid = async (uid) => {
+const getAllJunctionUserSavedPostByUid = async (uid) => {
   const q = junctionUserSavedPostQueryByUid(uid);
 
   return getJunctionDocs(q, async (doc) => {
@@ -198,7 +196,7 @@ export const getStoryCategoriesByUid = async (uid) => {
   });
 };
 
-export const getAllJunctionUserLikedPostByUid = async (uid) => {
+const getAllJunctionUserLikedPostByUid = async (uid) => {
   const q = junctionUserLikedPostQueryByUid(uid);
 
   return getJunctionDocs(q, async (doc) => {
@@ -207,22 +205,6 @@ export const getAllJunctionUserLikedPostByUid = async (uid) => {
     return {
       ...docData,
       createdAt: docData.createdAt.toDate(),
-    };
-  });
-};
-
-export const getLikedUsersByPostId = async (likedPostId) => {
-  const q = junctionUserLikedPostQueryByPostId(likedPostId);
-
-  return getJunctionDocs(q, async (doc) => {
-    const {uid, createdAt} = doc.data();
-    const docRef = userDocRef(uid).withConverter(likedUserConverter);
-    const snapshot = await getDoc(docRef);
-    const likedUser = await getDocData(snapshot);
-
-    return {
-      ...likedUser,
-      createdAt: createdAt.toDate(),
     };
   });
 };
@@ -421,8 +403,12 @@ export const likePostRequest = async ({uid, likedPostId}) => {
 
       const newLikeAmount = postDoc.data().likeAmount + 1;
 
+      const updateData = {
+        likeAmount: newLikeAmount,
+      };
+
       // Update like amount
-      transaction.update(postRef, {likeAmount: newLikeAmount});
+      transaction.update(postRef, updateData);
 
       // Add to junction user liked post
       transaction.set(junctionRef, junctionData);
@@ -452,8 +438,12 @@ export const unlikePostRequest = async ({uid, likedPostId}) => {
 
       const newLikeAmount = postDoc.data().likeAmount - 1;
 
+      const updateData = {
+        likeAmount: newLikeAmount,
+      };
+
       // Update like amount
-      transaction.update(postRef, {likeAmount: newLikeAmount});
+      transaction.update(postRef, updateData);
 
       // Remove to junction user liked post
       transaction.delete(junctionRef);
@@ -504,7 +494,10 @@ export const getPostsAtHomeContent = async (uid) => {
         const postId = post.id;
         const postOwnerId = post.ownerId;
         const ownerData = await getUserDoc(postOwnerId);
-        const junctionQ = junctionUserLikedPostQueryByPostId(postId);
+        const junctionQ = junctionUserLikedPostQueryByPostId({
+          likedPostId: postId,
+          excludedUid: uid,
+        });
         const likedUsersData = await getJunctionDocs(junctionQ, async (doc) => {
           const {uid} = doc.data();
           const docRef = userDocRef(uid).withConverter(likedUserConverter);
@@ -566,7 +559,10 @@ export const getPostsAtSavedContent = async (uid) => {
       let postData = await getDocData(snapshot);
       const postOwnerId = postData.ownerId;
       const ownerData = await getUserDoc(postOwnerId);
-      const junctionQ = junctionUserLikedPostQueryByPostId(savedPostId);
+      const junctionQ = junctionUserLikedPostQueryByPostId({
+        likedPostId: savedPostId,
+        excludedUid: uid,
+      });
 
       const likedUsersData = await getJunctionDocs(
         junctionQ,
@@ -659,9 +655,9 @@ export const setFakeFollowRequests = async (uid) => {
   await setFakeDataForUi(refsAndData);
 };
 
-function getRandomInt(max) {
+const getRandomInt = (max) => {
   return Math.floor(Math.random() * max);
-}
+};
 
 export const setFakeJunctionUserStoryCategory = async (uid) => {
   try {

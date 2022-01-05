@@ -1,6 +1,7 @@
 import styled, {css} from 'styled-components';
 import {hoverUnderline} from './Mixins';
 import {TopText} from './UserCard.styled';
+import {ButtonSpinner} from './Button.styled';
 import UserCard from '../UserCard';
 import Avatar from '../Avatar';
 import Button from '../Button';
@@ -64,13 +65,18 @@ export const PostActions = styled.div`
 `;
 
 export const PostActionButton = styled(Button)`
-  font-size: 1.6rem;
+  --font-size: 1.6rem;
+  font-size: var(--font-size);
   padding: var(--padding-btn);
   color: ${({theme}) => theme.colors.postAction};
   ${darkerButtonHover}
 
   &:last-child {
     margin-left: auto;
+  }
+
+  ${ButtonSpinner} {
+    padding: calc(var(--font-size) / 2);
   }
 `;
 

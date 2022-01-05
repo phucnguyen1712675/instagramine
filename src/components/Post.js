@@ -36,7 +36,7 @@ import {
   PostDate,
 } from './styled/Post.styled';
 import {POST_CAPTION_SHOW_CHAR, ROUTE_PATHS} from '../constants';
-import {useAuth} from '../hooks';
+import {useAuth, useMounted} from '../hooks';
 import {postReducer} from '../reducers';
 import {
   likePostRequest,
@@ -45,57 +45,79 @@ import {
   removeJunctionUserSavedPost,
 } from '../services/firestore';
 import {formatPostDate} from '../utils/formatters';
-import {TOGGLE_IS_SAVED, LIKE_POST, UNLIKE_POST} from '../actions/postActions';
+import {
+  TOGGLE_IS_SAVED_AFTER_LOADING,
+  LIKE_POST,
+  UNLIKE_POST,
+  SET_IS_LIKE_BUTTON_LOADING,
+  SET_IS_SAVE_BUTTON_LOADING,
+} from '../actions/postActions';
 
 const Post = ({post, removeSavedPostHandler}) => {
   const [state, dispatch] = useReducer(postReducer, {
     likeAmount: post.likeAmount,
     isLiked: post.isLiked,
     isSaved: post.isSaved,
+    isLikeButtonLoading: false,
+    isSaveButtonLoading: false,
   });
 
   const auth = useAuth();
 
+  const mounted = useMounted();
+
   const location = useLocation();
 
-  const likePostHandler = () => {
+  const likePostHandler = async () => {
     const junctionObj = {
       uid: auth.authUser.id,
       likedPostId: post.id,
     };
 
+    dispatch({type: SET_IS_LIKE_BUTTON_LOADING, payload: true});
+
     if (!state.isLiked) {
-      likePostRequest(junctionObj);
-      dispatch({
-        type: LIKE_POST,
-      });
+      await likePostRequest(junctionObj);
+
+      if (mounted.current) {
+        dispatch({
+          type: LIKE_POST,
+        });
+      }
     } else {
-      unlikePostRequest(junctionObj);
-      dispatch({
-        type: UNLIKE_POST,
-      });
+      await unlikePostRequest(junctionObj);
+
+      if (mounted.current) {
+        dispatch({
+          type: UNLIKE_POST,
+        });
+      }
     }
   };
 
-  const savePostHandler = () => {
+  const savePostHandler = async () => {
     const junctionObj = {
       uid: auth.authUser.id,
       savedPostId: post.id,
     };
 
+    dispatch({type: SET_IS_SAVE_BUTTON_LOADING, payload: true});
+
     if (!state.isSaved) {
-      addJunctionUserSavedPost(junctionObj);
+      await addJunctionUserSavedPost(junctionObj);
     } else {
-      removeJunctionUserSavedPost(junctionObj);
+      await removeJunctionUserSavedPost(junctionObj);
 
       if (location.pathname === `/${ROUTE_PATHS.SAVED}`) {
         removeSavedPostHandler(post.id);
       }
     }
 
-    dispatch({
-      type: TOGGLE_IS_SAVED,
-    });
+    if (mounted.current) {
+      dispatch({
+        type: TOGGLE_IS_SAVED_AFTER_LOADING,
+      });
+    }
   };
 
   const {owner} = post;
@@ -142,6 +164,7 @@ const Post = ({post, removeSavedPostHandler}) => {
             <LikedButton
               type="text"
               onClick={likePostHandler}
+              loading={state.isLikeButtonLoading}
               $isLiked={state.isLiked}
             >
               <HeartIcon />
@@ -155,6 +178,7 @@ const Post = ({post, removeSavedPostHandler}) => {
             <SavedButton
               type="text"
               onClick={savePostHandler}
+              loading={state.isSaveButtonLoading}
               $isSaved={state.isSaved}
             >
               <SavedIcon />
