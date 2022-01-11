@@ -51,6 +51,3 @@ Room for improvement:
 
 ## Acknowledgements
 - This project was based on a design on Dribble.
-
-
-\
